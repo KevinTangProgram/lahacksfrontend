@@ -32,6 +32,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@testing-library/react", "virtual:04a57cdec3605b2f453cf27f17de3e9f65f0e11cc3e0a6a70245d38470b4e8947f3a676cd497a67b807b65f02d36ff95880f43d2ef91a9aacc7472ac66ab2eca#npm:13.4.0"],\
             ["@testing-library/user-event", "virtual:04a57cdec3605b2f453cf27f17de3e9f65f0e11cc3e0a6a70245d38470b4e8947f3a676cd497a67b807b65f02d36ff95880f43d2ef91a9aacc7472ac66ab2eca#npm:13.5.0"],\
             ["axios", "npm:1.3.6"],\
+            ["crypto-js", "npm:4.1.1"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:04a57cdec3605b2f453cf27f17de3e9f65f0e11cc3e0a6a70245d38470b4e8947f3a676cd497a67b807b65f02d36ff95880f43d2ef91a9aacc7472ac66ab2eca#npm:18.2.0"],\
             ["react-router-dom", "virtual:04a57cdec3605b2f453cf27f17de3e9f65f0e11cc3e0a6a70245d38470b4e8947f3a676cd497a67b807b65f02d36ff95880f43d2ef91a9aacc7472ac66ab2eca#npm:6.10.0"],\
@@ -6415,6 +6416,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@testing-library/react", "virtual:04a57cdec3605b2f453cf27f17de3e9f65f0e11cc3e0a6a70245d38470b4e8947f3a676cd497a67b807b65f02d36ff95880f43d2ef91a9aacc7472ac66ab2eca#npm:13.4.0"],\
             ["@testing-library/user-event", "virtual:04a57cdec3605b2f453cf27f17de3e9f65f0e11cc3e0a6a70245d38470b4e8947f3a676cd497a67b807b65f02d36ff95880f43d2ef91a9aacc7472ac66ab2eca#npm:13.5.0"],\
             ["axios", "npm:1.3.6"],\
+            ["crypto-js", "npm:4.1.1"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:04a57cdec3605b2f453cf27f17de3e9f65f0e11cc3e0a6a70245d38470b4e8947f3a676cd497a67b807b65f02d36ff95880f43d2ef91a9aacc7472ac66ab2eca#npm:18.2.0"],\
             ["react-router-dom", "virtual:04a57cdec3605b2f453cf27f17de3e9f65f0e11cc3e0a6a70245d38470b4e8947f3a676cd497a67b807b65f02d36ff95880f43d2ef91a9aacc7472ac66ab2eca#npm:6.10.0"],\
@@ -6854,6 +6856,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["path-key", "npm:3.1.1"],\
             ["shebang-command", "npm:2.0.0"],\
             ["which", "npm:2.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["crypto-js", [\
+        ["npm:4.1.1", {\
+          "packageLocation": "./.yarn/cache/crypto-js-npm-4.1.1-38a3b8c19d-b3747c12ee.zip/node_modules/crypto-js/",\
+          "packageDependencies": [\
+            ["crypto-js", "npm:4.1.1"]\
           ],\
           "linkType": "HARD"\
         }]\

@@ -289,6 +289,16 @@ a{
     width: 40em;
 }
 
+.selectGridSmall
+{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    margin-top: 20px;
+    width: 15em;
+    text-align: center;
+}
+
 .selectCells
 {
     cursor: pointer;
