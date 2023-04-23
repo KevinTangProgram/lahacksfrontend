@@ -8,6 +8,7 @@ function Home()
     const [input, setInput] = useState([]);
     const [shortInput, setShortInput] = useState("");
     const [output, setOutput] = useState([]);
+    const [tracker, setTracker] = useState("");
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);}
 
@@ -26,7 +27,11 @@ function Home()
         })
         .then (response => {
             let newOutput = output;
-            newOutput.push(sentMessage + ' ' + shortInput);
+            if (shortInput !== "")
+            {
+                input.append(shortInput);
+            }
+            newOutput.push(input);
             newOutput.push(response.data);
             setOutput(newOutput);
             setInput([]);
@@ -74,6 +79,14 @@ function Home()
         }
     }
 
+    function Thoughts({prompt, index})
+    {
+        return (<>
+            <p1>{prompt}</p1>
+            <br></br>
+        </>)
+    }
+
     function QuestionAnswer({prompt, index})
     {
         if (index % 2 === 0)
@@ -82,7 +95,9 @@ function Home()
                 <>
                     <div className="confirmGrid">
                         <p1>Prompt:</p1>
-                        <p1>{prompt}</p1>
+                        <div>
+                            {prompt.map((index, i) => (<div><Thoughts prompt={prompt[i]} index={i}/></div>))}
+                        </div>
                     </div>
                 </>
             )
@@ -99,17 +114,9 @@ function Home()
         }
     }
 
-    function Thoughts({prompt, index})
-    {
-        return (<>
-            <p1>{prompt}</p1>
-            <br></br>
-        </>)
-    }
-
     return (
     <>
-        <h1>Welcome to Idea Oasis</h1>
+        <h1>Please Enter Your Thoughts Below</h1>
         <div className="selectGrid">
             {output.map((index, i) => (<div><QuestionAnswer prompt={output[i]} index={i}/></div>))}
             <div className="inputGrid">
