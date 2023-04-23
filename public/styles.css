@@ -41,7 +41,6 @@ body
 h1
 {
     text-align: center;
-    margin-top: 50px;
     margin-bottom: 50px;
 }
 
@@ -266,7 +265,7 @@ a{
     cursor: pointer;
     position: absolute;
     margin-left: 3em;
-    margin-top: -1.5em;
+    margin-top: 0em;
     font-size: 1em;
 }
 
@@ -297,6 +296,11 @@ a{
     margin-top: 20px;
     width: 15em;
     text-align: center;
+}
+
+.pointer
+{
+    cursor: pointer;
 }
 
 .selectCells
@@ -619,6 +623,16 @@ input
     font-size: 15px;
 }
 
+#submitAndConfirmVeryLong
+{
+    margin-top: 50px;
+    width: 14em;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    margin-right: 50px;
+}
+
 .inputGrid
 {
     margin-top: 1em;
@@ -635,7 +649,7 @@ input
 {
     margin-top: 1em;
     display: grid;
-    grid-template-columns: 20% 80%;
+    grid-template-columns: 15% 80% 5%;
 }
 
 .officeHoursGrid
