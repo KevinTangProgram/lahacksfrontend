@@ -19,7 +19,10 @@ function Home()
     const [incorrectPass, setIncorrectPass] = useState(false);
     const [sentEmail, setSentEmail] = useState(false);
 
-    const handleChangeInput = (event) => {setShortInput(event.target.value);}
+    const handleChangeInput = (event) => {setShortInput(event.target.value);
+        const textarea = event.target;
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight + 20}px`;}
     const handleChangeUsername = (event) => {setUsername(event.target.value);}
     const handleChangePassword = (event) => {setPassword(event.target.value);}
     const handleChangePassword2 = (event) => {setPassword2(event.target.value);}
@@ -318,10 +321,14 @@ function Home()
                             setShortInput(shortInput+"\n")
                         } 
                             else if (event.key === "Enter") {
+                                const textarea = event.target;
+                                textarea.style.height = "auto";
                                 event.preventDefault(); 
                                 addThought();}}}
-                        ></textarea>
-                        <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();}}>+</button>
+                                style={{ height: "auto", resize: "none" }}></textarea>
+                        <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();
+                                const textarea = event.target;
+                                textarea.style.height = "auto";}}>+</button>
                     </div>
                     <div className="confirmGrid">
                         <p1>Current Thoughts:</p1>
