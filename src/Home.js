@@ -336,6 +336,9 @@ function Home()
             )
         case "login":
             return (<>
+                            <button id="backButton" onClick={() => {
+                    setTracker("");
+                }}>&#10094;Back</button>
             <h1>Welcome to Idea Oasis</h1>
                     <div className="selectGridSmall">
                             <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
