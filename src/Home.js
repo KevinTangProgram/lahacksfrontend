@@ -24,8 +24,8 @@ function Home()
     const handleChangePassword = (event) => {setPassword(event.target.value);}
     const handleChangePassword2 = (event) => {setPassword2(event.target.value);}
 
-    const URL = "https://gharial-cape.cyclic.app";
-    //const URL = "http://localhost:8080";
+    //const URL = "https://gharial-cape.cyclic.app";
+    const URL = "http://localhost:8080";
 
     function sendInput()
     {
@@ -136,7 +136,7 @@ function Home()
     function sendEmail()
     {
         axios.get(URL + '/email', {
-            id: userId
+            params: {id: userId}
         })
         .then (response => {
             setSentEmail(true);
