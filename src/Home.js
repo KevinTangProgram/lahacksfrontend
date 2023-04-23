@@ -33,7 +33,7 @@ function Home()
         let addedInput = input;
         if (shortInput !== "")
         {
-            addedInput.push(shortInput);
+            addedInput.push(shortInput.replace(/\n/g, "<br>"));
         }
         axios.put(URL + "/api/cohere", {
             id: userId,
@@ -148,7 +148,7 @@ function Home()
     function addThought()
     {
         let addedInput = input;
-        addedInput.push(shortInput);
+        addedInput.push(shortInput.replace(/\n/g, "<br>"));
         setInput(addedInput);
         setShortInput("");
     }
@@ -323,7 +323,9 @@ function Home()
                     <div className="confirmGrid">
                         <p1>Current Thoughts:</p1>
                         <div>
-                            {input.map((index, i) => (<div><Thoughts prompt={input[i]} index={i}/></div>))}
+                        {input.map((index, i) => (
+  <div key={i} dangerouslySetInnerHTML={{ __html: input[i].replace(/\n/g, '<br>') }}></div>
+))}
                         </div>
                     </div>
                     <br></br>
@@ -332,18 +334,12 @@ function Home()
                 </div>
             </>
             )
-        case "setup":
-            const passwordRef = useRef(null);
+        case "login":
             return (<>
             <h1>Welcome to Idea Oasis</h1>
                     <div className="selectGridSmall">
-                            <input placeholder="Username" value={username} onChange={handleChangeUsername}
-                                                    onKeyDown={(event) => { if (event.key === "Enter") {      passwordRef.current.focus(); console.log("enter:");
-                                                    }}
-                                                }></input>
-                            <input placeholder="Password" value={password} onChange={handleChangePassword}
-                            ref={passwordRef}
-                            onKeyDown={(event) => {if (event.key ==="Enter") { sendInput();}}} ></input>
+                            <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
+                            <input placeholder="Password" value={password} onChange={handleChangePassword} ></input>
                         
                         {incorrect()}
                         {connectionError()}
