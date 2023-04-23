@@ -215,8 +215,11 @@ function Home()
                     <div className="confirmGrid">
                         <p1>Prompt:</p1>
                         <div>
-                            {prompt.map((index, i) => (<div><Thoughts prompt={prompt[i]} index={i}/></div>))}
-                        </div>
+                        {prompt.map((index, i) => (
+    <div>
+        <Thoughts prompt={prompt[i].replace(/<br>/g, '\n')} index={i}/>
+    </div>
+))}                        </div>
                         <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
                     </div>
                 </>
