@@ -301,11 +301,23 @@ function Home()
                 </div>
                 <button className="selectCells" id="submitAndConfirmVeryLong" onClick={() => {setTracker("login"); setSentEmail(false);}}>Login/Create Account</button>
                 <h1>Please Enter Your Thoughts Below</h1>
+
                 <div className="selectGrid">
                     {output.map((index, i) => (<div><QuestionAnswer prompt={output[i]} index={i}/></div>))}
                     <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
                     <div className="inputGrid">
-                        <input placeholder="What stuff is your professor saying now?" value={shortInput} onChange={handleChangeInput}></input>
+                        <textarea placeholder="What stuff is your professor saying now?" value={shortInput} onChange={handleChangeInput}
+                        // Add onKeyPress to add thought on enter
+                        onKeyDown={(event) => { 
+                            if (event.key === "Enter" && event.shiftKey) 
+                            {
+                                event.preventDefault();
+                            setShortInput(shortInput+"\n")
+                        } 
+                            else if (event.key === "Enter") {
+                                event.preventDefault(); 
+                                addThought();}}}
+                        ></textarea>
                         <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();}}>+</button>
                     </div>
                     <div className="confirmGrid">
@@ -320,13 +332,18 @@ function Home()
                 </div>
             </>
             )
-        case "login":
-            return (
-                <>
-                    <h1>Welcome to Idea Oasis</h1>
+        case "setup":
+            const passwordRef = useRef(null);
+            return (<>
+            <h1>Welcome to Idea Oasis</h1>
                     <div className="selectGridSmall">
-                        <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
-                        <input placeholder="Password" type="password" value={password} onChange={handleChangePassword}></input>
+                            <input placeholder="Username" value={username} onChange={handleChangeUsername}
+                                                    onKeyDown={(event) => { if (event.key === "Enter") {      passwordRef.current.focus(); console.log("enter:");
+                                                    }}
+                                                }></input>
+                            <input placeholder="Password" value={password} onChange={handleChangePassword}
+                            ref={passwordRef}
+                            onKeyDown={(event) => {if (event.key ==="Enter") { sendInput();}}} ></input>
                         
                         {incorrect()}
                         {connectionError()}
