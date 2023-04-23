@@ -24,8 +24,8 @@ function Home()
     const handleChangePassword = (event) => {setPassword(event.target.value);}
     const handleChangePassword2 = (event) => {setPassword2(event.target.value);}
 
-    const URL = "https://gharial-cape.cyclic.app";
-    //const URL = "http://localhost:8080";
+    //const URL = "https://gharial-cape.cyclic.app";
+    const URL = "http://localhost:8080";
 
     function sendInput()
     {
@@ -136,7 +136,7 @@ function Home()
     function sendEmail()
     {
         axios.get(URL + '/email', {
-            id: userId
+            params: {id: userId}
         })
         .then (response => {
             setSentEmail(true);
@@ -215,8 +215,11 @@ function Home()
                     <div className="confirmGrid">
                         <p1>Prompt:</p1>
                         <div>
-                            {prompt.map((index, i) => (<div><Thoughts prompt={prompt[i]} index={i}/></div>))}
-                        </div>
+                        {prompt.map((index, i) => (
+    <div>
+        <Thoughts prompt={prompt[i].replace(/<br>/g, '\n')} index={i}/>
+    </div>
+))}                        </div>
                         <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
                     </div>
                 </>
@@ -336,6 +339,9 @@ function Home()
             )
         case "login":
             return (<>
+                            <button id="backButton" onClick={() => {
+                    setTracker("");
+                }}>&#10094;Back</button>
             <h1>Welcome to Idea Oasis</h1>
                     <div className="selectGridSmall">
                             <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
