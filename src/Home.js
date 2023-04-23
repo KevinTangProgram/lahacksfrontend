@@ -17,6 +17,7 @@ function Home()
     const [goodCred, setGoodCred] = useState(false);
     const [password2, setPassword2] = useState("");
     const [incorrectPass, setIncorrectPass] = useState(false);
+    const [sentEmail, setSentEmail] = useState(false);
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);}
     const handleChangeUsername = (event) => {setUsername(event.target.value);}
@@ -132,6 +133,18 @@ function Home()
         })
     }
 
+    function sendEmail()
+    {
+        axios.get(URL + '/email', {
+            id: userId
+        })
+        .then (response => {
+            setSentEmail(true);
+        })
+        .catch(() => {
+        })
+    }
+
     function addThought()
     {
         let addedInput = input;
@@ -172,6 +185,15 @@ function Home()
         if (goodCred)
         {
             return <p1 className="alignCenter">Account Creation Successful! Go back to login.</p1>
+        }
+        return <></>
+    }
+
+    function emailNotify()
+    {
+        if (sentEmail)
+        {
+            return <p1 className="alignCenter">Email successfully sent!</p1>
         }
         return <></>
     }
@@ -219,6 +241,7 @@ function Home()
             return (<>
             <button className="selectCells" id="submitAndConfirmLong" onClick={() => {
                     sendInput();
+                    setSentEmail(false);
                 }}>Organize Now</button></>)
         }
         else
@@ -276,10 +299,11 @@ function Home()
                 <div className="container">
                     <img src="palm.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
                 </div>
-                <button className="selectCells" id="submitAndConfirmVeryLong" onClick={() => {setTracker("login");}}>Login/Create Account</button>
+                <button className="selectCells" id="submitAndConfirmVeryLong" onClick={() => {setTracker("login"); setSentEmail(false);}}>Login/Create Account</button>
                 <h1>Please Enter Your Thoughts Below</h1>
                 <div className="selectGrid">
                     {output.map((index, i) => (<div><QuestionAnswer prompt={output[i]} index={i}/></div>))}
+                    <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
                     <div className="inputGrid">
                         <input placeholder="What stuff is your professor saying now?" value={shortInput} onChange={handleChangeInput}></input>
                         <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();}}>+</button>
