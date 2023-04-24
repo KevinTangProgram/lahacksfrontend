@@ -48,10 +48,16 @@ function Home()
             input: addedInput
         })
         .then (response => {
+            console.log(response);
             let newOutput = output;
             newOutput.push(addedInput);
             newOutput.push(response.data);
-            setOutput(newOutput);
+            setOutput({
+                __html: newOutput.replace(/\n/g, '<br>'),
+                dangerouslySetInnerHTML: true
+              });
+              
+            
             setInput([]);
             setShortInput("");
             setResponseTime(false);
@@ -225,11 +231,21 @@ function Home()
             return (
                 <>
                     <div className="confirmGrid">
-                        <p1>Prompt:</p1>
+                        <p1>Ideas:</p1>
                         <div>
+<<<<<<< HEAD
                             {prompt.map((index, i) => (<div><Thoughts prompt={prompt[i]} index={i}/></div>))}                     </div>
                             <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
                         </div>
+=======
+                        {prompt.map((index, i) => (
+    <div>
+        <Thoughts prompt={prompt[i].replace(/<br>/g, '\n')} index={i}/>
+    </div>
+))}                        </div>
+                        <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px" className="trash"></img></button>
+                    </div>
+>>>>>>> 04c760641c0465404113a7de78f231b992d33ac7
                 </>
             )
         }
@@ -326,6 +342,7 @@ function Home()
                 <h1>Please Enter Your Thoughts Below</h1>
 
                 <div className="selectGrid">
+<<<<<<< HEAD
                     {output.map((index, i) => (<div><QuestionAnswer prompt={output[i]} index={i}/></div>))}
                     <div className="confirmGrid">
                         <div>
@@ -336,6 +353,11 @@ function Home()
                         </div>
                     </div>
                     {loader()}
+=======
+<div dangerouslySetInnerHTML={{__html: output.map((index, i) => `<div><QuestionAnswer prompt="${output[i]}" index="${i}"/></div>`).join('')}}></div>
+                    <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
+                    {connectionError()}
+>>>>>>> 04c760641c0465404113a7de78f231b992d33ac7
                     <div className="inputGrid">
                         <textarea placeholder="What stuff is your professor saying now?" value={shortInput} onChange={handleChangeInput}
                         // Add onKeyPress to add thought on enter
@@ -350,9 +372,28 @@ function Home()
                                 textarea.style.height = "auto";
                                 event.preventDefault(); 
                                 addThought();}}}
+<<<<<<< HEAD
                         ></textarea>
                         <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();}}>+</button>
                         {searchButton()}
+=======
+                                style={{ height: "auto", resize: "none" }}></textarea>
+                        <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();
+                                const textarea = event.target;
+                                textarea.style.height = "auto";}}>+</button>
+                    </div>
+                    <div className="confirmGrid">
+                    <div>
+                        {timestamp.map((index, i) => (
+  <div key={i} dangerouslySetInnerHTML={{ __html: input[i].replace(/\n/g, '<br>') }}></div>
+)).reverse()}
+                        </div>
+                        <div>
+                        {input.map((index, i) => (
+  <div key={i} dangerouslySetInnerHTML={{ __html: input[i].replace(/\n/g, '<br>') }}></div>
+)).reverse()}
+                        </div>
+>>>>>>> 04c760641c0465404113a7de78f231b992d33ac7
                     </div>
                     <br></br>
                     <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
