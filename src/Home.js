@@ -44,10 +44,16 @@ function Home()
             input: addedInput
         })
         .then (response => {
+            console.log(response);
             let newOutput = output;
             newOutput.push(addedInput);
             newOutput.push(response.data);
-            setOutput(newOutput);
+            setOutput({
+                __html: newOutput.replace(/\n/g, '<br>'),
+                dangerouslySetInnerHTML: true
+              });
+              
+            
             setInput([]);
             setShortInput("");
             setResponseTime(false);
@@ -217,14 +223,14 @@ function Home()
             return (
                 <>
                     <div className="confirmGrid">
-                        <p1>Prompt:</p1>
+                        <p1>Ideas:</p1>
                         <div>
                         {prompt.map((index, i) => (
     <div>
         <Thoughts prompt={prompt[i].replace(/<br>/g, '\n')} index={i}/>
     </div>
 ))}                        </div>
-                        <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
+                        <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px" className="trash"></img></button>
                     </div>
                 </>
             )
@@ -313,7 +319,7 @@ function Home()
                 <h1>Please Enter Your Thoughts Below</h1>
 
                 <div className="selectGrid">
-                    {output.map((index, i) => (<div><QuestionAnswer prompt={output[i]} index={i}/></div>))}
+<div dangerouslySetInnerHTML={{__html: output.map((index, i) => `<div><QuestionAnswer prompt="${output[i]}" index="${i}"/></div>`).join('')}}></div>
                     <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
                     {connectionError()}
                     <div className="inputGrid">
