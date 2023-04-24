@@ -289,7 +289,7 @@ a{
     flex-direction: column;
     margin: 0 auto;
     margin-top: 20px;
-    width: 40em;
+    width: 50em;
 }
 
 .selectGridSmall
@@ -616,6 +616,8 @@ input
     padding-top: 0px;
     padding-bottom: 0px;
     height: 1.8em;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 #submitAndConfirmLong
@@ -625,6 +627,8 @@ input
     padding-bottom: 5px;
     font-size: 15px;
     height: 1.8em;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 #submitAndConfirmVeryLong
@@ -641,7 +645,7 @@ input
 {
     margin-top: 1em;
     display: grid;
-    grid-template-columns: 65% 10% 25%;
+    grid-template-columns: 72% 8% 20%;
 }
 
 .lowOpacity
@@ -653,7 +657,7 @@ input
 {
     margin-top: 1em;
     display: grid;
-    grid-template-columns: 25% 70% 5%;
+    grid-template-columns: 15% 80% 5%;
 }
 
 .officeHoursGrid

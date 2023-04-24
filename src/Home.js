@@ -19,11 +19,12 @@ function Home()
     const [incorrectPass, setIncorrectPass] = useState(false);
     const [sentEmail, setSentEmail] = useState(false);
     const [timestamp, setTimestamp] = useState([]);
+    const [secondTimestamp, setSecondTimestamp] = useState([]);
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);
         const textarea = event.target;
-        textarea.style.height = "auto";
-        textarea.style.height = `${textarea.scrollHeight + 20}px`;}
+        textarea.style.height = "0em";
+        textarea.style.height = `${textarea.scrollHeight + 5}px`;}
     const handleChangeUsername = (event) => {setUsername(event.target.value);}
     const handleChangePassword = (event) => {setPassword(event.target.value);}
     const handleChangePassword2 = (event) => {setPassword2(event.target.value);}
@@ -33,12 +34,15 @@ function Home()
 
     function sendInput()
     {
-        setResponseTime(true);
+        setResponseTime(responseTime => true);
         let addedInput = input;
         if (shortInput !== "")
         {
-            addedInput.push(shortInput.replace(/\n/g, "<br>"));
+            addedInput.push(shortInput);
         }
+        let newTimestamp = timestamp;
+        newTimestamp.push((new Date).toString().substring(0, 24));
+        setTimestamp(newTimestamp);
         axios.put(URL + "/api/cohere", {
             id: userId,
             input: addedInput
@@ -52,6 +56,7 @@ function Home()
             setShortInput("");
             setResponseTime(false);
             setError(false);
+            setSecondTimestamp([]);
         })
         .catch(() => {
             console.error();
@@ -152,9 +157,12 @@ function Home()
     function addThought()
     {
         let addedInput = input;
-        addedInput.push(shortInput.replace(/\n/g, "<br>"));
+        addedInput.push(shortInput);
         setInput(addedInput);
         setShortInput("");
+        let newTimestamp = secondTimestamp;
+        newTimestamp.push((new Date()).toString().substring(16, 24));
+        setSecondTimestamp(newTimestamp);
     }
 
     function connectionError()
@@ -219,13 +227,9 @@ function Home()
                     <div className="confirmGrid">
                         <p1>Prompt:</p1>
                         <div>
-                        {prompt.map((index, i) => (
-    <div>
-        <Thoughts prompt={prompt[i].replace(/<br>/g, '\n')} index={i}/>
-    </div>
-))}                        </div>
-                        <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
-                    </div>
+                            {prompt.map((index, i) => (<div><Thoughts prompt={prompt[i]} index={i}/></div>))}                     </div>
+                            <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
+                        </div>
                 </>
             )
         }
@@ -236,7 +240,7 @@ function Home()
                         <p1>Response:</p1>
                         <p1>{prompt}
                         <br></br>
-                        {(new Date()).toString().substring(0, 24)}
+                        {timestamp[index]}
                         </p1>
                     </div>
                 </>
@@ -281,6 +285,15 @@ function Home()
         }
     }
 
+    function loader()
+    {
+        if (responseTime)
+        {
+            return (<><br></br><div class="loader"></div></>)
+        }
+        return (<></>)
+    }
+
     function accountButton()
     {
         if (!responseTime)
@@ -314,8 +327,15 @@ function Home()
 
                 <div className="selectGrid">
                     {output.map((index, i) => (<div><QuestionAnswer prompt={output[i]} index={i}/></div>))}
-                    <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
-                    {connectionError()}
+                    <div className="confirmGrid">
+                        <div>
+                            {secondTimestamp.map((index, i) => (<div key={i} dangerouslySetInnerHTML={{ __html: secondTimestamp[i]}}></div>)).reverse()}
+                        </div>
+                        <div>
+                            {input.map((index, i) => (<div key={i} dangerouslySetInnerHTML={{ __html: input[i]}}></div>)).reverse()}
+                        </div>
+                    </div>
+                    {loader()}
                     <div className="inputGrid">
                         <textarea placeholder="What stuff is your professor saying now?" value={shortInput} onChange={handleChangeInput}
                         // Add onKeyPress to add thought on enter
@@ -330,29 +350,14 @@ function Home()
                                 textarea.style.height = "auto";
                                 event.preventDefault(); 
                                 addThought();}}}
-<<<<<<< HEAD
                         ></textarea>
                         <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();}}>+</button>
                         {searchButton()}
-=======
-                                style={{ height: "auto", resize: "none" }}></textarea>
-                        <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();
-                                const textarea = event.target;
-                                textarea.style.height = "auto";}}>+</button>
->>>>>>> 6b45354fbb983f7a8cdbdea0e48e8e57ea5e2147
                     </div>
-                    <div className="confirmGrid">
-                    <div>
-                        {timestamp.map((index, i) => (
-  <div key={i} dangerouslySetInnerHTML={{ __html: input[i].replace(/\n/g, '<br>') }}></div>
-)).reverse()}
-                        </div>
-                        <div>
-                        {input.map((index, i) => (
-  <div key={i} dangerouslySetInnerHTML={{ __html: input[i].replace(/\n/g, '<br>') }}></div>
-)).reverse()}
-                        </div>
-                    </div>
+                    <br></br>
+                    <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
+                    {connectionError()}
+                    {emailNotify()}
                     <br></br>
                 </div>
             </>
