@@ -1,3 +1,7 @@
+textarea{
+    resize: none;
+}
+
 body
 {
     background-color: white;
@@ -649,7 +653,7 @@ input
 {
     margin-top: 1em;
     display: grid;
-    grid-template-columns: 15% 80% 5%;
+    grid-template-columns: 25% 70% 5%;
 }
 
 .officeHoursGrid
