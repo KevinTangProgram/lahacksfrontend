@@ -18,6 +18,7 @@ function Home()
     const [password2, setPassword2] = useState("");
     const [incorrectPass, setIncorrectPass] = useState(false);
     const [sentEmail, setSentEmail] = useState(false);
+    const [timestamp, setTimestamp] = useState([]);
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);}
     const handleChangeUsername = (event) => {setUsername(event.target.value);}
@@ -227,7 +228,10 @@ function Home()
                 <>
                     <div className="confirmGrid">
                         <p1>Response:</p1>
-                        <p1>{prompt}</p1>
+                        <p1>{prompt}
+                        <br></br>
+                        {(new Date()).toString().substring(0, 24)}
+                        </p1>
                     </div>
                 </>
             )
@@ -305,6 +309,7 @@ function Home()
                 <div className="selectGrid">
                     {output.map((index, i) => (<div><QuestionAnswer prompt={output[i]} index={i}/></div>))}
                     <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
+                    {connectionError()}
                     <div className="inputGrid">
                         <textarea placeholder="What stuff is your professor saying now?" value={shortInput} onChange={handleChangeInput}
                         // Add onKeyPress to add thought on enter
@@ -319,18 +324,21 @@ function Home()
                                 addThought();}}}
                         ></textarea>
                         <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();}}>+</button>
+                        {searchButton()}
                     </div>
                     <div className="confirmGrid">
-                        <p1>Current Thoughts:</p1>
+                    <div>
+                        {timestamp.map((index, i) => (
+  <div key={i} dangerouslySetInnerHTML={{ __html: input[i].replace(/\n/g, '<br>') }}></div>
+)).reverse()}
+                        </div>
                         <div>
                         {input.map((index, i) => (
   <div key={i} dangerouslySetInnerHTML={{ __html: input[i].replace(/\n/g, '<br>') }}></div>
-))}
+)).reverse()}
                         </div>
                     </div>
                     <br></br>
-                    {connectionError()}
-                    {searchButton()}
                 </div>
             </>
             )

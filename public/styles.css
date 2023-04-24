@@ -616,11 +616,11 @@ input
 
 #submitAndConfirmLong
 {
-    margin-top: 20px;
     width: 10em;
     padding-top: 5px;
     padding-bottom: 5px;
     font-size: 15px;
+    height: 1.8em;
 }
 
 #submitAndConfirmVeryLong
@@ -637,7 +637,7 @@ input
 {
     margin-top: 1em;
     display: grid;
-    grid-template-columns: 90% 10%;
+    grid-template-columns: 65% 10% 25%;
 }
 
 .lowOpacity
