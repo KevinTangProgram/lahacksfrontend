@@ -336,16 +336,10 @@ function Home()
                                 textarea.style.height = "auto";
                                 event.preventDefault(); 
                                 addThought();}}}
-<<<<<<< HEAD
-                        ></textarea>
-                        <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();}}>+</button>
-                        {searchButton()}
-=======
                                 style={{ height: "auto", resize: "none" }}></textarea>
                         <button className="selectCells" id="submitAndConfirm" onClick={() => {addThought();
                                 const textarea = event.target;
                                 textarea.style.height = "auto";}}>+</button>
->>>>>>> 6b45354fbb983f7a8cdbdea0e48e8e57ea5e2147
                     </div>
                     <div className="confirmGrid">
                     <div>
