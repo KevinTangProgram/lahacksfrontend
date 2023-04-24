@@ -604,6 +604,11 @@ button
     margin-right: auto;
 }
 
+.notWhite
+{
+    background-color: transparent;
+}
+
 input
 {
     margin-bottom: 1.5em;

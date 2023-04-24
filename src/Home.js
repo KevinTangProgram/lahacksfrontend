@@ -52,7 +52,7 @@ function Home()
             let newOutput = output;
             newOutput.push(addedInput);
             newOutput.push(response.data);
-            setOutput({newOutput});
+            setOutput(newOutput);
             setInput([]);
             setShortInput("");
             setResponseTime(false);
@@ -229,7 +229,7 @@ function Home()
                         <p1>Ideas:</p1>
                         <div>
                             {prompt.map((index, i) => (<div><Thoughts prompt={prompt[i]} index={i}/></div>))}                     </div>
-                            <button className="pointer" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
+                            <button className="pointer notWhite" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
                         </div>
                 </>
             )
@@ -276,6 +276,7 @@ function Home()
                     authenticate();
                     setUsername("");
                     setPassword("");
+                    setPassword2("");
                 }}>Login</button></>)
         }
         else
@@ -356,7 +357,7 @@ function Home()
                         {searchButton()}
                     </div>
                     <br></br>
-                    <button className="pointer" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
+                    <button className="pointer notWhite" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
                     {connectionError()}
                     {emailNotify()}
                     <br></br>
@@ -365,23 +366,25 @@ function Home()
             )
         case "login":
             return (<>
-                            <button id="backButton" onClick={() => {
+                            <button id="backButton" className="notWhite" onClick={() => {
                     setTracker("");
                 }}>&#10094;Back</button>
             <h1>Welcome to Idea Oasis</h1>
                     <div className="selectGridSmall">
                             <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
-                            <input placeholder="Password" value={password} onChange={handleChangePassword} ></input>
+                            <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} ></input>
                         
                         {incorrect()}
                         {connectionError()}
                         {loginButton()}
                         <br></br>
                         <p1>or</p1>
+                        <br></br>
                         <button className="selectCells" id="submitAndConfirmLong" onClick={() => {
                             setTracker("setup");
                             setUsername("");
                             setPassword("");
+                            setPassword2("");
                             setGoodCred(false);
                             setIncorrectPass(false);
                         }}>Create Account</button>
@@ -390,7 +393,7 @@ function Home()
             )
         case "setup":
             return (<>
-                <button id="backButton" onClick={() => {
+                <button id="backButton" className="notWhite" onClick={() => {
                     setTracker("login");
                 }}>&#10094;Back</button>
                 <h1>Welcome to Idea Oasis</h1>
