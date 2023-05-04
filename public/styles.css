@@ -1,6 +1,8 @@
 textarea{
     resize: none;
-    width: 99.4%;
+    width: calc(100% - 2px);
+    padding: 0px;
+    border-width: 1px;
 }
 
 body
@@ -309,7 +311,7 @@ a{
 .selectCells
 {
     cursor: pointer;
-    box-shadow: 0 0 15px rgb(0 0 0 / 10%);
+    /* box-shadow: 0 0 15px rgb(0 0 0 / 10%); */
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     box-sizing: border-box;
@@ -799,12 +801,21 @@ input
     grid-template-columns: 50% 50%;
 }
 
+.backGround
+{
+    background-color: #ffe0b0;
+}
+
 .tablet
 {
     width: 60em;
     margin-left: auto;
     margin-right: auto;
-    background-color: #ffe0b0;
+}
+
+#noBackground
+{
+    background-color: transparent;
 }
 
 .mainHeader
