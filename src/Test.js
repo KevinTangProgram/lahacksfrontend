@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function Test()
 {
     const [shortInput, setShortInput] = useState("");
+    const [currentTab, setCurrentTab] = useState(["selected", "", "selected"]);
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);
         const textarea = event.target;
@@ -14,14 +15,17 @@ function Test()
         <>
         <div className="mainHeader">
             <img src="palm.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
-            <h1 className="centerVertically">Idea Oasis</h1>
+            <div className="centerVertically">
+                <h1 className="mainTitle">Idea Oasis</h1>
+                <a className="mainTitle" href="/pricing">Pricing</a>
+            </div>
         </div>
 
         <div className="tablet" id="noBackground">
             <div className="threeButtons">
-                <button className="selectCells">Home</button>
-                <button className="selectCells">Your Oasis</button>
-                <button className="selectCells">About</button>
+                <button className="selectCells" id={currentTab[0]} onClick={() => {setCurrentTab(["", "selected", "selected"])}}>Home</button>
+                <button className="selectCells" id={currentTab[1]} onClick={() => {setCurrentTab(["selected", "", "selected"])}}>Your Oasis</button>
+                <button className="selectCells" id={currentTab[2]} onClick={() => {setCurrentTab(["selected", "selected", ""])}}>Settings</button>
             </div>
         </div>
         <div className="backGround">

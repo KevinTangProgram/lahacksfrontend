@@ -49,9 +49,9 @@ body
     }
 }
 
-h2
+.mainTitle
 {
-    text-align: center;
+    margin: 0;
 }
 
 .alignCenter
@@ -324,6 +324,11 @@ a{
     overflow: hidden;
     width: 100%;
     margin-bottom: 0px;
+    background-color: #ffe0b0;
+}
+
+#selected {
+    background-color: #f8eae7;
 }
 
 .selectGrid .name {
@@ -355,8 +360,34 @@ a{
     }
 }
 
-.selectCells:hover{
-    background-color: aquamarine;
+#selected:hover{
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+#selected:hover::after {
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    animation-fill-mode: backwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        background-color: #f8eae7;
+    }
+    100% {
+        transform: scale(1.1);
+        background-color: aquamarine;
+    }
+}
+@keyframes fadeOut {
+    0% {
+        background-color: aquamarine;
+    }
+    100% {
+        transform: scale(1.1);
+        background-color: #f8eae7;
+    }
 }
 
 .appointmentSubjectCells
