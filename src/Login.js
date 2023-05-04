@@ -10,6 +10,27 @@ function Login()
     const [incorrectCred, setIncorrectCred] = useState(false);
     const [responseTime, setResponseTime] = useState(false);
 
+    const handleChangeUsername = (event) => {setUsername(event.target.value);}
+    const handleChangePassword = (event) => {setPassword(event.target.value);}
+
+    function incorrect()
+    {
+        if (incorrectCred)
+        {
+            return <p1 className="alignCenter">Invalid credentials</p1>
+        }
+        return <></>
+    }
+
+    function connectionError()
+    {
+        if (error)
+        {
+            return <p1 className="alignCenter">There was an error with the connection. If this problem persists, please reload the page and try again.</p1>
+        }
+        return <></>
+    }
+
     function authenticate()
     {
         setResponseTime(true);
@@ -37,11 +58,28 @@ function Login()
             setResponseTime(false);
         })
     }
+
+    function loginButton()
+    {
+        if (!responseTime)
+        {
+            return (<>
+            <button className="selectCells" id="submitAndConfirmLong" onClick={() => {
+                    authenticate();
+                    setUsername("");
+                    setPassword("");
+                }}>Login</button></>)
+        }
+        else
+        {
+            return (<>
+            <button className="selectCells lowOpacity" id="submitAndConfirmLong" onClick={() => {
+                }}>Login</button></>)
+        }
+    }
     
     return (<>
-        <button id="backButton" className="notWhite" onClick={() => {
-        setTracker("");
-        }}>&#10094;Back</button>
+        <a id="backButton" className="notWhite" href="/">&#10094;Back</a>
         <h1>Welcome to Idea Oasis</h1>
         <div className="selectGridSmall">
             <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
@@ -54,11 +92,8 @@ function Login()
             <p1>or</p1>
             <br></br>
             <button className="selectCells" id="submitAndConfirmLong" onClick={() => {
-                setTracker("setup");
                 setUsername("");
                 setPassword("");
-                setPassword2("");
-                setGoodCred(false);
                 setIncorrectPass(false);
             }}>Create Account</button>
         </div> 

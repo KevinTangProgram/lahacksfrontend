@@ -1,10 +1,11 @@
 textarea{
     resize: none;
+    width: 99.4%;
 }
 
 body
 {
-    background-color: beige;
+    background-color: #fffdf9;
     font-family: Verdana, sans-serif;
 }
 
@@ -33,7 +34,6 @@ body
 
 #homeImage
 {
-    position: absolute;
     top: 10px;
     left: 50px;
 }
@@ -45,12 +45,6 @@ body
         top: 0px;
         left: 0px;
     }
-}
-
-h1
-{
-    text-align: center;
-    margin-bottom: 50px;
 }
 
 h2
@@ -316,7 +310,8 @@ a{
 {
     cursor: pointer;
     box-shadow: 0 0 15px rgb(0 0 0 / 10%);
-    border-radius: 15px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
     box-sizing: border-box;
     transition: all 0.2s;
     padding-top: 20px;
@@ -772,7 +767,54 @@ input
 
   .trash 
 {
-background-color: beige;
-padding: 0;
+    background-color: beige;
+    padding: 0;
 }
 
+.threeButtons
+{
+    display: grid;
+    grid-template-columns: 33% 34% 33%;
+}
+
+.dateAndTime
+{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.alignLeft
+{
+    margin-left: 0;
+}
+
+.alignRight
+{
+    margin-left: auto;
+}
+
+.twoButtons
+{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.tablet
+{
+    width: 60em;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #ffe0b0;
+}
+
+.mainHeader
+{
+    display: grid;
+    grid-template-columns: 12% 88%;
+}
+
+.centerVertically
+{
+    margin-top: auto;
+    margin-bottom: auto;
+}
