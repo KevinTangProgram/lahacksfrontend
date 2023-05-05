@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GetTime, GetDate } from './utilities/utilities.js';
-
+import Clock from './components/clock.js';
 import axios from 'axios';
 
 function Test()
@@ -25,7 +24,7 @@ function Test()
     return (
         <>
         <div className="mainHeader">
-            <img src="palm.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
+            <img src="/images/icons/iconLogo.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
             <div className="centerVertically">
                 <h1 className="mainTitle">Idea Oasis</h1>
                 <a className="mainTitle" href="/pricing">Pricing</a>
@@ -43,7 +42,7 @@ function Test()
             <div className="tablet">
                 <div className="dateAndTime">
                     <p1 className="alignLeft">{new Date().toLocaleDateString()}</p1>
-                    <p1 className="alignRight">{time}</p1>
+                    <Clock type="time" className="alignRight"></Clock>
                 </div>
                 <h1>Title</h1>
                 <div className="twoButtons">
