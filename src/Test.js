@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { GetTime, GetDate } from './utilities/utilities.js';
+
 import axios from 'axios';
 
 function Test()
 {
     const [shortInput, setShortInput] = useState("");
     const [currentTab, setCurrentTab] = useState(["selected", "", "selected"]);
-    const [hour, setHour] = useState(new Date().toLocaleTimeString().substring(0, new Date().toLocaleTimeString().length - 6) + new Date().toLocaleTimeString().substring(new Date().toLocaleTimeString().length - 3, new Date().toLocaleTimeString().length));
+    const [time, setTime] = useState(GetTime());
 
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setHour(new Date().toLocaleTimeString().substring(0, new Date().toLocaleTimeString().length - 6) + new Date().toLocaleTimeString().substring(new Date().toLocaleTimeString().length - 3, new Date().toLocaleTimeString().length));
+            setTime(GetTime());
         }, 1000);
         return () => clearInterval(interval);
-    }, [hour])
+    }, [])
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);
         const textarea = event.target;
@@ -41,7 +43,7 @@ function Test()
             <div className="tablet">
                 <div className="dateAndTime">
                     <p1 className="alignLeft">{new Date().toLocaleDateString()}</p1>
-                    <p1 className="alignRight">{new Date().toLocaleTimeString().substring(0, new Date().toLocaleTimeString().length - 6) + new Date().toLocaleTimeString().substring(new Date().toLocaleTimeString().length - 3, new Date().toLocaleTimeString().length)}</p1>
+                    <p1 className="alignRight">{time}</p1>
                 </div>
                 <h1>Title</h1>
                 <div className="twoButtons">
