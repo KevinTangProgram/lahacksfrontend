@@ -1,0 +1,92 @@
+/*
+        Main CSS File
+*/
+
+.alignCenter
+{
+    text-align: center;
+}
+.lowOpacity
+{
+    opacity: 50%;
+}
+.loader {
+    border: 6px solid #f3f3f3; /* Light grey */
+    border-top: 6px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .container
+{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+.pointer
+{
+    cursor: pointer;
+}
+.notWhite
+{
+    background-color: transparent;
+}
+.centerVertically
+{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.alignLeft
+{
+    margin-left: 0;
+}
+.alignRight
+{
+    margin-left: auto;
+}
+.backGround
+{
+    background-color: #ffe0b0;
+    height: auto;
+}
+textarea{
+    resize: none;
+    width: calc(100% - 2px);
+    padding: 0px;
+    border-width: 1px;
+}
+body
+{
+    background-color: #fffdf9;
+    font-family: Verdana, sans-serif;
+}
+
+
+/* ID NAMES */
+#submitAndConfirmLong
+{
+    width: 10em;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    height: 1.8em;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+#backButton
+{
+    cursor: pointer;
+    position: absolute;
+    margin-left: 3em;
+    margin-top: 0em;
+    font-size: 1em;
+}
+#homeImage
+{
+    top: 10px;
+    left: 50px;
+}

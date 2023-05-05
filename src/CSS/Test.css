@@ -1,0 +1,113 @@
+/*
+Test.js CSS file
+*/
+
+/* CLASS NAMES */
+.mainHeader
+{
+    display: grid;
+    grid-template-columns: 12% 88%;
+}
+.mainTitle
+{
+    margin: 0;
+}
+.tablet
+{
+    width: 60em;
+    margin-left: auto;
+    margin-right: auto;
+}
+.threeButtons
+{
+    display: grid;
+    grid-template-columns: 33% 34% 33%;
+}
+.selectCells
+{
+    cursor: pointer;
+    /* box-shadow: 0 0 15px rgb(0 0 0 / 10%); */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 0px;
+}
+.dateAndTime
+{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+.twoButtons
+{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+/* ID NAMES */
+#noBackground
+{
+    background-color: transparent;
+}
+#selected {
+    background-color: #f8eae7;
+}
+#selected:hover{
+    animation-name: fadeIn;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    z-index: 1;
+}
+#selected:not(:hover) {
+    animation-name: fadeOut;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+}
+#notSelected
+{
+    animation-name: fadeOut;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    cursor: pointer;
+    /* box-shadow: 0 0 15px rgb(0 0 0 / 10%); */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 0px;
+    background-color: #ffe0b0;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.05);
+        background-color: #f6bcaf;
+    }
+}
+@keyframes fadeOut {
+    0% {
+        transform: scale(1.05);
+        background-color: #f6bcaf;
+    }
+    100% {
+        transform: scale(1);
+    }
+}

@@ -1,3 +1,5 @@
+import './CSS/Test.css';
+//
 import React, { useState, useEffect } from 'react';
 import Clock from './components/clock.js';
 import axios from 'axios';
@@ -41,7 +43,7 @@ function Test()
         <div className="backGround">
             <div className="tablet">
                 <div className="dateAndTime">
-                    <p1 className="alignLeft">{new Date().toLocaleDateString()}</p1>
+                    <Clock type={"date"} className={"alignLeft"}/>
                     <Clock type={"time"} className={"alignRight"}/>
                 </div>
                 <h1>Title</h1>

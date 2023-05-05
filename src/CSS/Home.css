@@ -1,0 +1,77 @@
+/* 
+Home.js Elements CSS File
+*/
+
+/* CLASS NAMES */
+.confirmGrid
+{
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: 15% 80% 5%;
+}
+.selectCells
+{
+    cursor: pointer;
+    /* box-shadow: 0 0 15px rgb(0 0 0 / 10%); */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 0px;
+}
+.selectGrid
+{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    margin-top: 20px;
+    width: 50em;
+}
+.selectGridSmall
+{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    margin-top: 20px;
+    width: 15em;
+    text-align: center;
+}
+.confirmGrid
+{
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: 15% 80% 5%;
+}
+.inputGrid
+{
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: 72% 8% 20%;
+}
+
+/* ID NAMES */
+#submitAndConfirmLong
+{
+    width: 10em;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    height: 1.8em;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+#backButton
+{
+    cursor: pointer;
+    position: absolute;
+    margin-left: 3em;
+    margin-top: 0em;
+    font-size: 1em;
+}

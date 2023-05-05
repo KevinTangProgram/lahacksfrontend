@@ -1,7 +1,10 @@
+import './CSS/Home.css';
+//
 import React, { useState } from 'react';
 import axios from 'axios';
+//
 const crypto = require('crypto-js');
-
+//
 function Home()
 {
     const [error, setError] = useState(false);
