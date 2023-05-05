@@ -860,6 +860,7 @@ input
 .backGround
 {
     background-color: #ffe0b0;
+    height: auto;
 }
 
 .tablet

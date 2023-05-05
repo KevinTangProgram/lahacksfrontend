@@ -25,7 +25,7 @@ function Test()
     return (
         <>
         <div className="mainHeader">
-            <img src="palm.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
+            <img src="/images/icons/iconLogo.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
             <div className="centerVertically">
                 <h1 className="mainTitle">Idea Oasis</h1>
                 <a className="mainTitle" href="/pricing">Pricing</a>
