@@ -362,30 +362,35 @@ a{
 
 #selected:hover{
     animation-name: fadeIn;
-    animation-duration: 1s;
+    animation-duration: 0.3s;
     animation-fill-mode: forwards;
 }
-#selected:hover::after {
-    animation-name: fadeIn;
-    animation-duration: 1s;
-    animation-fill-mode: backwards;
+#selected:not(:hover) {
+    animation-name: fadeOut;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    transition: background-color 0.3s ease-out;
 }
 
 @keyframes fadeIn {
     0% {
-        background-color: #f8eae7;
+        /* background-color: #f8eae7; */
+        /* transform: scale(1); */
+        background-color: #f6bcaf;
+
     }
     100% {
         transform: scale(1.1);
-        background-color: aquamarine;
+        background-color: #f6bcaf;
     }
 }
 @keyframes fadeOut {
     0% {
-        background-color: aquamarine;
+        /* transform: scale(1.1); */
+        background-color: #f6bcaf;
     }
     100% {
-        transform: scale(1.1);
+        transform: scale(1);
         background-color: #f8eae7;
     }
 }

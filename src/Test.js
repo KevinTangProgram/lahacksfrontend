@@ -5,6 +5,15 @@ function Test()
 {
     const [shortInput, setShortInput] = useState("");
     const [currentTab, setCurrentTab] = useState(["selected", "", "selected"]);
+    const [hour, setHour] = useState(new Date().toLocaleTimeString().substring(0, new Date().toLocaleTimeString().length - 6) + new Date().toLocaleTimeString().substring(new Date().toLocaleTimeString().length - 3, new Date().toLocaleTimeString().length));
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setHour(new Date().toLocaleTimeString().substring(0, new Date().toLocaleTimeString().length - 6) + new Date().toLocaleTimeString().substring(new Date().toLocaleTimeString().length - 3, new Date().toLocaleTimeString().length));
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [hour])
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);
         const textarea = event.target;
@@ -14,7 +23,7 @@ function Test()
     return (
         <>
         <div className="mainHeader">
-            <img src="palm.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
+            <img src="images/icons/iconLogo.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
             <div className="centerVertically">
                 <h1 className="mainTitle">Idea Oasis</h1>
                 <a className="mainTitle" href="/pricing">Pricing</a>
@@ -32,7 +41,7 @@ function Test()
             <div className="tablet">
                 <div className="dateAndTime">
                     <p1 className="alignLeft">{new Date().toLocaleDateString()}</p1>
-                    <p1 className="alignRight">{new Date().toLocaleTimeString()}</p1>
+                    <p1 className="alignRight">{new Date().toLocaleTimeString().substring(0, new Date().toLocaleTimeString().length - 6) + new Date().toLocaleTimeString().substring(new Date().toLocaleTimeString().length - 3, new Date().toLocaleTimeString().length)}</p1>
                 </div>
                 <h1>Title</h1>
                 <div className="twoButtons">

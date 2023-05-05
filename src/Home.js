@@ -229,7 +229,7 @@ function Home()
                         <p1>Ideas:</p1>
                         <div>
                             {prompt.map((index, i) => (<div><Thoughts prompt={prompt[i]} index={i}/></div>))}                     </div>
-                            <button className="pointer notWhite" onClick={() => deletePost(index)}><img src="trash.png" height="20px"></img></button>
+                            <button className="pointer notWhite" onClick={() => deletePost(index)}><img src="images/icons/iconTrash.png" height="20px"></img></button>
                         </div>
                 </>
             )
@@ -322,7 +322,7 @@ function Home()
             return (
             <>
                 <div className="container">
-                    <img src="palm.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
+                    <img src="images/icons/iconLogo.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
                 </div>
                 <button className="selectCells" id="submitAndConfirmVeryLong" onClick={() => {setTracker("login"); setSentEmail(false);}}>Login/Create Account</button>
                 <h1>Please Enter Your Thoughts Below</h1>
@@ -357,7 +357,7 @@ function Home()
                         {searchButton()}
                     </div>
                     <br></br>
-                    <button className="pointer notWhite" onClick={() => sendEmail()}><img src="email.png" width="20px"></img></button>
+                    <button className="pointer notWhite" onClick={() => sendEmail()}><img src="images/icons/iconEmail.png" width="20px"></img></button>
                     {connectionError()}
                     {emailNotify()}
                     <br></br>
