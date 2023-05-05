@@ -6,21 +6,16 @@ import axios from 'axios';
 function Test()
 {
     const [shortInput, setShortInput] = useState("");
-<<<<<<< HEAD
     const [currentTab, setCurrentTab] = useState(["selected", "notSelected", "selected"]);
     const [bottomTab, setBottomTab] = useState(["selected", "notSelected"]);
-=======
-    const [currentTab, setCurrentTab] = useState(["selected", "", "selected"]);
-    const [time, setTime] = useState(GetTime());
-
+    const [time, setTime] = useState((new Date).getTime());
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setTime(GetTime());
+            setTime((new Date).toLocaleTimeString());
         }, 1000);
         return () => clearInterval(interval);
-    }, [])
->>>>>>> a5aff5cb50534a031e20d5bc4dad3962601b1876
+    }, [time])
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);
         const textarea = event.target;
@@ -48,11 +43,7 @@ function Test()
             <div className="tablet">
                 <div className="dateAndTime">
                     <p1 className="alignLeft">{new Date().toLocaleDateString()}</p1>
-<<<<<<< HEAD
-                    <p1 className="alignRight">{new Date().toLocaleTimeString()}</p1>
-=======
                     <p1 className="alignRight">{time}</p1>
->>>>>>> a5aff5cb50534a031e20d5bc4dad3962601b1876
                 </div>
                 <h1>Title</h1>
                 <div className="twoButtons">
