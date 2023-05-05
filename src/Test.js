@@ -42,7 +42,7 @@ function Test()
             <div className="tablet">
                 <div className="dateAndTime">
                     <p1 className="alignLeft">{new Date().toLocaleDateString()}</p1>
-                    <Clock type="time" className="alignRight"></Clock>
+                    <Clock type={"time"} className={"alignRight"}/>
                 </div>
                 <h1>Title</h1>
                 <div className="twoButtons">

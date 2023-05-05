@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 const date = new Date();
 
 // Components:
-export default function Clock(type, className = "") {
+export default function Clock(type) {
     const [time, setTime] = useState(getTime());
     const [date, setDate] = useState(getDate());
   
@@ -18,13 +18,13 @@ export default function Clock(type, className = "") {
       return () => clearInterval(interval);
     }, []);
   
-    if (type === "time") {
-        return <p1 className={className}>{time}</p1>;
+    if (type.type === "time") {
+        return <p1 className={type.className}>{time}</p1>;
     }
-    if (type === "date") {
-        return <p1 className={className}>{date}</p1>;
+    if (type.type === "date") {
+        return <p1 className={type.className}>{date}</p1>;
     }
-    return;
+    return <p1>Hello Aaron</p1>
   }
 
 // Interface:
