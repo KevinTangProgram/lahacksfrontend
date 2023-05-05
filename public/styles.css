@@ -324,7 +324,6 @@ a{
     overflow: hidden;
     width: 100%;
     margin-bottom: 0px;
-    background-color: #ffe0b0;
 }
 
 #selected {
@@ -364,18 +363,40 @@ a{
     animation-name: fadeIn;
     animation-duration: 0.3s;
     animation-fill-mode: forwards;
+    z-index: 1;
 }
+
 #selected:not(:hover) {
     animation-name: fadeOut;
     animation-duration: 0.3s;
     animation-fill-mode: forwards;
-    transition: background-color 0.3s ease-out;
+}
+
+#notSelected
+{
+    animation-name: fadeOut;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    cursor: pointer;
+    /* box-shadow: 0 0 15px rgb(0 0 0 / 10%); */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 0px;
+    background-color: #ffe0b0;
 }
 
 @keyframes fadeIn {
     0% {
-        /* background-color: #f8eae7; */
-        /* transform: scale(1); */
+        transform: scale(1);
         background-color: #f6bcaf;
 
     }
@@ -386,12 +407,11 @@ a{
 }
 @keyframes fadeOut {
     0% {
+        transform: scale(1.1);
         /* transform: scale(1.1); */
-        background-color: #f6bcaf;
     }
     100% {
         transform: scale(1);
-        background-color: #f8eae7;
     }
 }
 
