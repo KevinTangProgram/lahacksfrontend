@@ -9,14 +9,6 @@ function Test()
     const [shortInput, setShortInput] = useState("");
     const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
     const [bottomTab, setBottomTab] = useState(["tabActive", "tabInactive"]);
-    const [time, setTime] = useState((new Date).getTime());
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTime((new Date).toLocaleTimeString());
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [time])
 
     const handleChangeInput = (event) => {setShortInput(event.target.value);
         const textarea = event.target;
@@ -70,7 +62,10 @@ function Test()
                 </div>
             </div>
         </div>
-        <GenerationOptionsUI />
+        <GenerationOptionsUI 
+            title = ""
+            messageArray = {["hello my name is Aaron, I have words, and I can swim.", "hello2", "OMGI"]}
+        />
         
         </>
     )
