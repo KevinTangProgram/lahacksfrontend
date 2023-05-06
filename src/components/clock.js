@@ -19,12 +19,12 @@ export default function Clock(type) {
     }, []);
   
     if (type.type === "time") {
-        return <p1 className={type.className}>{time}</p1>;
+        return <p className={type.className}>{time}</p>;
     }
     if (type.type === "date") {
-        return <p1 className={type.className}>{date}</p1>;
+        return <p className={type.className}>{date}</p>;
     }
-    return <p1>Hello Aaron</p1>
+    return <p>Hello Aaron</p>
   }
 
 // Interface:
