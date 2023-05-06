@@ -56,21 +56,21 @@ Test.js CSS file
 {
     background-color: transparent;
 }
-#selected {
+#tabInactive {
     background-color: #f8eae7;
 }
-#selected:hover{
+#tabInactive:hover{
     animation-name: fadeIn;
     animation-duration: 0.3s;
     animation-fill-mode: forwards;
     z-index: 1;
 }
-#selected:not(:hover) {
+#tabInactive:not(:hover) {
     animation-name: fadeOut;
     animation-duration: 0.3s;
     animation-fill-mode: forwards;
 }
-#notSelected
+#tabActive
 {
     animation-name: fadeOut;
     animation-duration: 0.3s;

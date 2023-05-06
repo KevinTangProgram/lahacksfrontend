@@ -2,13 +2,13 @@ import './CSS/Test.css';
 //
 import React, { useState, useEffect } from 'react';
 import Clock from './components/clock.js';
-import axios from 'axios';
+import GenerationOptionsUI from './components/generateUI';
 
 function Test()
 {
     const [shortInput, setShortInput] = useState("");
-    const [currentTab, setCurrentTab] = useState(["selected", "notSelected", "selected"]);
-    const [bottomTab, setBottomTab] = useState(["selected", "notSelected"]);
+    const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
+    const [bottomTab, setBottomTab] = useState(["tabActive", "tabInactive"]);
     const [time, setTime] = useState((new Date).getTime());
 
     useEffect(() => {
@@ -35,9 +35,9 @@ function Test()
 
         <div className="tablet" id="noBackground">
             <div className="threeButtons">
-                <button className="selectCells" id={currentTab[0]} onClick={() => {setCurrentTab(["notSelected", "selected", "selected"])}}>Home</button>
-                <button className="selectCells" id={currentTab[1]} onClick={() => {setCurrentTab(["selected", "notSelected", "selected"])}}>Your Oasis</button>
-                <button className="selectCells" id={currentTab[2]} onClick={() => {setCurrentTab(["selected", "selected", "notSelected"])}}>Settings</button>
+                <button className="selectCells" id={currentTab[0]} onClick={() => {setCurrentTab(["tabActive", "tabInactive", "tabInactive"])}}>Home</button>
+                <button className="selectCells" id={currentTab[1]} onClick={() => {setCurrentTab(["tabInactive", "tabActive", "tabInactive"])}}>Your Oasis</button>
+                <button className="selectCells" id={currentTab[2]} onClick={() => {setCurrentTab(["tabInactive", "tabInactive", "tabActive"])}}>Settings</button>
             </div>
         </div>
         <div className="backGround">
@@ -48,8 +48,8 @@ function Test()
                 </div>
                 <h1>Title</h1>
                 <div className="twoButtons">
-                    <button className="selectCells" id={bottomTab[0]} onClick={() => {setBottomTab(["notSelected", "selected"])}}>Organized</button>
-                    <button className="selectCells" id={bottomTab[1]} onClick={() => {setBottomTab(["selected", "notSelected"])}}>Original Ideas</button>
+                    <button className="selectCells" id={bottomTab[0]} onClick={() => {setBottomTab(["tabActive", "tabInactive"])}}>Ideas</button>
+                    <button className="selectCells" id={bottomTab[1]} onClick={() => {setBottomTab(["tabInactive", "tabActive"])}}>Generated Notes</button>
                 </div>
                 <div>
                     <textarea placeholder="What stuff is your professor saying now?" value={shortInput} onChange={handleChangeInput}
@@ -70,7 +70,7 @@ function Test()
                 </div>
             </div>
         </div>
-        
+        <GenerationOptionsUI />
         
         </>
     )
