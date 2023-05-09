@@ -87,7 +87,7 @@ function GenerationOptionsUI() {
                     <h2>Generation Options</h2>
                     {/* TITLE */}
                     <div id="optionTitle">
-                        <p>Enter Title: (shows if title of messages wasn't written) </p>
+                        <p>Topic: (default is title of message conversation) </p>
                         <input
                             type="text"
                             name="Title"

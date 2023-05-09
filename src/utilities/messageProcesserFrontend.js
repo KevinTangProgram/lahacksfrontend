@@ -21,11 +21,11 @@ export class MessageProcessor {
     // 3. Provide warnings and errors, enforce usage limits.
     // 4. Sync to and from database.
     // 5. Connect with backend for GPT-3 generation.
+    // 6. Handle API failures.
 
     static addMessage(newMessage) {
-        this.allMessages.push(newMessage);
+        this.allRawMessages.push(newMessage);
     }
-
 
 
 
