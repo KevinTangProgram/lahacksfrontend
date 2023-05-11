@@ -1,4 +1,4 @@
-
+import React, { useState, useEffect, Component } from 'react';
 
 export class MessageProcessor {
     // Constants:
@@ -20,7 +20,13 @@ export class MessageProcessor {
     static headerMessageIndexes = []; // Array of indexes.
     static markedGPTMessageIndexes = [];
     // Generation:
+    static generationOptions; // Object {mode, generateHeaders, useBulletFormat}.
     static isGenerating = false;
+    static generationStatus = 0;
+    // -2: Error: generation failed
+    // -1: Error: generation already in progress
+    // 0:  Ready to generate
+    // 1:  Queued generation
     static currentIndex = 0; // Index of the message currently being generated.
 
     // Functionality:
@@ -124,7 +130,7 @@ export class MessageProcessor {
     }
 
     // 5:
-    static getGenerationWarnings(options) {
+    static getGenerationWarnings() {
         // Give warnings:
         let warnings = [];
         if (this.lowContentMessageIndexes.length > 0) {
@@ -143,15 +149,21 @@ export class MessageProcessor {
     }
     static startGenerationWithOptions(options) {
         if (this.isGenerating) {
-            return false;
+            this.generationStatus = -1;
+            return;
         }
         this.isGenerating = true;
+        this.generationOptions = options;
         // Process messages, send to backend:
-        console.log("Processing messages with mode X" + options.mode);
-
+        this.generationStatus = 1;
+        this.queueGenerationRequest();
     }
-    static queueGeneration() {
+    static queueGenerationRequest() {
         // Queue generation request:
+        setTimeout(() => {
+            this.generationStatus = 2;
+            this.isGenerating = false;
+        }, 5000);
     }
     static processGenerationResponse(response) {
         // Clean and process messages, add to allOrganizedMessages:
