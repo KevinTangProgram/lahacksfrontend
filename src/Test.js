@@ -12,20 +12,6 @@ const userId = "6444bb82eb14ecacdb125107";
 function Test()
 {
     const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
-<<<<<<< HEAD
-    const [bottomTab, setBottomTab] = useState(["tabActive", "tabInactive"]);
-
-    const handleChangeInput = (event) => {setShortInput(event.target.value);
-        const textarea = event.target;
-        textarea.style.height = "0em";
-        textarea.style.height = `${textarea.scrollHeight + 5}px`;}
-
-    function addIndividualMessage()
-    {
-        
-    }
-=======
->>>>>>> 6dbe2c85de5cd5dc8c37da085a82b91f424c12b3
         
     return (
         <div className="Main">
