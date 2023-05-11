@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Tooltip from './tooltip';
 import { MessageProcessor } from '../utilities/messageProcesser';
 
@@ -9,9 +9,14 @@ var options = {
 };
 
 
-function GenerationOptionsUI() {
+function GenerationOptionsUI(options) {
+    // UI Title:
+    const [topicValue, setTopicValue] = useState(options.titleValue);
+    const handleTopicChange = (event) => {
+        setTopicValue(event.target.value);
+    }
     // UI Popups:
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPopup, setShowPopup] = useState(options.openUIByDefault);
     const togglePopup = () => {
         setShowPopup(!showPopup);
     }
@@ -128,15 +133,17 @@ function GenerationOptionsUI() {
                     <h2>Generation Options</h2>
                     {/* TITLE */}
                     <div id="optionTitle">
-                        <p>Topic: (default is title of message conversation) </p>
+                        <p>Topic: </p>
                         <input
                             type="text"
                             name="Title"
+                            defaultValue={options.titleValue}
+                            onChange={handleTopicChange}
                         />
                     </div>
                     {/* SLIDER */}
                     <div id="optionSlider">
-                        <p>Mode:</p>
+                        <p>Mode: </p>
                         {generateDescElement}
                         <input
                             type="range"

@@ -1,7 +1,6 @@
 import './CSS/Test.css';
 //
 import React, { useState, useEffect } from 'react';
-import GenerationOptionsUI from './components/generateUI';
 //
 import Tab_oasis from './tabs/Tab_oasis';
 import Tab_home from './tabs/Tab_home';

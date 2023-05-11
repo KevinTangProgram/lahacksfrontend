@@ -1,0 +1,10 @@
+/*
+Tab_oasis_ideas.js CSS file
+*/
+
+/* CLASS NAMES */
+.ideaContainer {
+    height: 300px;
+    display: flex;
+    overflow-y: scroll;
+}

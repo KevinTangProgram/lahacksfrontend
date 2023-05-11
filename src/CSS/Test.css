@@ -7,6 +7,7 @@ Test.js CSS file
 {
     display: grid;
     grid-template-columns: 12% 88%;
+    height: 7em;
 }
 .mainTitle
 {
@@ -43,12 +44,14 @@ Test.js CSS file
 .dateAndTime
 {
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 33% 33% 33%;
 }
 .twoButtons
 {
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 30% 30%;
+    justify-content: center;
+    align-content: center;
 }
 
 /* ID NAMES */

@@ -9,7 +9,7 @@ export class MessageProcessor {
     static WARNING_MAX_OASES_LENGTH = 40; // 40 messages.
     // Sync:
     static syncedFromDatabase = false;
-    static guestUser = false;
+    static guestUser = true;
     static sessionIndex = 0; // Obtained from database, the true index of allRawMessages[0].
     // Raw Messages:
     static allRawMessages = []; // Array of strings, index corresponds to order.
@@ -81,29 +81,29 @@ export class MessageProcessor {
     }
 
     // 3:
-    handleMessageWarnings(index, newMessage) {
+    static handleMessageWarnings(index, newMessage) {
         if (newMessage === "") {
             // Deleting message:
-            removeMessageWarnings(index);
+            this.removeMessageWarnings(index);
             return;
         }
         // Edit or adding message:
         if (newMessage.size > this.WARNING_MAX_MESSAGE_LENGTH) {
-            highContentMessageIndexes.push(index + sessionIndex);
+            this.highContentMessageIndexes.push(index + sessionIndex);
             return "max_length";
         }
         if (newMessage.size < this.WARNING_MIN_MESSAGE_LENGTH) {
-            lowContentMessageIndexes.push(index + sessionIndex);
+            this.lowContentMessageIndexes.push(index + sessionIndex);
             return "min_length";
         }
         this.removeMessageWarnings(index);
     }
-    removeMessageWarnings(index) {
-        if (highContentMessageIndexes.includes(index)) {
-            highContentMessageIndexes.splice(highContentMessageIndexes.indexOf(index), 1);
+    static removeMessageWarnings(index) {
+        if (this.highContentMessageIndexes.includes(index)) {
+            this.highContentMessageIndexes.splice(this.highContentMessageIndexes.indexOf(index), 1);
         }
-        if (lowContentMessageIndexes.includes(index)) {
-            lowContentMessageIndexes.splice(lowContentMessageIndexes.indexOf(index), 1);
+        if (this.lowContentMessageIndexes.includes(index)) {
+            this.lowContentMessageIndexes.splice(this.lowContentMessageIndexes.indexOf(index), 1);
         }
     }
 
@@ -119,7 +119,7 @@ export class MessageProcessor {
         // Load specific payload from database:
     }
     static readyForMessages() {
-        return this.syncedFromDatabase || this.guestUser;
+        return (this.syncedFromDatabase || this.guestUser);
     }
     static editMessageInDatabase(index, messageString) {
         // Set message in database to string:
@@ -163,6 +163,8 @@ export class MessageProcessor {
         setTimeout(() => {
             this.generationStatus = 2;
             this.isGenerating = false;
+            console.log("Generation:");
+            this.allRawMessages.forEach(message => console.log(message));
         }, 5000);
     }
     static processGenerationResponse(response) {
