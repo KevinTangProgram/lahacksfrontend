@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Tooltip from './tooltip';
+import { MessageProcessor } from '../utilities/messageProcesser';
+
+var options = {
+    mode: 0,
+    generateHeaders: false,
+    useBulletFormat: false,
+};
+
 
 function GenerationOptionsUI() {
     // UI Popups:
@@ -8,7 +16,8 @@ function GenerationOptionsUI() {
         setShowPopup(!showPopup);
     }
     // UI Sliders:
-    const [showCBMark, setShowCBMark] = useState(false);
+    const [showCheckBoxHeaders, setShowCheckBoxHeaders] = useState(false);
+    const [showCheckBoxBullet, setShowCheckBoxBullet] = useState(false);
     const [sliderValue, setSliderValue] = useState(0);
     const [generateDescElement, setGenerateDescElement] = useState(
         <div>
@@ -19,8 +28,9 @@ function GenerationOptionsUI() {
     const handleSliderChange = (event) => {
         const newValue = parseInt(event.target.value);
         setSliderValue(newValue);
-        if (newValue === 0) {
-            setShowCBMark(false);
+        if (newValue === 1) {
+            setShowCheckBoxHeaders(false);
+            setShowCheckBoxBullet(false);
             setGenerateDescElement(
                 <div>
                     <p>Format</p>
@@ -28,17 +38,9 @@ function GenerationOptionsUI() {
                 </div>
                 );
         }
-        if (newValue === 1) {
-            setShowCBMark(false);
-            setGenerateDescElement(
-                <div>
-                    <p>Organize</p>
-                    <Tooltip text={"Keep original wording."} />
-                </div>
-                );
-        }
         if (newValue === 2) {
-            setShowCBMark(true);
+            setShowCheckBoxHeaders(true);
+            setShowCheckBoxBullet(false);
             setGenerateDescElement(
                 <div>
                     <p>Polish</p>
@@ -47,7 +49,8 @@ function GenerationOptionsUI() {
             );
         }
         if (newValue === 3) {
-            setShowCBMark(true);
+            setShowCheckBoxHeaders(false);
+            setShowCheckBoxBullet(true);
             setGenerateDescElement(
                 <div>
                     <p>Elaborate</p>
@@ -59,7 +62,7 @@ function GenerationOptionsUI() {
     // UI Checkboxes:
     const [checkboxValues, setCheckboxValues] = useState({
         generateHeaders: false,
-        markUnclearMessages: false,
+        useBulletFormat: false,
     });
     const handleCheckboxChange = (event) => {
         setCheckboxValues({
@@ -69,25 +72,63 @@ function GenerationOptionsUI() {
     };
     // UI Warnings:
     const warningMessageContentTooLow = 
-        <div>Warning: Low content per message decreases the effectiveness of AI-enabled formatting.</div>
+        "Warning: Low content per message decreases the quality of generation."
     const warningMessageContentTooHigh =
-        <div>Warning: Each message is counted as a single thought. Split large messages into different thoughts?</div>
+        "Warning: Each message is counted as a single thought. Split large messages into different thoughts?"
     const warningNoteContentTooLow =
-        <div>Warning: A lower number of messages decreases the effectiveness of AI-enabled formatting.</div>
+        "Warning: A low number of messages may decrease the quality of generation."
     const warningNoteContentTooHigh =
-        <div>Warning: Too many messages may result in usage limits being applied.</div>
+        "Warning: Too many messages may result in usage limits being applied."
+    const warningStrings = { warningMessageContentTooLow, warningMessageContentTooHigh, warningNoteContentTooLow, warningNoteContentTooHigh };
 
+    // UI Generation:
+    const [showWarnings, setShowWarnings] = useState(false);
+    const tryGeneration = (forceGenerate = false) => {
+        options = {
+            mode: sliderValue,
+            generateHeaders: checkboxValues.generateHeaders,
+            useBulletFormat: checkboxValues.useBulletFormat,
+        };
+        const warnings = MessageProcessor.getGenerationWarnings();
+        if (warnings.length < 0 || forceGenerate) {
+            setShowWarnings(false);
+            MessageProcessor.startGenerationWithOptions(options);
+        }
+        else if (MessageProcessor.generationStatus === 0){
+            setShowWarnings(true);
+        }
+        setGenerationStatus(MessageProcessor.generationStatus);
+    }
+    const [generationStatus, setGenerationStatus] = useState(0);
+    // -2: Error: generation failed
+    // -1: Error: generation already in progress
+    //  0:  Ready to generate
+    //  1:  Generation in progress
+    //  2: Generation complete
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const statusCode = MessageProcessor.generationStatus;
+            setGenerationStatus(statusCode)
+            if (statusCode === 2) {
+                setShowPopup(false);
+                MessageProcessor.generationStatus = 0;
+            }
+        }, 1000);
+        // Cleanup function to clear the interval
+        return () => clearInterval(interval);
+    }, []);
 
     // Output:
     return (
+        <div className="generationOptionsUI">
         <div className="alignCenter">
             <button onClick={togglePopup}>Generate</button>
             {showPopup &&
-                <div className="generationOptionsUI">
+                <div className="generationOptions">
                     <h2>Generation Options</h2>
                     {/* TITLE */}
                     <div id="optionTitle">
-                        <p>Enter Title: (shows if title of messages wasn't written) </p>
+                        <p>Topic: (default is title of message conversation) </p>
                         <input
                             type="text"
                             name="Title"
@@ -95,11 +136,11 @@ function GenerationOptionsUI() {
                     </div>
                     {/* SLIDER */}
                     <div id="optionSlider">
-                        <p>Generate Mode:</p>
+                        <p>Mode:</p>
                         {generateDescElement}
                         <input
                             type="range"
-                            min="0"
+                            min="1"
                             max="3"
                             step="1"
                             defaultValue={sliderValue}
@@ -107,6 +148,7 @@ function GenerationOptionsUI() {
                         />
                     </div>
                     {/* CHECKBOXES */}
+                    {showCheckBoxHeaders  && 
                     <div id="checkboxGenerateHeaders">
                         <p>Generate Headers:</p>
                         <input
@@ -115,28 +157,49 @@ function GenerationOptionsUI() {
                             checked={checkboxValues.generateHeaders}
                             onChange={handleCheckboxChange}
                         />
-                    </div>
-                    {showCBMark && 
-                    <div id="checkboxMarkUnclearMessages">
-                        <p>Mark Unclear Messages:</p>
+                    </div> 
+                    }
+                    {showCheckBoxBullet && 
+                        <div id="checkboxUseBulletFormat">
+                        <p>Use Bullet Format:</p>
                         <input
                             type="checkbox"
-                            name="markUnclearMessages"
-                            checked={checkboxValues.markUnclearMessages}
+                                name="useBulletFormat"
+                                checked={checkboxValues.useBulletFormat}
                             onChange={handleCheckboxChange}
                         />
                     </div>
                     }
                     {/* WARNINGS */}
-                    {(sliderValue === 2 || sliderValue === 3) && warningMessageContentTooLow}
-                    {(sliderValue === 2 || sliderValue === 3) && warningNoteContentTooLow}
-                    {warningMessageContentTooHigh}
-                    {warningNoteContentTooHigh}
-                    <button onClick={togglePopup}>GENERATE NOW</button>
+                    {showWarnings && 
+                        <div id="generateUIWarnings">
+                            <ul>
+                                {MessageProcessor.getGenerationWarnings().map((warning, index) => (
+                                    warning === "o_low" ? <li key={index}>{warningStrings.warningNoteContentTooLow}</li> :
+                                    warning === "o_high" ? <li key={index}>{warningStrings.warningNoteContentTooHigh}</li> :
+                                    warning === "m_low" ? <li key={index}>{warningStrings.warningMessageContentTooLow}</li> :
+                                    warning === "m_high" ? <li key={index}>{warningStrings.warningMessageContentTooHigh}</li> : null
+                                ))}
+                            </ul>
+                            <button onClick={() => tryGeneration(true)}>CONTINUE</button>
+                        </div>
+                    }
+                    {/* GENERATE BUTTON */}
+                    {!showWarnings &&
+                        <button onClick={() => tryGeneration(false)}>GENERATE NOW</button>
+                    }
+                    {
+                        generationStatus === -1 ? (<p>A generation is already in process. Please wait a few moments and try again.</p>) :
+                        generationStatus === 1 ? (<p>Generating with mode X{options.mode} ...</p>) : null
+                    }
                 </div>
             }
         </div>
+        </div>
     );
 }
+
+
+
 
 export default GenerationOptionsUI;
