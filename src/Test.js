@@ -6,6 +6,8 @@ import Tab_oasis from './tabs/Tab_oasis';
 import Tab_home from './tabs/Tab_home';
 import Tab_settings from './tabs/Tab_settings';
 
+const userId = "6444bb82eb14ecacdb125107";
+
 function Test()
 {
     const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
