@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Clock from './components/clock.js';
 import GenerationOptionsUI from './components/generateUI';
 
+const userId = "6444bb82eb14ecacdb125107";
+
 function Test()
 {
     const [shortInput, setShortInput] = useState("");
@@ -14,6 +16,11 @@ function Test()
         const textarea = event.target;
         textarea.style.height = "0em";
         textarea.style.height = `${textarea.scrollHeight + 5}px`;}
+
+    function addIndividualMessage()
+    {
+        
+    }
         
     return (
         <>
