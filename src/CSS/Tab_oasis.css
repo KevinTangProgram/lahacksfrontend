@@ -5,7 +5,9 @@ Tab_oasis_ideas.js CSS file
 /* CLASS NAMES */
 .ideaContainer {
     height: 285px;
+    border: 1px solid black;
     display: flex;
+
     /* overflow-y: scroll; */
 }
 .messageContainer {
@@ -32,4 +34,9 @@ Tab_oasis_ideas.js CSS file
         justify-content: space-between;
         height: min-content;
             word-wrap: break-word;
+}
+.iconTrash {
+    margin-left: auto;
+    aspect-ratio: 1/1;
+    width: 3%;
 }

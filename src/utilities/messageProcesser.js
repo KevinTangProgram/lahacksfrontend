@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from 'react';
+import axios from 'axios';
 
 export class MessageProcessor {
     // Constants:
@@ -28,6 +28,8 @@ export class MessageProcessor {
     // 0:  Ready to generate
     // 1:  Queued generation
     static currentIndex = 0; // Index of the message currently being generated.
+    // Backend:
+    static backendURL = "http://localhost:8080";
 
     // Functionality:
     // 1. Add, Remove, and Edit Messages.
@@ -161,6 +163,17 @@ export class MessageProcessor {
     }
     static queueGenerationRequest() {
         // Queue generation request:
+        axios.post(this.backendURL + '/new/group', {
+            messages: this.allRawMessages,
+            name: "test"
+        })
+        .then((response) => {
+            this.processGenerationResponse(response);
+        })
+        .catch((error) => {
+            console.error(error);
+            this.generationStatus = -2;
+        })
         setTimeout(() => {
             this.generationStatus = 2;
             this.isGenerating = false;
@@ -170,5 +183,6 @@ export class MessageProcessor {
     }
     static processGenerationResponse(response) {
         // Clean and process messages, add to allOrganizedMessages:
+        console.log(response);
     }
 }

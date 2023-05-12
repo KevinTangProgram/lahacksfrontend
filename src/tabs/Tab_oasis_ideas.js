@@ -8,11 +8,22 @@ import React, { useState, useRef, useEffect } from 'react';
 function Tab_oasis_ideas({ forceOpenUI }) {
     const [shortInput, setShortInput] = useState("");
     const [input, setInput] = useState(MessageProcessor.allRawMessages);
+    const [charCountString, setCharCountString] = useState("");
     const handleChangeInput = (event) => {
-        setShortInput(event.target.value);
         const textarea = event.target;
-        //textarea.style.height = "0em";
-        //textarea.style.height = `${textarea.scrollHeight + 5}px`;
+        // Enforce max chars:
+        let inputString = textarea.value;
+        if (inputString.length > MessageProcessor.ERROR_MAX_MESSAGE_LENGTH) {
+            inputString = inputString.substring(0, MessageProcessor.ERROR_MAX_MESSAGE_LENGTH);
+        }
+        if (inputString.length > 0.8 * MessageProcessor.ERROR_MAX_MESSAGE_LENGTH) {
+            setCharCountString(`${inputString.length} / ${MessageProcessor.ERROR_MAX_MESSAGE_LENGTH}`);
+        }
+        else {
+            setCharCountString("");
+        }
+        // Auto-resize textarea (for up to 10 lines):
+        setShortInput(inputString);
     }
     // Scroll System:
         // Scroll to bottom on load:
@@ -42,6 +53,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         setShortInput("");
         // Update messages on screen:
         setInput(MessageProcessor.allRawMessages);
+        setCharCountString("");
         setTimeout(() => {
             scrollToMessageID(messageIndex);
         }, 0);    }
@@ -62,6 +74,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                         const lines = input[i].split('\n');
                         return (
                             <div className="singleMessage" key={i + MessageProcessor.sessionIndex} id={i + MessageProcessor.sessionIndex}>
+                                <img className="iconTrash" src="./images/icons/iconTrash.png" alt="Delete" onClick={() => { deleteThought(); }} />
                                 {lines.map((line, j) => (
                                     <div key={j}>{line}</div>
                                 ))}
@@ -95,7 +108,11 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                             }
                         }}
                     ></textarea>
-                    <button className="selectCells" id="submitAndConfirm" onClick={() => { addThought(); }}>+</button>
+                    <button className="selectCells" id="submitAndConfirm" onClick={() => { addThought(); }}>
+                        +
+                        <br></br>
+                        {charCountString}
+                        </button>
                     <button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>
                 </div>
             </div>
