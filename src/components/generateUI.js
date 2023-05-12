@@ -2,12 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Tooltip from './tooltip';
 import { MessageProcessor } from '../utilities/messageProcesser';
 
-var options = {
-    mode: 0,
-    generateHeaders: false,
-    useBulletFormat: false,
-};
-
 
 function GenerationOptionsUI(options) {
     // UI Title:
@@ -87,15 +81,20 @@ function GenerationOptionsUI(options) {
     const warningStrings = { warningMessageContentTooLow, warningMessageContentTooHigh, warningNoteContentTooLow, warningNoteContentTooHigh };
 
     // UI Generation:
+    const [generateOptions, setGenerateOptions] = useState({
+        mode: 0,
+        generateHeaders: false,
+        useBulletFormat: false,
+    });
     const [showWarnings, setShowWarnings] = useState(false);
     const tryGeneration = (forceGenerate = false) => {
-        options = {
+        setGenerateOptions({
             mode: sliderValue,
             generateHeaders: checkboxValues.generateHeaders,
             useBulletFormat: checkboxValues.useBulletFormat,
-        };
+        });
         const warnings = MessageProcessor.getGenerationWarnings();
-        if (warnings.length < 0 || forceGenerate) {
+        if (warnings.length <= 0 || forceGenerate) {
             setShowWarnings(false);
             MessageProcessor.startGenerationWithOptions(options);
         }
@@ -127,7 +126,7 @@ function GenerationOptionsUI(options) {
     return (
         <div className="generationOptionsUI">
         <div className="alignCenter">
-            <button onClick={togglePopup}>Generate</button>
+            <button onClick={togglePopup}>===</button>
             {showPopup &&
                 <div className="generationOptions">
                     <h2>Generation Options</h2>
@@ -188,16 +187,16 @@ function GenerationOptionsUI(options) {
                                     warning === "m_high" ? <li key={index}>{warningStrings.warningMessageContentTooHigh}</li> : null
                                 ))}
                             </ul>
-                            <button onClick={() => tryGeneration(true)}>CONTINUE</button>
+                            <button onClick={() => tryGeneration(true)}>Continue</button>
                         </div>
                     }
                     {/* GENERATE BUTTON */}
                     {!showWarnings &&
-                        <button onClick={() => tryGeneration(false)}>GENERATE NOW</button>
+                            <button className={generationStatus !==0 ? 'lowOpacity' : ''} onClick={() => tryGeneration(false)}>Generate</button>
                     }
                     {
                         generationStatus === -1 ? (<p>A generation is already in process. Please wait a few moments and try again.</p>) :
-                        generationStatus === 1 ? (<p>Generating with mode X{options.mode} ...</p>) : null
+                        generationStatus === 1 ? (<p>Generating with mode X{generateOptions.mode} ...</p>) : null
                     }
                 </div>
             }

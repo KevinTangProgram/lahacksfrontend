@@ -2,36 +2,65 @@ import '../CSS/Test.css';
 import '../CSS/Tab_oasis.css';
 import { MessageProcessor } from '../utilities/messageProcesser';
 //
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 
 function Tab_oasis_ideas({ forceOpenUI }) {
     const [shortInput, setShortInput] = useState("");
-    const [input, setInput] = useState([]);
+    const [input, setInput] = useState(MessageProcessor.allRawMessages);
     const handleChangeInput = (event) => {
         setShortInput(event.target.value);
         const textarea = event.target;
-        textarea.style.height = "0em";
-        textarea.style.height = `${textarea.scrollHeight + 5}px`;
+        //textarea.style.height = "0em";
+        //textarea.style.height = `${textarea.scrollHeight + 5}px`;
     }
-    function addThought() {
-        let success = MessageProcessor.addMessage(shortInput);
-        if (success === false) {
-            alert("Error: Could not add message.");
-            return;
+    // Scroll System:
+        // Scroll to bottom on load:
+    useEffect(() => {
+        scrollToMessageID(-1);
+    }, []);
+        // Scroll to specific message:
+    function scrollToMessageID(messageID) {
+        if (messageID === -1) {
+            messageID = input.length - 1 + MessageProcessor.sessionIndex;
         }
-        let addedInput = input;
-        addedInput.push(shortInput);
-        setInput(addedInput);
+        const messageEle = document.getElementById(`${messageID}`);
+        if (messageEle) {
+            messageEle.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }
+    // Add and update messages:
+    function addThought() {
+        if (shortInput === "") {
+            return false;
+        }
+        const messageIndex = MessageProcessor.addMessage(shortInput);
+        if (messageIndex === false) {
+            alert("Error: Could not add message.");
+            return false;
+        }
         setShortInput("");
+        // Update messages on screen:
+        setInput(MessageProcessor.allRawMessages);
+        setTimeout(() => {
+            scrollToMessageID(messageIndex);
+        }, 0);    }
+    function editThought() {
+
+    }
+    function deleteThought() {
+
     }
 
     return (
         <div className="ideaContainer">
             <div className="selectGrid">
-                <p>hello</p>
+                <div className="messageContainer">
+                    {input.length === 0 && <div className="singleMessage">Your Oasis is Empty- Add some ideas!</div>}
+                    {input.map((message, i) => (<div className="singleMessage" key={i + MessageProcessor.sessionIndex} id={i + MessageProcessor.sessionIndex}>{input[i]}</div>))}
+                </div>
                 <div className="inputGrid">
-                    <textarea placeholder="What stuff is your professor saying now?" value={shortInput} onChange={handleChangeInput}
+                    <textarea placeholder="Insert Thought" value={shortInput} onChange={handleChangeInput}
                         // Add onKeyPress to add thought on enter
                         onKeyDown={(event) => {
                             if (event.key === "Enter" && event.shiftKey) {
@@ -47,7 +76,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                         }}
                     ></textarea>
                     <button className="selectCells" id="submitAndConfirm" onClick={() => { addThought(); }}>+</button>
-                    <button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Organize Now?</button>
+                    <button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>
                 </div>
             </div>
         </div>

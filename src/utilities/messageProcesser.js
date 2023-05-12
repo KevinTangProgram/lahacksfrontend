@@ -43,9 +43,9 @@ export class MessageProcessor {
             return false;
         }
         this.allRawMessages.push(newMessage);
-        this.syncToDatabase;
+        this.syncToDatabase();
         // Grab index, check for warnings, return:
-        const index = this.allRawMessages.indexOf(newMessage) + this.sessionIndex;
+        const index = this.allRawMessages.length - 1 + this.sessionIndex;
         this.handleMessageWarnings(index, newMessage);
         return index;
     }
@@ -85,18 +85,19 @@ export class MessageProcessor {
         if (newMessage === "") {
             // Deleting message:
             this.removeMessageWarnings(index);
-            return;
+            return "deleted";
         }
         // Edit or adding message:
-        if (newMessage.size > this.WARNING_MAX_MESSAGE_LENGTH) {
-            this.highContentMessageIndexes.push(index + sessionIndex);
+        if (newMessage.length > this.WARNING_MAX_MESSAGE_LENGTH) {
+            this.highContentMessageIndexes.push(index + this.sessionIndex);
             return "max_length";
         }
-        if (newMessage.size < this.WARNING_MIN_MESSAGE_LENGTH) {
-            this.lowContentMessageIndexes.push(index + sessionIndex);
+        if (newMessage.length < this.WARNING_MIN_MESSAGE_LENGTH) {
+            this.lowContentMessageIndexes.push(index + this.sessionIndex);
             return "min_length";
         }
         this.removeMessageWarnings(index);
+        return "edited"
     }
     static removeMessageWarnings(index) {
         if (this.highContentMessageIndexes.includes(index)) {
