@@ -51,13 +51,33 @@ function Tab_oasis_ideas({ forceOpenUI }) {
     function deleteThought() {
 
     }
+    function MessageDisplays() {
+        {
+            if (input.length === 0) {
+                return <div className="singleMessage">Your Oasis is Empty- Add some ideas!</div>;
+            }
+            return (
+                <div>
+                    {input.map((message, i) => {
+                        const lines = input[i].split('\n');
+                        return (
+                            <div className="singleMessage" key={i + MessageProcessor.sessionIndex} id={i + MessageProcessor.sessionIndex}>
+                                {lines.map((line, j) => (
+                                    <div key={j}>{line}</div>
+                                ))}
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        }
+    }
 
     return (
         <div className="ideaContainer">
             <div className="selectGrid">
                 <div className="messageContainer">
-                    {input.length === 0 && <div className="singleMessage">Your Oasis is Empty- Add some ideas!</div>}
-                    {input.map((message, i) => (<div className="singleMessage" key={i + MessageProcessor.sessionIndex} id={i + MessageProcessor.sessionIndex}>{input[i]}</div>))}
+                    <MessageDisplays />
                 </div>
                 <div className="inputGrid">
                     <textarea placeholder="Insert Thought" value={shortInput} onChange={handleChangeInput}
