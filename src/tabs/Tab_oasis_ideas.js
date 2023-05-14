@@ -1,6 +1,7 @@
 import '../CSS/Test.css';
 import '../CSS/Tab_oasis.css';
 import { MessageProcessor } from '../utilities/messageProcesser';
+import SingleMessage from '../components/singleMessage';
 //
 import React, { useState, useRef, useEffect } from 'react';
 
@@ -56,12 +57,14 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         setCharCountString("");
         setTimeout(() => {
             scrollToMessageID(messageIndex);
-        }, 0);    }
-    function editThought() {
+        }, 0);
+    }
+    function editThought(index) {
 
     }
-    function deleteThought() {
-
+    function deleteThought(index) {
+        MessageProcessor.removeMessage(index);
+        setInput([...MessageProcessor.allRawMessages]);
     }
     function MessageDisplays() {
         {
@@ -71,15 +74,10 @@ function Tab_oasis_ideas({ forceOpenUI }) {
             return (
                 <div>
                     {input.map((message, i) => {
-                        const lines = input[i].split('\n');
                         return (
-                            <div className="singleMessage" key={i + MessageProcessor.sessionIndex} id={i + MessageProcessor.sessionIndex}>
-                                <img className="iconTrash" src="./images/icons/iconTrash.png" alt="Delete" onClick={() => { deleteThought(); }} />
-                                {lines.map((line, j) => (
-                                    <div key={j}>{line}</div>
-                                ))}
-                            </div>
-                        );
+                            <SingleMessage key={message.content} rawMessage={message} index={i} 
+                            functions={{ edit: editThought, delete: deleteThought }} />
+                        )
                     })}
                 </div>
             );

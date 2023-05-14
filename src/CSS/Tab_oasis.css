@@ -33,10 +33,30 @@ Tab_oasis_ideas.js CSS file
         flex-direction: column;
         justify-content: space-between;
         height: min-content;
-            word-wrap: break-word;
+        word-wrap: break-word;
+}
+.messageBanner {
+    display: flex;
+    justify-content: space-between;
+}
+.iconDesc {
+    margin: 0;
+    font-weight: bold;
+    color: gray;
+}
+.iconCopy {
+    margin-left: auto;
+    margin-right: 0.7em;
+    aspect-ratio: 1/1;
+    width: 3%;
+}
+.iconEdit {
+    margin-right: 0.5em;
+    aspect-ratio: 1/1;
+    width: 3%;
 }
 .iconTrash {
-    margin-left: auto;
+    margin-right: 0em;
     aspect-ratio: 1/1;
     width: 3%;
 }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import getTime from '../components/clock.js';
 
 export class MessageProcessor {
     // Constants:
@@ -12,7 +13,7 @@ export class MessageProcessor {
     static guestUser = true;
     static sessionIndex = 0; // Obtained from database, the true index of allRawMessages[0].
     // Raw Messages:
-    static allRawMessages = []; // Array of strings, index corresponds to order.
+    static allRawMessages = []; // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
@@ -40,26 +41,34 @@ export class MessageProcessor {
     // 6. Handle API failures.
 
     // 1:
-    static addMessage(newMessage) {
+    static addMessage(newMessageString) {
         if (!this.readyForMessages()) {
             return false;
         }
-        this.allRawMessages.push(newMessage);
+        const ID = this.allRawMessages[this.allRawMessages.length - 1] + 1;
+        const date = new Date();
+        const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+        this.allRawMessages.push({
+            UUID: ID,
+            timestamp: timeString,
+            sender: "Guest",
+            content: newMessageString
+        });
         this.syncToDatabase();
         // Grab index, check for warnings, return:
         const index = this.allRawMessages.length - 1 + this.sessionIndex;
-        this.handleMessageWarnings(index, newMessage);
+        this.handleMessageWarnings(index, newMessageString);
         return index;
     }
     static removeMessage(masterIndex) {
         if (masterIndex < this.sessionIndex) {
             // Deleting a message from previous session:
-            editMessageInDatabase(masterIndex, "");
+            this.editMessageInDatabase(masterIndex, "");
             return;
         }
         // Delete a message from this session:
         this.allRawMessages.splice(masterIndex - this.sessionIndex, 1);
-        handleMessageWarnings(masterIndex - this.sessionIndex, "");
+        this.handleMessageWarnings(masterIndex - this.sessionIndex, "");
             // remember to update the component ID of messages following the splice.
         this.syncToDatabase;
     }
@@ -70,7 +79,7 @@ export class MessageProcessor {
             return;
         }
         // Editing a message from this session:
-        this.allRawMessages[masterIndex - this.sessionIndex] = messageString;
+        this.allRawMessages[masterIndex - this.sessionIndex].content = messageString;
 
     }
     
@@ -163,22 +172,22 @@ export class MessageProcessor {
     }
     static queueGenerationRequest() {
         // Queue generation request:
-        axios.post(this.backendURL + '/new/group', {
-            messages: this.allRawMessages,
-            name: "test"
-        })
-        .then((response) => {
-            this.processGenerationResponse(response);
-        })
-        .catch((error) => {
-            console.error(error);
-            this.generationStatus = -2;
-        })
+        // axios.post(this.backendURL + '/new/group', {
+        //     messages: this.allRawMessages,
+        //     name: "test"
+        // })
+        // .then((response) => {
+        //     this.processGenerationResponse(response);
+        // })
+        // .catch((error) => {
+        //     console.error(error);
+        //     this.generationStatus = -2;
+        // })
         setTimeout(() => {
             this.generationStatus = 2;
             this.isGenerating = false;
             console.log("Generation:");
-            this.allRawMessages.forEach(message => console.log(message));
+            this.allRawMessages.forEach(message => console.log(message.content));
         }, 5000);
     }
     static processGenerationResponse(response) {

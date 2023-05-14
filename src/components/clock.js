@@ -45,4 +45,4 @@ function getDate() {
   return dateString;
 }
 
-export { getTimeData };
+export { getTimeData, getTime, getDate };
