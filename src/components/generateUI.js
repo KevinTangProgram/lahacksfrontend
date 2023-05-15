@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Tooltip from './tooltip';
 import { MessageProcessor } from '../utilities/messageProcesser';
+import { OasisManager } from '../utilities/oasisManager';
 
 
 function GenerationOptionsUI(options) {
     // UI Title:
-    const [topicValue, setTopicValue] = useState(options.titleValue);
+    const [topicValue, setTopicValue] = useState(MessageProcessor.generationMenuSettings.topic || options.titleValue);
     const handleTopicChange = (event) => {
         setTopicValue(event.target.value);
     }
@@ -108,6 +109,7 @@ function GenerationOptionsUI(options) {
         });
     }, [topicValue, sliderValue, checkboxValues.generateHeaders, checkboxValues.useBulletFormat]);
     const tryGeneration = () => {
+        MessageProcessor.generationMenuSettings = generateOptions;
         const result = MessageProcessor.startGenerationWithOptions(generateOptions);
         if (result !== 1) {
             setErrors(result);
@@ -129,6 +131,9 @@ function GenerationOptionsUI(options) {
         // Cleanup function to clear the interval
         return () => clearInterval(interval);
     }, []);
+    
+    // Persistent UI:
+
 
     // Output:
     return (
@@ -186,7 +191,7 @@ function GenerationOptionsUI(options) {
                     </div>
                     }
                     {/* WARNINGS */}
-                        <button className={warnings.length === 0 ? 'lowOpacity' : ''} onClick={() => setShowWarnings(true)}>Show Warnings ({warnings.length})</button>
+                        <button className={warnings.length === 0 ? 'lowOpacity' : ''} onClick={() => setShowWarnings(!showWarnings)}>Show Warnings ({warnings.length})</button>
                     {showWarnings && 
                         <div id="generateUIWarnings">
                             <ul>

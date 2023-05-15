@@ -8,18 +8,6 @@ export class MessageProcessor {
     static WARNING_MIN_MESSAGE_LENGTH = 20; // 20 characters, ~3-4 words.
     static WARNING_MIN_OASES_LENGTH = 4; // 4 messages.
     static WARNING_MAX_OASES_LENGTH = 20; // 20 messages.
-    // Oasis:
-    static generationMenuState = 0; // 0: closed, 1: open, 2: openWithWarnings.
-    static generationMenuSettings = { // Object (message indexes, topic, mode, options)
-        generateRecent: true,
-        startIndex: 0,
-        endIndex: 0,
-        topic: "",
-        mode: 0,
-        generateHeaders: false,
-        useBulletFormat: false,
-    } 
-    static lastGeneratedMessageIndex = 0;
     // Raw Messages:
     static allRawMessages = []; // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
     static lowContentMessageIndexes = []; // Array of indexes.
@@ -167,7 +155,7 @@ export class MessageProcessor {
         if (this.isGenerating) {
             errors.push("e_in_prog");
         }
-        if (topic.length === 0) {
+        if (!topic) {
             errors.push("e_no_topic");
         }
         return errors;
