@@ -13,6 +13,8 @@ function GenerationOptionsUI(options) {
     const [showPopup, setShowPopup] = useState(options.openUIByDefault);
     const togglePopup = () => {
         setShowPopup(!showPopup);
+        // Setup:
+        setShowErrors(false);
     }
     // UI Sliders:
     const [showCheckBoxHeaders, setShowCheckBoxHeaders] = useState(false);
@@ -70,45 +72,50 @@ function GenerationOptionsUI(options) {
         })
     };
     // UI Warnings:
-    const warningMessageContentTooLow = 
-        "Warning: Low content per message decreases the quality of generation."
-    const warningMessageContentTooHigh =
-        "Warning: Each message is counted as a single thought. Split large messages into different thoughts?"
-    const warningNoteContentTooLow =
-        "Warning: A low number of messages may decrease the quality of generation."
-    const warningNoteContentTooHigh =
-        "Warning: Too many messages may result in usage limits being applied."
-    const warningStrings = { warningMessageContentTooLow, warningMessageContentTooHigh, warningNoteContentTooLow, warningNoteContentTooHigh };
+    const UIStrings = {
+        w_m_low: "Warning: Shorter ideas may decrease the quality of generation.",
+        w_m_high: "Warning: Each message is counted as a single idea. Split large messages into different ideas?",
+        w_o_low: "Warning: A low number of ideas may decrease the quality of generation.",
+        w_o_high: "Warning: Too many ideas may result in usage limits being applied.",
+        e_not_ready: "Error: There was a problem generating. Please wait a few moments and try again.",
+        e_no_messages: "Error: There were no ideas to generate from. Please check your generation settings.",
+        e_usage_limit: "Error: Usage limit reached. Please consider upgrading your account.",
+        e_in_prog: "Error: A generation is already in process. Please wait a few moments and try again.",
+        e_no_topic: "Error: Please enter a topic."
+    }
+
 
     // UI Generation:
-    const [generateOptions, setGenerateOptions] = useState({
-        mode: 0,
-        generateHeaders: false,
-        useBulletFormat: false,
-    });
+        // Options:
+    const [generateOptions, setGenerateOptions] = useState(MessageProcessor.generationMenuSettings);
+        // Warnings:
     const [showWarnings, setShowWarnings] = useState(false);
-    const tryGeneration = (forceGenerate = false) => {
+    const [warnings, setWarnings] = useState(MessageProcessor.getGenerationWarnings());
+        // Errors/Status:
+    const [showErrors, setShowErrors] = useState(false);
+    const [errors, setErrors] = useState([]);
+    const [generationStatus, setGenerationStatus] = useState(0); // 0: Ready, 1: In Progress, 2: Complete. -2: failed. -1. in progress.
+
+    useEffect(() => {
         setGenerateOptions({
+            generateRecent: true,
+            startIndex: 0,
+            endIndex: 0,
+            topic: topicValue,
             mode: sliderValue,
             generateHeaders: checkboxValues.generateHeaders,
             useBulletFormat: checkboxValues.useBulletFormat,
         });
-        const warnings = MessageProcessor.getGenerationWarnings();
-        if (warnings.length <= 0 || forceGenerate) {
-            setShowWarnings(false);
-            MessageProcessor.startGenerationWithOptions(options);
-        }
-        else if (MessageProcessor.generationStatus === 0){
-            setShowWarnings(true);
+    }, [topicValue, sliderValue, checkboxValues.generateHeaders, checkboxValues.useBulletFormat]);
+    const tryGeneration = () => {
+        const result = MessageProcessor.startGenerationWithOptions(generateOptions);
+        if (result !== 1) {
+            setErrors(result);
+            setShowErrors(true);
         }
         setGenerationStatus(MessageProcessor.generationStatus);
     }
-    const [generationStatus, setGenerationStatus] = useState(0);
-    // -2: Error: generation failed
-    // -1: Error: generation already in progress
-    //  0:  Ready to generate
-    //  1:  Generation in progress
-    //  2: Generation complete
+    // Interval Checks:
     useEffect(() => {
         const interval = setInterval(() => {
             const statusCode = MessageProcessor.generationStatus;
@@ -117,6 +124,7 @@ function GenerationOptionsUI(options) {
                 setShowPopup(false);
                 MessageProcessor.generationStatus = 0;
             }
+            setWarnings(MessageProcessor.getGenerationWarnings());
         }, 1000);
         // Cleanup function to clear the interval
         return () => clearInterval(interval);
@@ -124,10 +132,11 @@ function GenerationOptionsUI(options) {
 
     // Output:
     return (
-        <div className="generationOptionsUI">
-        <div className="alignCenter">
+        <div className="generationOptionsMenu alignCenter">
             <button onClick={togglePopup}>===</button>
             {showPopup &&
+                <div className="generationOptionsUI">
+                    <button onClick={togglePopup}>===</button>
                 <div className="generationOptions">
                     <h2>Generation Options</h2>
                     {/* TITLE */}
@@ -177,30 +186,37 @@ function GenerationOptionsUI(options) {
                     </div>
                     }
                     {/* WARNINGS */}
+                        <button className={warnings.length === 0 ? 'lowOpacity' : ''} onClick={() => setShowWarnings(true)}>Show Warnings ({warnings.length})</button>
                     {showWarnings && 
                         <div id="generateUIWarnings">
                             <ul>
-                                {MessageProcessor.getGenerationWarnings().map((warning, index) => (
-                                    warning === "o_low" ? <li key={index}>{warningStrings.warningNoteContentTooLow}</li> :
-                                    warning === "o_high" ? <li key={index}>{warningStrings.warningNoteContentTooHigh}</li> :
-                                    warning === "m_low" ? <li key={index}>{warningStrings.warningMessageContentTooLow}</li> :
-                                    warning === "m_high" ? <li key={index}>{warningStrings.warningMessageContentTooHigh}</li> : null
+                                    {warnings.map((warning, index) => (
+                                        <li key={index}>{UIStrings[warning] || null}</li>
                                 ))}
                             </ul>
-                            <button onClick={() => tryGeneration(true)}>Continue</button>
                         </div>
                     }
                     {/* GENERATE BUTTON */}
-                    {!showWarnings &&
-                            <button className={generationStatus !==0 ? 'lowOpacity' : ''} onClick={() => tryGeneration(false)}>Generate</button>
-                    }
+                        {showErrors &&
+                            <div id="generateUIErrors">
+                                <ul>
+                                    {errors.map((error, index) => (
+                                        <li key={index}>{UIStrings[error] || null}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        }
+                    <button className={generationStatus === 1 ? 'lowOpacity' : ''} onClick={() => {
+                            if (generationStatus !== 1) {
+                                tryGeneration();
+                            }
+                    }}>Generate</button>
                     {
-                        generationStatus === -1 ? (<p>A generation is already in process. Please wait a few moments and try again.</p>) :
                         generationStatus === 1 ? (<p>Generating with mode X{generateOptions.mode} ...</p>) : null
                     }
                 </div>
+                </div>
             }
-        </div>
         </div>
     );
 }

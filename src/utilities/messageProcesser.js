@@ -7,11 +7,19 @@ export class MessageProcessor {
     static WARNING_MAX_MESSAGE_LENGTH = 250; // 1000 characters, ~50 words.
     static WARNING_MIN_MESSAGE_LENGTH = 20; // 20 characters, ~3-4 words.
     static WARNING_MIN_OASES_LENGTH = 4; // 4 messages.
-    static WARNING_MAX_OASES_LENGTH = 40; // 40 messages.
-    // Sync:
-    static syncedFromDatabase = false;
-    static guestUser = true;
-    static sessionIndex = 0; // Obtained from database, the true index of allRawMessages[0].
+    static WARNING_MAX_OASES_LENGTH = 20; // 20 messages.
+    // Oasis:
+    static generationMenuState = 0; // 0: closed, 1: open, 2: openWithWarnings.
+    static generationMenuSettings = { // Object (message indexes, topic, mode, options)
+        generateRecent: true,
+        startIndex: 0,
+        endIndex: 0,
+        topic: "",
+        mode: 0,
+        generateHeaders: false,
+        useBulletFormat: false,
+    } 
+    static lastGeneratedMessageIndex = 0;
     // Raw Messages:
     static allRawMessages = []; // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
     static lowContentMessageIndexes = []; // Array of indexes.
@@ -28,9 +36,14 @@ export class MessageProcessor {
     // -1: Error: generation already in progress
     // 0:  Ready to generate
     // 1:  Queued generation
+    // 2:  Generation complete
     static currentIndex = 0; // Index of the message currently being generated.
     // Backend:
     static backendURL = "http://localhost:8080";
+    static syncedFromDatabase = false;
+    static guestUser = true;
+    static sessionIndex = 0; // Obtained from database, the true index of allRawMessages[0].
+    static usageLimit = 10; // Max messages generable (refreshes every 24 hours).
 
     // Functionality:
     // 1. Add, Remove, and Edit Messages.
@@ -52,7 +65,8 @@ export class MessageProcessor {
             UUID: ID,
             timestamp: timeString,
             sender: "Guest",
-            content: newMessageString
+            content: newMessageString,
+            edits: 0
         });
         this.syncToDatabase();
         // Grab index, check for warnings, return:
@@ -80,7 +94,8 @@ export class MessageProcessor {
         }
         // Editing a message from this session:
         this.allRawMessages[masterIndex - this.sessionIndex].content = messageString;
-
+        this.allRawMessages[masterIndex - this.sessionIndex].edits += 1;
+        this.handleMessageWarnings(masterIndex - this.sessionIndex, messageString);
     }
     
     // 2:
@@ -90,6 +105,7 @@ export class MessageProcessor {
     static trackOasisProperties() {
 
     }
+     
 
     // 3:
     static handleMessageWarnings(index, newMessage) {
@@ -118,6 +134,44 @@ export class MessageProcessor {
             this.lowContentMessageIndexes.splice(this.lowContentMessageIndexes.indexOf(index), 1);
         }
     }
+    static getGenerationWarnings() {
+        // Give warnings:
+        let warnings = [];
+        if (this.lowContentMessageIndexes.length > 0) {
+            warnings.push("w_m_low");
+        }
+        if (this.highContentMessageIndexes.length > 0) {
+            warnings.push("w_m_high");
+        }
+        const messageNumber = this.allRawMessages.length;
+        if (messageNumber < this.WARNING_MIN_OASES_LENGTH && messageNumber > 0) {
+            warnings.push("w_o_low");
+        }
+        if (messageNumber > this.WARNING_MAX_OASES_LENGTH) {
+            warnings.push("w_o_high");
+        }
+        return warnings;
+    }
+    static checkGenerationErrors(messages, topic) {
+        // Give errors:
+        let errors = [];
+        if (!this.readyForMessages()) {
+            errors.push("e_not_ready");
+        }
+        if (messages.length <= 0) {
+            errors.push("e_no_messages");
+        }
+        if (this.usageLimit < messages.length) {
+            errors.push("e_usage_limit");
+        }
+        if (this.isGenerating) {
+            errors.push("e_in_prog");
+        }
+        if (topic.length === 0) {
+            errors.push("e_no_topic");
+        }
+        return errors;
+    }
 
     // 4:
     static syncFromDatabase() {
@@ -142,33 +196,24 @@ export class MessageProcessor {
     }
 
     // 5:
-    static getGenerationWarnings() {
-        // Give warnings:
-        let warnings = [];
-        if (this.lowContentMessageIndexes.length > 0) {
-            warnings.push("m_low");
-        }
-        if (this.highContentMessageIndexes.length > 0) {
-            warnings.push("m_high");
-        }
-        if (this.allRawMessages.length < this.WARNING_MIN_OASES_LENGTH) {
-            warnings.push("o_low");
-        }
-        if (this.allRawMessages.length > this.WARNING_MAX_OASES_LENGTH) {
-            warnings.push("o_high");
-        }
-        return warnings;
-    }
     static startGenerationWithOptions(options) {
-        if (this.isGenerating) {
-            this.generationStatus = -1;
-            return;
+        let errors;
+        if (options.generateRecent === true) {
+            errors = this.checkGenerationErrors(this.allRawMessages, options.topic);
+        }
+        else {
+            errors = this.checkGenerationErrors(this.allRawMessages.slice(options.startIndex, options.endIndex), options.topic);
+        }
+        if (errors.length > 0) {
+            this.generationStatus = -2;
+            return errors;
         }
         this.isGenerating = true;
         this.generationOptions = options;
         // Process messages, send to backend:
         this.generationStatus = 1;
         this.queueGenerationRequest();
+        return 1;
     }
     static queueGenerationRequest() {
         // Queue generation request:

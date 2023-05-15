@@ -7,8 +7,11 @@ import GenerationOptionsUI from '../components/generateUI';
 function Tab_oasis_notes(options) {
 
     return (
-        <div className="backGround">
-            <p>NOTES!!</p>
+        <div className="selectGrid">
+            <p>Your Oasis is Empty- Generate some notes!</p>
+            <p>Your Oasis is Empty- Generate some notes!</p>
+            <p>Your Oasis is Empty- Generate some notes!</p>
+            <p>Your Oasis is Empty- Generate some notes!</p>
             <GenerationOptionsUI openUIByDefault={options.openUIByDefault} titleValue={options.titleValue}/>
         </div>
     );

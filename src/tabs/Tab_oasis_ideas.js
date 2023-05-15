@@ -26,10 +26,13 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         // Auto-resize textarea (for up to 10 lines):
         setShortInput(inputString);
     }
-    // Scroll System:
-        // Scroll to bottom on load:
+    // Focus/scroll System:
+        // Text area:
+    const textareaRef = useRef(null);
+        // Scroll & focus on load:
     useEffect(() => {
         scrollToMessageID(-1);
+        focusTextarea();
     }, []);
         // Scroll to specific message:
     function scrollToMessageID(messageID) {
@@ -38,9 +41,16 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         }
         const messageEle = document.getElementById(`${messageID}`);
         if (messageEle) {
-            messageEle.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            setTimeout(() => {
+                messageEle.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 0);
         }
     }
+        // Focus on textarea:
+    function focusTextarea() {
+        textareaRef.current.focus();
+    }
+
     // Add and update messages:
     function addThought() {
         if (shortInput === "") {
@@ -59,8 +69,9 @@ function Tab_oasis_ideas({ forceOpenUI }) {
             scrollToMessageID(messageIndex);
         }, 0);
     }
-    function editThought(index) {
-
+    function editThought(index, newMessage) {
+        MessageProcessor.editMessage(index, newMessage);
+        setInput(MessageProcessor.allRawMessages);
     }
     function deleteThought(index) {
         MessageProcessor.removeMessage(index);
@@ -75,8 +86,8 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                 <div>
                     {input.map((message, i) => {
                         return (
-                            <SingleMessage key={message.content} rawMessage={message} index={i} 
-                            functions={{ edit: editThought, delete: deleteThought }} />
+                            <SingleMessage key={i} rawMessage={message} index={i} 
+                                functions={{ edit: editThought, delete: deleteThought, refocus: focusTextarea }} />
                         )
                     })}
                 </div>
@@ -91,7 +102,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                     <MessageDisplays />
                 </div>
                 <div className="inputGrid">
-                    <textarea placeholder="Insert Thought" value={shortInput} onChange={handleChangeInput}
+                    <textarea ref={textareaRef} placeholder="Insert Thought" value={shortInput} onChange={handleChangeInput}
                         // Add onKeyPress to add thought on enter
                         onKeyDown={(event) => {
                             if (event.key === "Enter" && event.shiftKey) {
