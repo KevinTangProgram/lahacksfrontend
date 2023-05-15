@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Tooltip from './tooltip';
 import { MessageProcessor } from '../utilities/messageProcesser';
 import { OasisManager } from '../utilities/oasisManager';
@@ -6,17 +6,49 @@ import { OasisManager } from '../utilities/oasisManager';
 
 function GenerationOptionsUI(options) {
     // UI Title:
-    const [topicValue, setTopicValue] = useState(MessageProcessor.generationMenuSettings.topic || options.titleValue);
+    const [topicValue, setTopicValue] = useState(OasisManager.cachedMenuSettings.topic || options.titleValue);
     const handleTopicChange = (event) => {
         setTopicValue(event.target.value);
     }
     // UI Popups:
     const [showPopup, setShowPopup] = useState(options.openUIByDefault);
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
-        // Setup:
+    const togglePopup = (toggle) => {
+        if (typeof toggle !== "boolean") {
+            toggle = !showPopup;
+        }
+        setShowPopup(toggle);
+        if (toggle) {
+            if (showWarnings) {
+                OasisManager.cachedMenuState = 2;
+            }
+            else {
+                OasisManager.cachedMenuState = 1;
+            }
+            scrollToUI();
+        }
+        else {
+            OasisManager.cachedMenuState = 0;
+        }
+        // Reset Errors:
         setShowErrors(false);
     }
+    // UI Scroll:
+    const UIRef = useRef(null);
+    function scrollToUI() {
+        setTimeout(() => {
+            UIRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 0);
+    }
+    // Render Setup:
+    useEffect(() => {
+        if (options.openUIByDefault && OasisManager.cachedMenuState === 0) {
+            OasisManager.cachedMenuState = 1;
+        }
+        setShowPopup(OasisManager.cachedMenuState >= 1);
+        if (UIRef) {
+            scrollToUI();
+        }
+    }, []);
     // UI Sliders:
     const [showCheckBoxHeaders, setShowCheckBoxHeaders] = useState(false);
     const [showCheckBoxBullet, setShowCheckBoxBullet] = useState(false);
@@ -120,13 +152,15 @@ function GenerationOptionsUI(options) {
     // Interval Checks:
     useEffect(() => {
         const interval = setInterval(() => {
-            const statusCode = MessageProcessor.generationStatus;
-            setGenerationStatus(statusCode)
-            if (statusCode === 2) {
-                setShowPopup(false);
-                MessageProcessor.generationStatus = 0;
+            if (showPopup) {
+                const statusCode = MessageProcessor.generationStatus;
+                setGenerationStatus(statusCode)
+                if (statusCode === 2) {
+                    togglePopup(false);
+                    MessageProcessor.generationStatus = 0;
+                }
+                setWarnings(MessageProcessor.getGenerationWarnings());
             }
-            setWarnings(MessageProcessor.getGenerationWarnings());
         }, 1000);
         // Cleanup function to clear the interval
         return () => clearInterval(interval);
@@ -137,7 +171,7 @@ function GenerationOptionsUI(options) {
 
     // Output:
     return (
-        <div className="generationOptionsMenu alignCenter">
+        <div ref={UIRef} className="generationOptionsMenu alignCenter">
             <button onClick={togglePopup}>===</button>
             {showPopup &&
                 <div className="generationOptionsUI">
@@ -191,12 +225,23 @@ function GenerationOptionsUI(options) {
                     </div>
                     }
                     {/* WARNINGS */}
+                    {showWarnings ? 
+                        <button className={warnings.length === 0 ? 'lowOpacity' : ''} onClick={() => setShowWarnings(!showWarnings)}>Hide Warnings ({warnings.length})</button> :
                         <button className={warnings.length === 0 ? 'lowOpacity' : ''} onClick={() => setShowWarnings(!showWarnings)}>Show Warnings ({warnings.length})</button>
+                    }
                     {showWarnings && 
                         <div id="generateUIWarnings">
                             <ul>
                                     {warnings.map((warning, index) => (
-                                        <li key={index}>{UIStrings[warning] || null}</li>
+                                        <div className="singleWarning">
+                                            <li key={index}>{UIStrings[warning] || null}</li>
+                                            {warning === 'w_m_low' && <button onClick={() => {
+                                                setSliderValue(sliderValue + 1);
+                                            }}>Increase Mode</button>}
+                                            {warning === 'w_m_high' && <button onClick={() => {
+                                                setSliderValue(sliderValue - 1);
+                                            }}>Decrease Mode</button>}
+                                        </div>
                                 ))}
                             </ul>
                         </div>
