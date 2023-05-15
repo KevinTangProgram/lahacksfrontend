@@ -1,8 +1,6 @@
 import './CSS/Login.css';
 //
 import React, { useState } from 'react';
-import axios from 'axios';
-import crypto from 'crypto-js';
 import CreateAccountUI from './components/createAccountUI';
 import LoginAccountUI from './components/loginAccountUI';
 //
