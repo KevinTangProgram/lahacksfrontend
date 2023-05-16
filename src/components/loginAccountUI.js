@@ -9,20 +9,25 @@ function LoginAccountUI() {
     const handleChangePassword = (event) => { setPassword(event.target.value); }
     // Output:
     return (
-        <div className="selectGridSmall">
-            <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
-            <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} ></input>
+        <>
+            <h1 style={{"text-align": "center"}}>Login</h1>
+            <div className="selectGridSmall">
+                <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
+                <br></br>
+                <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} ></input>
+                <br></br>
+                <button className="selectCells" id="submitAndConfirmLong" style={{"border-radius": "1em", "height": "2em", "width": "80%"}} onClick={() => {
 
-            <button className="selectCells" id="submitAndConfirmLong" onClick={() => {
+                }}>Login</button>
+                <br></br>
+                <p1>or</p1>
+                <br></br>
+                <button className="selectCells" id="submitAndConfirmLong" style={{"border-radius": "1em", "height": "2em", "width": "80%"}} onClick={() => {
 
-            }}>Login</button>
-            <br></br>
-            <p1>or</p1>
-            <br></br>
-            <button className="selectCells" id="submitAndConfirmLong" onClick={() => {
-
-            }}>Create Account</button>
-        </div>
+                }}>Create Account</button>
+            </div>
+        </>
+        
     );
 }
 

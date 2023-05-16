@@ -8,14 +8,13 @@ import LoginAccountUI from './components/loginAccountUI';
 function Login()
 {
     // Create Acc:
-    const [showCreateAcc, setShowCreateAcc] = useState(true);
+    const [showCreateAcc, setShowCreateAcc] = useState(false);
 
     return (<>
         <button id="backButton" className="notWhite" onClick={() => {
             window.location.href = "/";
         }}>&#10094;Back</button>
         <br></br>
-        <h1>Welcome to Idea Oasis</h1>
         {/* LOGIN */}
         {!showCreateAcc && <LoginAccountUI />}
         {/* CREATE ACC */}
