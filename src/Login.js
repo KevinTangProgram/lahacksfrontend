@@ -18,7 +18,7 @@ function Login()
         {/* LOGIN */}
         {!showCreateAcc && <LoginAccountUI />}
         {/* CREATE ACC */}
-        {showCreateAcc && <CreateAccountUI />}
+        {showCreateAcc && <CreateAccountUI setShowCreateAcc={setShowCreateAcc} />}
     </>
     )
 }
