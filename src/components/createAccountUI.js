@@ -4,7 +4,7 @@ import crypto from 'crypto-js';
 import {CONST} from '../utilities/CONST.js';
 //
 
-function CreateAccountUI() {
+function CreateAccountUI(props) {
 
     // vars/functions:
     const [username, setUsername] = useState("");
@@ -36,6 +36,7 @@ function CreateAccountUI() {
                 <br></br>
                 <button className="selectCells" id = "submitAndConfirmLong" style={{"border-radius": "1em", "height": "2em", "width": "80%"}} onClick={() => {
                     createAccount();
+                    props.setShowCreateAcc(false);
                 }}>Create Account</button>
             </div>
         </>
