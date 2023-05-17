@@ -1,5 +1,5 @@
-import axios from 'axios';
-import getTime from '../components/clock.js';
+import { StorageManager } from './storageManager.js';
+
 
 export class MessageProcessor {
     // Constants:
@@ -9,7 +9,8 @@ export class MessageProcessor {
     static WARNING_MIN_OASES_LENGTH = 4; // 4 messages.
     static WARNING_MAX_OASES_LENGTH = 20; // 20 messages.
     // Raw Messages:
-    static allRawMessages = []; // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
+    static key = "allRawMessages";
+    static allRawMessages = StorageManager.createSyncedObject([], "local", this.key); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
@@ -84,6 +85,7 @@ export class MessageProcessor {
         this.allRawMessages[masterIndex - this.sessionIndex].content = messageString;
         this.allRawMessages[masterIndex - this.sessionIndex].edits += 1;
         this.handleMessageWarnings(masterIndex - this.sessionIndex, messageString);
+        StorageManager.sync(this.key);
     }
     
     // 2:

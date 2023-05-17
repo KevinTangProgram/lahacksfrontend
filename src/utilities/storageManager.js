@@ -1,51 +1,78 @@
 import {CONST} from "./CONST.js";
 //
 export class StorageManager {
+    // Vars:
+    static state = "synced"; // "unsynced", "syncing", "synced
     // Refs:
-    static tempStorage = new Map();
     static localStorage = window.localStorage;
     static databaseStorage = CONST.URL;
     // Storage:
-    static syncedObjects = new Map(); // {key -> {object, type, status}
+    static syncedObjects = new Map(); // {key -> {proxy, object, type, status}
 
     // Interface:
     static createSyncedObject(obj, type, key = obj.name) {
         // 1. Type: temp/local/database. Key: default is object name.
         // Create object:
-        this.syncedObjects.set(key, { object: obj, type: type, status: 'unsynced' });
-        // Setup Sync:
-        this.setupSyncObject(key, type);
+        this.syncedObjects.set(key, { proxy: null, object: obj, type: type, status: 'unsynced' });
+        // Setup Proxy:
+        this.setupSyncedObject(key, type);
         // Return object:
-        return this.syncedObjects.get(key).object;
+        return this.syncedObjects.get(key).proxy;
     }
     static changeSyncedObject(key, type) {
         // 1. Change type of synced object.
         this.setObjectProperty(key, "type", type);
         this.setObjectProperty(key, "status", unsynced);
-        this.setupSyncObject(key, type);
+        this.setupSyncedObject(key, type);
     }
     static unSyncObject(key) {
         // 1. Unsync object from storage.
-        delete this.syncedObjects.get(key).object.proxy;
-        this.syncedObjects.delete(key);
+        alert("You cannot unsync objects yet.");
+        // const unsyncedObj = this.proxyToObj(this.syncedObjects.get(key).proxy);
+        // this.setObjectProperty(key, "proxy", )
+        // delete this.syncedObjects.get(key).proxy;
+        // this.syncedObjects.delete(key);
     }
-    static getSyncedStatus(key) {
+    static getSyncedStatus(key = undefined) {
         // 1. Return synced object status: syncing/synced/unsynced.
+        if (key === undefined) {
+            return this.state;
+        }
         return this.getObjectProperty(key, "status");
     }
     static resetStorage() {
         // 1. Reset all storage.
-        this.tempStorage = new Map();
         this.localStorage.clear();
         this.clearDatabase();
         this.syncedObjects = new Map();
+        location.reload(true);
     }
-
+    static sync(key) {
+        const type = this.getObjectProperty(key, "type");
+        if (type === 'temp') {
+            // No syncing needed.
+            return;
+        }
+        if (type === 'local') {
+            // Force proxy action:
+            StorageManager.queueSyncObject(key, type);
+            return;
+        }
+        if (type === 'database') {
+            // Force proxy action:
+            StorageManager.queueSyncObject(key, type);
+            return;
+        }
+    }
     // Utils:
-    static setupSyncObject(key, type) {
-        // Remove proxy:
-        delete this.syncedObjects.get(key).object.proxy;
+    static setupSyncedObject(key, type) {
+        const existingProxy = this.syncedObjects.get(key).proxy;
+        if (existingProxy) {
+            // Remove proxy:
+            this.setObjectProperty(key, "proxy", proxyToObj(existingProxy));
+        }
         // Setup object:
+        const obj = this.syncedObjects.get(key).object;
         if (type === 'temp') {
             this.setObjectProperty(key, "status", "synced");
             // No syncing needed.
@@ -57,16 +84,14 @@ export class StorageManager {
                 this.pushToLocal(key);
             }
             // Create proxy:
-            const proxy = new Proxy(obj, {
+            const proxyObj = new Proxy(obj, {
                 set: function (target, prop, value) {
                     target[prop] = value;
-                    this.setObjectProperty(key, "status", "unsynced");
-                    this.debounce(() => {
-                        this.forceSyncObject(key, type);
-                    }, 5000)();
+                    StorageManager.queueSyncObject(key, type);
                     return true;
                 }
             });
+            this.setObjectProperty(key, "proxy", proxyObj);
             return;
         }
         if (type === 'database') {
@@ -75,16 +100,14 @@ export class StorageManager {
                 this.pushToDatabase(key);
             }
             // Create proxy:
-            const proxy = new Proxy(obj, {
+            const proxyObj = new Proxy(obj, {
                 set: function (target, prop, value) {
                     target[prop] = value;
-                    this.setObjectProperty(key, "status", "unsynced");
-                    this.debounce(() => {
-                        this.forceSyncObject(key, type);
-                    }, 5000)();
+                    StorageManager.queueSyncObject(key, type);
                     return true;
                 }
             });
+            this.setObjectProperty(key, "proxy", proxyObj);
             return;
         }
     }
@@ -109,6 +132,7 @@ export class StorageManager {
         const json = this.localStorage.getItem(key);
         if (json) {
             this.setObjectProperty(key, "object", JSON.parse(json));
+            console.log("Pulled from local storage.");
             return true;
         }
         return false;
@@ -130,7 +154,12 @@ export class StorageManager {
     static setObjectProperty(key, property, value) {
         // 2. Set object property.
         if (this.syncedObjects.has(key)) {
-            this.syncedObjects.get(key)[property] = value;
+            if (property === "object") {
+                Object.assign(this.syncedObjects.get(key).object, value);
+            }
+            else {
+                this.syncedObjects.get(key)[property] = value;
+            }
             return true;
         }
         alert('Key not found.');
@@ -145,6 +174,17 @@ export class StorageManager {
             }, delay);
         };
     }
+    static proxyToObj(proxy) {
+        // 1. Return object from proxy.
+        return Object.assign({}, proxy);
+    }
+    static queueSyncObject(key, type) {
+        this.state = "unsynced";
+        this.setObjectProperty(key, "status", "unsynced");
+        this.debounce(() => {
+            StorageManager.forceSyncObject(key, type);
+        }, 5000)();
+    }
     // Database:
     static async pullFromDatabase(key) {
 
@@ -155,4 +195,28 @@ export class StorageManager {
     static async clearDatabase() {
 
     }
+    // Stop reload:
+    static setup() {
+        const interval = setInterval(() => {
+            console.log(this.state);
+            if (this.state !== "synced") {
+                let hasUnsynced = false;
+                this.syncedObjects.forEach((value) => {
+                    if (value.status === 'unsynced') {
+                        hasUnsynced = true;
+                        return; 
+                    }
+                });
+                if (hasUnsynced === false) {
+                    this.state = "synced";
+                }
+            }
+        }, 1000);
+        window.addEventListener('beforeunload', function (e) {
+            if (this.getSyncedStatus() !== "synced") {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes!';
+            }
+        });
+    }   
 }

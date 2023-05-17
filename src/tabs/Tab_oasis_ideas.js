@@ -1,9 +1,11 @@
 import '../CSS/Test.css';
 import '../CSS/Tab_oasis.css';
 import { MessageProcessor } from '../utilities/messageProcesser';
+import { StorageManager } from '../utilities/storageManager';
 import SingleMessage from '../components/singleMessage';
 //
 import React, { useState, useRef, useEffect } from 'react';
+require('../utilities/setup.js')
 
 
 function Tab_oasis_ideas({ forceOpenUI }) {
@@ -124,6 +126,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                         </button>
                     <button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>
                 </div>
+                {StorageManager.getSyncedStatus() === "synced" ? null : <div className="syncing">Syncing...</div>}
             </div>
         </div>
     );
