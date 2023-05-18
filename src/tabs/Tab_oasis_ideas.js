@@ -3,14 +3,14 @@ import '../CSS/Tab_oasis.css';
 import { MessageProcessor } from '../utilities/messageProcesser';
 import { StorageManager } from '../utilities/storageManager';
 import SingleMessage from '../components/singleMessage';
-//
 import React, { useState, useRef, useEffect } from 'react';
-require('../utilities/setup.js')
+import ObserverComponent from '../components/observer';
+//
 
 
 function Tab_oasis_ideas({ forceOpenUI }) {
     const [shortInput, setShortInput] = useState("");
-    const [input, setInput] = useState(MessageProcessor.allRawMessages);
+    const [input, setInput] = useState(MessageProcessor.allRawMessagesCONST);
     const [charCountString, setCharCountString] = useState("");
     const handleChangeInput = (event) => {
         const textarea = event.target;
@@ -65,7 +65,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         }
         setShortInput("");
         // Update messages on screen:
-        setInput(MessageProcessor.allRawMessages);
+        setInput(MessageProcessor.allRawMessagesCONST);
         setCharCountString("");
         setTimeout(() => {
             scrollToMessageID(messageIndex);
@@ -73,11 +73,11 @@ function Tab_oasis_ideas({ forceOpenUI }) {
     }
     function editThought(index, newMessage) {
         MessageProcessor.editMessage(index, newMessage);
-        setInput(MessageProcessor.allRawMessages);
+        setInput(MessageProcessor.allRawMessagesCONST);
     }
     function deleteThought(index) {
         MessageProcessor.removeMessage(index);
-        setInput([...MessageProcessor.allRawMessages]);
+        setInput([...MessageProcessor.allRawMessagesCONST]);
     }
     function MessageDisplays() {
         {
@@ -126,7 +126,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                         </button>
                     <button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>
                 </div>
-                {StorageManager.getSyncedStatus() === "synced" ? null : <div className="syncing">Syncing...</div>}
+                < ObserverComponent dependencies={"StorageState"} Component={() => { return <div>sup {StorageManager.read("StorageState")}</div>}} />
             </div>
         </div>
     );

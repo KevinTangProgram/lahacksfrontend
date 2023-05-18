@@ -9,8 +9,9 @@ export class MessageProcessor {
     static WARNING_MIN_OASES_LENGTH = 4; // 4 messages.
     static WARNING_MAX_OASES_LENGTH = 20; // 20 messages.
     // Raw Messages:
-    static key = "allRawMessages";
-    static allRawMessages = StorageManager.createSyncedObject([], "local", this.key); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
+    static allRawMessagesKey = "allRawMessages";
+    static allRawMessages = StorageManager.createSyncedObject([], "local", this.allRawMessagesKey); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
+    static allRawMessagesCONST = StorageManager.read(this.allRawMessagesKey); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
@@ -47,10 +48,10 @@ export class MessageProcessor {
         if (!this.readyForMessages()) {
             return false;
         }
-        const ID = this.allRawMessages[this.allRawMessages.length - 1] + 1;
+        const ID = this.allRawMessagesCONST[this.allRawMessagesCONST.length - 1] + 1;
         const date = new Date();
         const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-        this.allRawMessages.push({
+        StorageManager.modify(this.allRawMessagesKey).push({
             UUID: ID,
             timestamp: timeString,
             sender: "Guest",
@@ -59,7 +60,7 @@ export class MessageProcessor {
         });
         this.syncToDatabase();
         // Grab index, check for warnings, return:
-        const index = this.allRawMessages.length - 1 + this.sessionIndex;
+        const index = this.allRawMessagesCONST.length - 1 + this.sessionIndex;
         this.handleMessageWarnings(index, newMessageString);
         return index;
     }
@@ -70,7 +71,7 @@ export class MessageProcessor {
             return;
         }
         // Delete a message from this session:
-        this.allRawMessages.splice(masterIndex - this.sessionIndex, 1);
+        StorageManager.modify(this.allRawMessagesKey).splice(masterIndex - this.sessionIndex, 1);
         this.handleMessageWarnings(masterIndex - this.sessionIndex, "");
             // remember to update the component ID of messages following the splice.
         this.syncToDatabase;
@@ -82,10 +83,10 @@ export class MessageProcessor {
             return;
         }
         // Editing a message from this session:
-        this.allRawMessages[masterIndex - this.sessionIndex].content = messageString;
-        this.allRawMessages[masterIndex - this.sessionIndex].edits += 1;
-        this.handleMessageWarnings(masterIndex - this.sessionIndex, messageString);
-        StorageManager.sync(this.key);
+        const message = this.allRawMessagesCONST[masterIndex - this.sessionIndex];
+        message.content = messageString;
+        message.edits += 1;
+        StorageManager.modify(this.allRawMessagesKey)[masterIndex - this.sessionIndex] = message;
     }
     
     // 2:
@@ -133,7 +134,7 @@ export class MessageProcessor {
         if (this.highContentMessageIndexes.length > 0) {
             warnings.push("w_m_high");
         }
-        const messageNumber = this.allRawMessages.length;
+        const messageNumber = this.allRawMessagesCONST.length;
         if (messageNumber < this.WARNING_MIN_OASES_LENGTH && messageNumber > 0) {
             warnings.push("w_o_low");
         }
@@ -189,10 +190,10 @@ export class MessageProcessor {
     static startGenerationWithOptions(options) {
         let errors;
         if (options.generateRecent === true) {
-            errors = this.checkGenerationErrors(this.allRawMessages, options.topic);
+            errors = this.checkGenerationErrors(this.allRawMessagesCONST, options.topic);
         }
         else {
-            errors = this.checkGenerationErrors(this.allRawMessages.slice(options.startIndex, options.endIndex), options.topic);
+            errors = this.checkGenerationErrors(this.allRawMessagesCONST.slice(options.startIndex, options.endIndex), options.topic);
         }
         if (errors.length > 0) {
             this.generationStatus = -2;
@@ -222,7 +223,7 @@ export class MessageProcessor {
             this.generationStatus = 2;
             this.isGenerating = false;
             console.log("Generation:");
-            this.allRawMessages.forEach(message => console.log(message.content));
+            this.allRawMessagesCONST.forEach(message => console.log(message.content));
         }, 5000);
     }
     static processGenerationResponse(response) {
