@@ -55,7 +55,7 @@ export class StorageManager {
             return this.syncedObjects.get(key).object;
         } 
         // For primitive types, where modify() doesn't return a reference:
-        this.handleModifications(key); // LOOK HERE
+        // this.handleModifications(key); // LOOK HERE
         this.setObjectProperty(key, "object", value);
     }
     //
