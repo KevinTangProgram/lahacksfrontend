@@ -80,19 +80,24 @@ export class StorageManager {
     }
     
     // Utils:
-    static handleModifications(key, isAPush = true) {
-        const type = this.getObjectProperty(key, "type");
+    static handleModifications(key, pushMode = true) {
         // Handle Syncing:
-        if (isAPush === true && this.getObjectProperty(key) !== 'temp') {
+        if (this.getObjectProperty(key, "type") === 'temp') {
+            setTimeout(() => {
+                this.emitEvent(key);
+            }, 0);
+            return;
+        }
+        if (pushMode === true) {
             // Sending data to local/database:
             this.modify("StorageState", this.read("StorageState") + 1);
             this.setObjectProperty(key, "status", "unsynced");
             this.queueSyncObject(key, type);
         }
         else {
-            // Recieving data OR 'temp' object:
+            // Just recieved data:
+            this.setObjectProperty(key, "status", "synced");
             setTimeout(() => {
-                this.setObjectProperty(key, "status", "synced");
                 this.emitEvent(key);
             }, 0);
         }
@@ -154,7 +159,6 @@ export class StorageManager {
             this.setObjectProperty(key, "status", "synced");
             this.modify("StorageState", this.read("StorageState") - 1);
         }
-        this.handleModifications(key, false);
     }
     static async clearDatabase() {
 
@@ -203,7 +207,7 @@ export class StorageManager {
         let StorageState = this.createSyncedObject( 0, "temp", "StorageState");
         // Quick state:
         window.addEventListener('beforeunload', function (e) {
-            if (this.read(StorageState) !== 0) {
+            if (StorageManager.read(StorageState) !== 0) {
                 e.preventDefault();
                 e.returnValue = 'You have unsaved changes!';
             }
