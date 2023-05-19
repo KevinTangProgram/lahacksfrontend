@@ -11,7 +11,6 @@ export class MessageProcessor {
     // Raw Messages:
     static allRawMessagesKey = "allRawMessages";
     static allRawMessages = StorageManager.createSyncedObject([], "local", this.allRawMessagesKey); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
-    static allRawMessagesCONST = StorageManager.read(this.allRawMessagesKey); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
@@ -48,10 +47,10 @@ export class MessageProcessor {
         if (!this.readyForMessages()) {
             return false;
         }
-        const ID = this.allRawMessagesCONST[this.allRawMessagesCONST.length - 1] + 1;
+        const ID = this.allRawMessages[this.allRawMessages.length - 1] + 1;
         const date = new Date();
         const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-        StorageManager.modify(this.allRawMessagesKey).push({
+        this.allRawMessages.modify().push({
             UUID: ID,
             timestamp: timeString,
             sender: "Guest",
@@ -60,7 +59,7 @@ export class MessageProcessor {
         });
         this.syncToDatabase();
         // Grab index, check for warnings, return:
-        const index = this.allRawMessagesCONST.length - 1 + this.sessionIndex;
+        const index = this.allRawMessages.length - 1 + this.sessionIndex;
         this.handleMessageWarnings(index, newMessageString);
         return index;
     }
@@ -71,7 +70,7 @@ export class MessageProcessor {
             return;
         }
         // Delete a message from this session:
-        StorageManager.modify(this.allRawMessagesKey).splice(masterIndex - this.sessionIndex, 1);
+        this.allRawMessages.modify().splice(masterIndex - this.sessionIndex, 1);
         this.handleMessageWarnings(masterIndex - this.sessionIndex, "");
             // remember to update the component ID of messages following the splice.
         this.syncToDatabase;
@@ -83,10 +82,10 @@ export class MessageProcessor {
             return;
         }
         // Editing a message from this session:
-        const message = this.allRawMessagesCONST[masterIndex - this.sessionIndex];
+        const message = this.allRawMessages[masterIndex - this.sessionIndex];
         message.content = messageString;
         message.edits += 1;
-        StorageManager.modify(this.allRawMessagesKey)[masterIndex - this.sessionIndex] = message;
+        this.allRawMessages.modify()[masterIndex - this.sessionIndex] = message;
     }
     
     // 2:
@@ -134,7 +133,7 @@ export class MessageProcessor {
         if (this.highContentMessageIndexes.length > 0) {
             warnings.push("w_m_high");
         }
-        const messageNumber = this.allRawMessagesCONST.length;
+        const messageNumber = this.allRawMessages.length;
         if (messageNumber < this.WARNING_MIN_OASES_LENGTH && messageNumber > 0) {
             warnings.push("w_o_low");
         }
@@ -190,10 +189,10 @@ export class MessageProcessor {
     static startGenerationWithOptions(options) {
         let errors;
         if (options.generateRecent === true) {
-            errors = this.checkGenerationErrors(this.allRawMessagesCONST, options.topic);
+            errors = this.checkGenerationErrors(this.allRawMessages, options.topic);
         }
         else {
-            errors = this.checkGenerationErrors(this.allRawMessagesCONST.slice(options.startIndex, options.endIndex), options.topic);
+            errors = this.checkGenerationErrors(this.allRawMessages.slice(options.startIndex, options.endIndex), options.topic);
         }
         if (errors.length > 0) {
             this.generationStatus = -2;
@@ -223,7 +222,7 @@ export class MessageProcessor {
             this.generationStatus = 2;
             this.isGenerating = false;
             console.log("Generation:");
-            this.allRawMessagesCONST.forEach(message => console.log(message.content));
+            this.allRawMessages.forEach(message => console.log(message.content));
         }, 5000);
     }
     static processGenerationResponse(response) {

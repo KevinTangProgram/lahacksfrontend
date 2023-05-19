@@ -10,7 +10,8 @@ import ObserverComponent from '../components/observer';
 
 function Tab_oasis_ideas({ forceOpenUI }) {
     const [shortInput, setShortInput] = useState("");
-    const [input, setInput] = useState(MessageProcessor.allRawMessagesCONST);
+    // const [input, setInput] = useState(MessageProcessor.allRawMessages);
+    const [input, setInput] = useState(StorageManager.read("allRawMessages"));
     const [charCountString, setCharCountString] = useState("");
     const handleChangeInput = (event) => {
         const textarea = event.target;
@@ -65,7 +66,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         }
         setShortInput("");
         // Update messages on screen:
-        setInput(MessageProcessor.allRawMessagesCONST);
+        setInput(MessageProcessor.allRawMessages);
         setCharCountString("");
         setTimeout(() => {
             scrollToMessageID(messageIndex);
@@ -73,11 +74,11 @@ function Tab_oasis_ideas({ forceOpenUI }) {
     }
     function editThought(index, newMessage) {
         MessageProcessor.editMessage(index, newMessage);
-        setInput(MessageProcessor.allRawMessagesCONST);
+        setInput(MessageProcessor.allRawMessages);
     }
     function deleteThought(index) {
         MessageProcessor.removeMessage(index);
-        setInput([...MessageProcessor.allRawMessagesCONST]);
+        setInput([...MessageProcessor.allRawMessages]);
     }
     function MessageDisplays() {
         {

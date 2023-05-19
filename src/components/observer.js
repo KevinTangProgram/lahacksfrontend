@@ -11,6 +11,7 @@ export default function Observer({ dependencies, Component }) {
     useEffect(() => {
         const handleChange = (event) => {
             console.log("rerender?");
+            console.log(event.detail.syncedObject); 
             if (dependencies.includes(event.detail.syncedObject)) {
                 setRenderCount(renderCount => renderCount + 1);
                 console.log("rerender!");

@@ -4,18 +4,25 @@ export class StorageManager {
     // Refs:
     static localStorage = window.localStorage;
     static databaseStorage = CONST.URL;
+    static unsyncCounter = 0;
     // Storage:
-    static syncedObjects = new Map(); // {key -> proxy: {object, type, status}
+    static syncedObjects = new Map(); // {key -> syncedObject}
+    // syncedObject: {property1, property2..., modify(), 
+    //              StorageManagerInfo: {key, type, status, lastSynced} }
 
     // Workflow:
-    // 1. Creating a synced object (createSyncedObject) returns a key/proxy.
+    // 1. Creating a synced object (createSyncedObject) returns a synced object.
     // 2. The synced object will automatically sync to storage.
-    // 3. Access and modify the synced object through the key/proxy.
-    // 4. Communicates with observerManager to rerender when synced object is modified.
+    // 3. Communicates with observerManager to rerender when synced object is modified.
+    // Rules:
+    // - Access syncedObject properties as usual, but only modify through modify().
+    // - If you need to assign the whole object, use safeAssign().
+    // - Use changeSyncedObject() to change the type of a synced object.
+    // - Other files can use read() to reference your object.
     // Behind the scenes:
-    // - The synced object is stored in a map.
-    // - Calling modify() or read() on the 'proxy' returns the original object.
-    // - The proxy will queue the object to be synced, as well as call events.
+    // - The synced object is a wrapper object with method modify().
+    // - Synced objects are stored in a map.
+    // - modify() communicates with StorageManager to perform sync / events.
 
     // Interface:
     static createSyncedObject(obj, type, key = obj.name) {
@@ -23,15 +30,87 @@ export class StorageManager {
         // 2. 'local': synced to local storage.
         // 3. 'database': synced to database.
         // Create object:
-        const status = (type === "temp" ? "synced" : "unsynced");
-        if (status === "unsynced" && key !== "StorageState") {
-            this.modify("StorageState", this.read("StorageState") + 1);
-        }
-        const proxyObj = { object: obj, type: type, status: status };
-        this.syncedObjects.set(key, proxyObj);
+        const syncedObject = Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+        // const syncedObject = obj;
+        const info = { key: key, type: type, status: "unsynced", lastSynced: null };
+        syncedObject.StorageManagerInfo = info;
+        syncedObject.modify = function () {
+            StorageManager.handleModifications(this.StorageManagerInfo);
+            return this;
+        };
+        this.syncedObjects.set(key, syncedObject);
         // Force sync:
         if (type === 'local') {
             // Check if exists in local:
+            this.unsyncCounter++;
+            if (this.pullFromLocal(info) === false) {
+                this.pushToLocal(info);
+            }
+            return;
+        }
+        if (type === 'database') {
+            // Check if exists in database:
+            this.unsyncCounter++;
+            if (this.pullFromDatabase(info) === false) {
+                this.pushToDatabase(info);
+            }
+        }
+        return syncedObject;
+    }
+    static read(key) {
+        return this.syncedObjects.get(key);
+    }
+    //
+    static safeAssign(syncedObject, otherObject) {
+        // If they are arrays:
+        // Remove StorageManagerInfo properties:
+        const oldInfo = syncedObject.StorageManagerInfo;
+        this.objectify(syncedObject, true);
+        // Combine into object:
+        const mergedObject = Object.assign({}, { syncedObject, otherObject });
+        const { syncedObject: mergedSyncedArray, otherObject: mergedOtherArray } = mergedObject;
+        // Destructure:
+        mergedSyncedArray.length = 0;
+        Array.prototype.push.apply(mergedSyncedArray, mergedOtherArray);
+
+
+        // console.log(syncedObject);
+        // Object.assign(syncedObject, otherObject);
+        // console.log(Object.assign([], otherObject));
+        // console.log(syncedObject);
+        // console.log(otherObject);
+        // // Remove missing properties:
+        // for (const key in otherObject) {
+        //     if (!syncedObject.hasOwnProperty(key)) {
+        //     // if (!Object.prototype.hasOwnProperty.call(syncedObject, key)) {
+        //         delete syncedObject[key];
+        //         console.log("jheu");
+        //     }
+        // }
+        // console.log(syncedObject);
+        // Re-add StorageManagerInfo properties:
+        syncedObject.StorageManagerInfo = oldInfo;
+        syncedObject.modify = function () {
+            StorageManager.handleModifications(this.StorageManagerInfo);
+            return this;
+        };
+        console.log(syncedObject);
+    }
+    static safeDecouple(syncedObject, type = "null") {
+        // Safe delete:
+        if (type === "null") {
+            this.syncedObjects.delete(syncedObject.StorageManagerInfo.key);
+            delete syncedObject.StorageManagerInfo;
+            delete syncedObject.modify;
+            return;
+        }
+        // Change type of synced object.
+        syncedObject.StorageManagerInfo.type = type;
+        syncedObject.StorageManagerInfo.status = "unsynced";
+        // Force sync:
+        if (type === 'local') {
+            // Check if exists in local:
+            this.unsyncCounter++;
             if (this.pullFromLocal(key) === false) {
                 this.pushToLocal(key);
             }
@@ -39,37 +118,12 @@ export class StorageManager {
         }
         if (type === 'database') {
             // Check if exists in database:
+            this.unsyncCounter++;
             if (this.pullFromDatabase(key) === false) {
                 this.pushToDatabase(key);
             }
         }
-        // Return object:
-        return proxyObj;
-    }
-    static read(key) {
-        return this.syncedObjects.get(key).object;
-    }
-    static modify(key, value) {
-        if (!value) {
-            this.handleModifications(key);
-            return this.syncedObjects.get(key).object;
-        } 
-        // For primitive types, where modify() doesn't return a reference:
-        // this.handleModifications(key); // LOOK HERE
-        this.setObjectProperty(key, "object", value);
-    }
-    //
-    static changeSyncedObject(key, type) {
-        // 1. Change type of synced object.
-        const proxyObj = this.syncedObjects.get(key);
-        if (proxyObj) {
-            // Destroy current object:
-            this.syncedObjects.delete(key);
-        }
-        // Create new object:
-        if (type !== "null") {
-            this.createSyncedObject(proxyObj.object, type, key);
-        }
+        return syncedObject;
     }
     static resetStorage() {
         // 1. Reset all storage.
@@ -80,68 +134,68 @@ export class StorageManager {
     }
     
     // Utils:
-    static handleModifications(key, pushMode = true) {
-        // Handle Syncing:
-        if (this.getObjectProperty(key, "type") === 'temp') {
-            setTimeout(() => {
-                this.emitEvent(key);
-            }, 0);
+    static handleModifications(StorageManagerInfo, pushMode = true) {
+        // Rerender:
+        setTimeout(() => {
+            this.emitEvent(StorageManagerInfo.key);
+        }, 0);
+        // Check for 'temp':
+        if (StorageManagerInfo.type === 'temp') {
             return;
         }
+        // Handle Syncing:
         if (pushMode === true) {
             // Sending data to local/database:
-            this.modify("StorageState", this.read("StorageState") + 1);
-            this.setObjectProperty(key, "status", "unsynced");
-            this.queueSyncObject(key, type);
+            this.unsyncCounter++;
+            this.setObjectProperty(StorageManagerInfo.key, "status", "unsynced");
+            this.queueSyncObject(StorageManagerInfo);
         }
         else {
             // Just recieved data:
-            this.setObjectProperty(key, "status", "synced");
-            setTimeout(() => {
-                this.emitEvent(key);
-            }, 0);
+            this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
+            this.unsyncCounter--;
         }
     }
-    static queueSyncObject(key, type) {
+    static queueSyncObject(StorageManagerInfo) {
         this.debounce(() => {
-            StorageManager.forceSyncObject(key, type);
+            StorageManager.forceSyncObject(StorageManagerInfo);
         }, 5000)();
     }
-    static forceSyncObject(key, type) {
-        if (type === 'temp') {
+    static forceSyncObject(StorageManagerInfo) {
+        if (StorageManagerInfo.type === 'temp') {
             // No syncing needed.
             return;
         }
-        if (type === 'local') {
+        if (StorageManagerInfo.type === 'local') {
             // Check if exists in local:
-            this.pushToLocal(key);
+            this.pushToLocal(StorageManagerInfo);
             return;
         }
-        if (type === 'database') {
+        if (StorageManagerInfo.type === 'database') {
             // Check if exists in database:
-            this.pushToDatabase(key);
+            this.pushToDatabase(StorageManagerInfo);
             return;
         }
     }
     //
-    static pullFromLocal(key) {
+    static pullFromLocal(StorageManagerInfo) {
         // 1. Pull object from local storage.
-        const json = this.localStorage.getItem(key);
+        const json = this.localStorage.getItem(StorageManagerInfo.key);
         if (json) {
-            this.setObjectProperty(key, "object", JSON.parse(json));
-            this.handleModifications(key, false);
+            this.safeAssign(this.read(StorageManagerInfo.key), JSON.parse(json));
+            this.handleModifications(StorageManagerInfo, false);
             console.log("Pulled from local storage.");
             return true;
         }
         return false;
     }
-    static pushToLocal(key) {
+    static pushToLocal(StorageManagerInfo) {
         // 1. Push object to local storage.
-        this.localStorage.setItem(key, JSON.stringify(this.getObjectProperty(key, "object")));
-        if (this.getObjectProperty(key, "status") === "unsynced") {
-            this.modify("StorageState", this.read("StorageState") - 1);
+        this.localStorage.setItem(StorageManagerInfo.key, JSON.stringify(this.objectify(StorageManagerInfo)));
+        if (StorageManagerInfo.status === "unsynced") {
+            this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
+            this.unsyncCounter--;
         }
-        this.handleModifications(key, false);
         console.log("Pushed to local storage.");
     }
     static async pullFromDatabase(key) {
@@ -155,37 +209,45 @@ export class StorageManager {
     static async pushToDatabase(key) {
         // Push:
         // Then:
-        if (this.getObjectProperty(key, "status") === "unsynced") {
-            this.setObjectProperty(key, "status", "synced");
-            this.modify("StorageState", this.read("StorageState") - 1);
-        }
+        
     }
     static async clearDatabase() {
 
     }
     //
-    static getObjectProperty(key, property) {
-        // 1. Get object property.
-        const keyObj = this.syncedObjects.get(key);
-        if (keyObj) {
-            return keyObj[property];
+    static objectify(info, modifyObject = false) {
+        // Get object:
+        let syncedObject = info;
+        if (typeof info.key === 'string') {
+            // You can pass in the object or the StorageManagerInfo.
+            syncedObject = this.read(info.key);
         }
-        alert('Key not found.');
-        return null;
+        if (modifyObject === false) {
+            // Return new object instead of modifying original:
+            const { StorageManagerInfo, modify, ...objectifiedObject } = syncedObject;
+            return objectifiedObject;
+        }
+        else if (modifyObject === true) {
+            // Modify syncedObject:
+            delete syncedObject.StorageManagerInfo;
+            delete syncedObject.modify;
+            return syncedObject;
+        }
     }
     static setObjectProperty(key, property, value) {
-        // 2. Set object property.
-        if (this.syncedObjects.has(key)) {
-            if (property === "object") {
-                Object.assign(this.syncedObjects.get(key).object, value);
-            }
-            else {
-                this.syncedObjects.get(key)[property] = value;
-            }
-            return true;
+        // Set object property.
+        const syncedObject = this.read(key);
+        if (!syncedObject) {
+            alert('Key not found.');
+            return false;
         }
-        alert('Key not found.');
-        return false;
+        if (property === "object") {
+            this.safeAssign(this.read(key), value);
+        }
+        else {
+            syncedObject.StorageManagerInfo[property] = value;
+        }
+        return true;
     }
     static debounce(func, delay) {
         let timeoutId;
@@ -204,7 +266,7 @@ export class StorageManager {
     //
     static setup() {
         // Sync state for Observer:
-        let StorageState = this.createSyncedObject( 0, "temp", "StorageState");
+
         // Quick state:
         window.addEventListener('beforeunload', function (e) {
             if (StorageManager.read(StorageState) !== 0) {
@@ -212,6 +274,16 @@ export class StorageManager {
                 e.returnValue = 'You have unsaved changes!';
             }
         });
+        // let testObj = this.test([2, 3]);
+        // console.log(testObj[0]);
+        // testObj.modify()[0]++;
+        // testObj.modify().push(4);
+        // testObj.modify().info = "test";
+        // console.log("elements : ");
+        // console.log(testObj[0]);
+        // console.log(testObj[1]);
+        // console.log(testObj[2]);
+        // console.log(testObj.info);
     }   
 }
 
