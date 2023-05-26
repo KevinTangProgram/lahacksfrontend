@@ -127,7 +127,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                         </button>
                     <button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>
                 </div>
-                < ObserverComponent dependencies={"StorageState"} Component={() => { return <div>sup {StorageManager.read("StorageState")}</div>}} />
+                {/* < ObserverComponent dependencies={"StorageState"} Component={() => { return <div>sup {StorageManager.read("StorageState")}</div>}} /> */}
             </div>
         </div>
     );

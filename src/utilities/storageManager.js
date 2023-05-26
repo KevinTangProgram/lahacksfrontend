@@ -46,7 +46,6 @@ export class StorageManager {
             if (this.pullFromLocal(info) === false) {
                 this.pushToLocal(info);
             }
-            return;
         }
         if (type === 'database') {
             // Check if exists in database:
@@ -62,39 +61,26 @@ export class StorageManager {
     }
     //
     static safeAssign(syncedObject, otherObject) {
-        // If they are arrays:
-        // Remove StorageManagerInfo properties:
-        const oldInfo = syncedObject.StorageManagerInfo;
-        this.objectify(syncedObject, true);
-        // Combine into object:
-        const mergedObject = Object.assign({}, { syncedObject, otherObject });
-        const { syncedObject: mergedSyncedArray, otherObject: mergedOtherArray } = mergedObject;
-        // Destructure:
-        mergedSyncedArray.length = 0;
-        Array.prototype.push.apply(mergedSyncedArray, mergedOtherArray);
-
-
-        // console.log(syncedObject);
-        // Object.assign(syncedObject, otherObject);
-        // console.log(Object.assign([], otherObject));
-        // console.log(syncedObject);
-        // console.log(otherObject);
-        // // Remove missing properties:
-        // for (const key in otherObject) {
-        //     if (!syncedObject.hasOwnProperty(key)) {
-        //     // if (!Object.prototype.hasOwnProperty.call(syncedObject, key)) {
-        //         delete syncedObject[key];
-        //         console.log("jheu");
-        //     }
-        // }
-        // console.log(syncedObject);
-        // Re-add StorageManagerInfo properties:
-        syncedObject.StorageManagerInfo = oldInfo;
-        syncedObject.modify = function () {
-            StorageManager.handleModifications(this.StorageManagerInfo);
-            return this;
-        };
-        console.log(syncedObject);
+        console.log(('length' in syncedObject) + "1");
+        console.log((Array.isArray(otherObject)) + "2");
+        if ('length' in syncedObject && Array.isArray(otherObject)) {
+            // Safe assign two arrays:
+            syncedObject.length = 0;
+            Array.prototype.push.apply(syncedObject, otherObject);
+            console.log(syncedObject.length);
+            return;
+        }
+        console.log("not an array");
+        // Safe assign two objects:
+        for (const key in syncedObject) {
+            // Remove all properties except StorageManagerInfo and modify:
+            if (key !== 'StorageManagerInfo' && key !== 'modify') {
+                delete syncedObject[key];
+            }
+        }
+        // Assign all properties except StorageManagerInfo and modify:
+        const { StorageManagerInfo, modify, ...tempObject } = otherObject;
+        Object.assign(syncedObject, tempObject);
     }
     static safeDecouple(syncedObject, type = "null") {
         // Safe delete:
@@ -182,7 +168,8 @@ export class StorageManager {
         // 1. Pull object from local storage.
         const json = this.localStorage.getItem(StorageManagerInfo.key);
         if (json) {
-            this.safeAssign(this.read(StorageManagerInfo.key), JSON.parse(json));
+            // this.safeAssign(this.read(StorageManagerInfo.key), JSON.parse(json));
+            this.setObjectProperty(StorageManagerInfo.key, "object", JSON.parse(json));
             this.handleModifications(StorageManagerInfo, false);
             console.log("Pulled from local storage.");
             return true;
@@ -191,7 +178,11 @@ export class StorageManager {
     }
     static pushToLocal(StorageManagerInfo) {
         // 1. Push object to local storage.
-        this.localStorage.setItem(StorageManagerInfo.key, JSON.stringify(this.objectify(StorageManagerInfo)));
+        const localItem = this.objectify(StorageManagerInfo);
+        console.log("localitem:");
+        console.log(localItem);
+        this.localStorage.setItem(StorageManagerInfo.key, JSON.stringify(localItem));
+        this.localStorage.setItem("test", JSON.stringify([2, 3, 4]));
         if (StorageManagerInfo.status === "unsynced") {
             this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
             this.unsyncCounter--;
@@ -224,7 +215,12 @@ export class StorageManager {
         }
         if (modifyObject === false) {
             // Return new object instead of modifying original:
-            const { StorageManagerInfo, modify, ...objectifiedObject } = syncedObject;
+            // const { StorageManagerInfo, modify, ...objectifiedObject } = syncedObject;
+            const objectifiedObject = Object.create(Object.getPrototypeOf(syncedObject));
+            this.safeAssign(objectifiedObject, syncedObject);
+            // return objectifiedObject;
+            console.log(syncedObject);
+            console.log(objectifiedObject);
             return objectifiedObject;
         }
         else if (modifyObject === true) {
@@ -269,7 +265,7 @@ export class StorageManager {
 
         // Quick state:
         window.addEventListener('beforeunload', function (e) {
-            if (StorageManager.read(StorageState) !== 0) {
+            if (StorageManager.unsyncCounter > 0) {
                 e.preventDefault();
                 e.returnValue = 'You have unsaved changes!';
             }
