@@ -10,7 +10,7 @@ export class MessageProcessor {
     static WARNING_MAX_OASES_LENGTH = 20; // 20 messages.
     // Raw Messages:
     static allRawMessagesKey = "allRawMessages";
-    static allRawMessages = StorageManager.createSyncedObject([1], "local", this.allRawMessagesKey); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
+    static allRawMessages = StorageManager.createSyncedObject([], "local", this.allRawMessagesKey); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
@@ -48,12 +48,11 @@ export class MessageProcessor {
             return false;
         }
         console.log(this.allRawMessages);
-        const ID = this.allRawMessages[this.allRawMessages.length - 1] + 1;
-        const date = new Date();
-        const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+        const lastMessage = this.allRawMessages[this.allRawMessages.length - 1];
+        const ID = typeof lastMessage === 'number' ? lastMessage.UUID + 1 : 1;
         this.allRawMessages.modify().push({
             UUID: ID,
-            timestamp: timeString,
+            timestamp: Date.now(),
             sender: "Guest",
             content: newMessageString,
             edits: 0
