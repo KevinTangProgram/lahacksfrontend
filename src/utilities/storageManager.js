@@ -41,14 +41,14 @@ export class StorageManager {
         // Force sync:
         if (type === 'local') {
             // Check if exists in local:
-            this.unsyncCounter++;
+            this.addToState(1);
             if (this.pullFromLocal(info) === false) {
                 this.pushToLocal(info);
             }
         }
         if (type === 'database') {
             // Check if exists in database:
-            this.unsyncCounter++;
+            this.addToState(1);
             if (this.pullFromDatabase(info) === false) {
                 this.pushToDatabase(info);
             }
@@ -91,7 +91,7 @@ export class StorageManager {
         // Force sync:
         if (type === 'local') {
             // Check if exists in local:
-            this.unsyncCounter++;
+            this.addToState(1);
             if (this.pullFromLocal(key) === false) {
                 this.pushToLocal(key);
             }
@@ -99,7 +99,7 @@ export class StorageManager {
         }
         if (type === 'database') {
             // Check if exists in database:
-            this.unsyncCounter++;
+            this.addToState(1);
             if (this.pullFromDatabase(key) === false) {
                 this.pushToDatabase(key);
             }
@@ -127,7 +127,7 @@ export class StorageManager {
         // Handle Syncing:
         if (pushMode === true) {
             // Sending data to local/database:
-            this.unsyncCounter++;
+            this.addToState(1);
             this.setObjectProperty(StorageManagerInfo.key, "status", "unsynced");
             this.queueSyncObject(StorageManagerInfo);
         }
@@ -135,7 +135,7 @@ export class StorageManager {
             // Just recieved data:
             this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
             this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
-            this.unsyncCounter--;
+            this.addToState(-1);
         }
     }
     static queueSyncObject(StorageManagerInfo) {
@@ -178,7 +178,7 @@ export class StorageManager {
         if (StorageManagerInfo.status === "unsynced") {
             this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
             this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
-            this.unsyncCounter--;
+            this.addToState(-1);
         }
         console.log("Pushed to local storage.");
     }
@@ -258,24 +258,21 @@ export class StorageManager {
     static setup() {
         // Sync state for Observer:
 
-        // Quick state:
+        // Prevent reload:
         window.addEventListener('beforeunload', function (e) {
             if (StorageManager.unsyncCounter > 0) {
                 e.preventDefault();
                 e.returnValue = 'You have unsaved changes!';
             }
         });
-        // let testObj = this.test([2, 3]);
-        // console.log(testObj[0]);
-        // testObj.modify()[0]++;
-        // testObj.modify().push(4);
-        // testObj.modify().info = "test";
-        // console.log("elements : ");
-        // console.log(testObj[0]);
-        // console.log(testObj[1]);
-        // console.log(testObj[2]);
-        // console.log(testObj.info);
-    }   
+    }  
+    static addToState(value) {
+        //
+        this.unsyncCounter+= value;
+        setTimeout(() => {
+            this.emitEvent("StorageState");
+        }, 0);
+    } 
 }
 
 StorageManager.setup();

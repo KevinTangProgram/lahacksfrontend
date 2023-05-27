@@ -47,7 +47,6 @@ export class MessageProcessor {
         if (!this.readyForMessages()) {
             return false;
         }
-        console.log(this.allRawMessages);
         const lastMessage = this.allRawMessages[this.allRawMessages.length - 1];
         const ID = typeof lastMessage === 'number' ? lastMessage.UUID + 1 : 1;
         this.allRawMessages.modify().push({

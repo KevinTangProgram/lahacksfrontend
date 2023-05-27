@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 //
 
-export default function Observer({ dependencies, Component }) {
+export default function Observer({ dependencies, props, Component }) {
     // Workflow:
     // 1. Subscribe to StorageManager events (syncedObjectChange)
     // 2. Rerender when event is received.
@@ -10,11 +10,8 @@ export default function Observer({ dependencies, Component }) {
     const [renderCount, setRenderCount] = useState(0);
     useEffect(() => {
         const handleChange = (event) => {
-            console.log("rerender?");
-            console.log(event.detail.syncedObject); 
             if (dependencies.includes(event.detail.syncedObject)) {
                 setRenderCount(renderCount => renderCount + 1);
-                console.log("rerender!");
             }
         };
         document.addEventListener('syncedObjectChange', handleChange);
