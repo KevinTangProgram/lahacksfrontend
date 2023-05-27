@@ -6,6 +6,7 @@ import copyToClipboard from '../utilities/utilities';
 function SingleMessage(props) {
     // Message content:
     const rawMessage = props.rawMessage;
+    const timeString = new Date(rawMessage.timestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
     const functions = props.functions;
     const lines = rawMessage.content.split('\n');
     // Handle copying:
@@ -41,7 +42,7 @@ function SingleMessage(props) {
         return (
             <div className="singleMessage" id={props.index}>
                 <div className="messageBanner">
-                    <p className="iconDesc">{rawMessage.sender} at {rawMessage.timestamp} (...)</p>
+                    <p className="iconDesc">{rawMessage.sender} at {timeString} (...)</p>
                     <img className="icons iconCopy" src="./images/icons/iconCopy.png" alt="Copy" onClick={() => { copyToClipboard(editedMessage, copySuccess); }} />
                     <img className="icons iconEdit" src="./images/icons/iconConfirm.png" alt="Edit" onClick={() => { closeEdit(true); }} />
                     <img className="icons iconTrash" src="./images/icons/iconCancel.png" alt="Delete" onClick={() => { closeEdit(false); }} />
@@ -73,7 +74,7 @@ function SingleMessage(props) {
     return (
         <div className="singleMessage" id={props.index}>
             <div className="messageBanner">
-                <p className="iconDesc">{rawMessage.sender} at {rawMessage.timestamp} {rawMessage.edits > 0 ? " (edited)": ""}</p>
+                <p className="iconDesc">{rawMessage.sender} at {timeString} {rawMessage.edits > 0 ? " (edited)": ""}</p>
                 <img className="icons iconCopy" src="./images/icons/iconCopy.png" alt="Copy" onClick={() => { copyToClipboard(rawMessage.content, copySuccess); }} />
                 <img className="icons iconEdit" src="./images/icons/iconEdit.png" alt="Edit" onClick={() => { openEdit(); }} />
                 <img className="icons iconTrash" src="./images/icons/iconTrash.png" alt="Delete" onClick={() => { functions.delete(props.index); }} />

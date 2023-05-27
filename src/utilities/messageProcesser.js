@@ -1,5 +1,5 @@
-import axios from 'axios';
-import getTime from '../components/clock.js';
+import { StorageManager } from './storageManager.js';
+
 
 export class MessageProcessor {
     // Constants:
@@ -9,7 +9,8 @@ export class MessageProcessor {
     static WARNING_MIN_OASES_LENGTH = 4; // 4 messages.
     static WARNING_MAX_OASES_LENGTH = 20; // 20 messages.
     // Raw Messages:
-    static allRawMessages = []; // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
+    static allRawMessagesKey = "allRawMessages";
+    static allRawMessages = StorageManager.createSyncedObject([], "local", this.allRawMessagesKey); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
@@ -46,12 +47,11 @@ export class MessageProcessor {
         if (!this.readyForMessages()) {
             return false;
         }
-        const ID = this.allRawMessages[this.allRawMessages.length - 1] + 1;
-        const date = new Date();
-        const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-        this.allRawMessages.push({
+        const lastMessage = this.allRawMessages[this.allRawMessages.length - 1];
+        const ID = typeof lastMessage === 'number' ? lastMessage.UUID + 1 : 1;
+        this.allRawMessages.modify().push({
             UUID: ID,
-            timestamp: timeString,
+            timestamp: Date.now(),
             sender: "Guest",
             content: newMessageString,
             edits: 0
@@ -69,7 +69,7 @@ export class MessageProcessor {
             return;
         }
         // Delete a message from this session:
-        this.allRawMessages.splice(masterIndex - this.sessionIndex, 1);
+        this.allRawMessages.modify().splice(masterIndex - this.sessionIndex, 1);
         this.handleMessageWarnings(masterIndex - this.sessionIndex, "");
             // remember to update the component ID of messages following the splice.
         this.syncToDatabase;
@@ -81,9 +81,10 @@ export class MessageProcessor {
             return;
         }
         // Editing a message from this session:
-        this.allRawMessages[masterIndex - this.sessionIndex].content = messageString;
-        this.allRawMessages[masterIndex - this.sessionIndex].edits += 1;
-        this.handleMessageWarnings(masterIndex - this.sessionIndex, messageString);
+        const message = this.allRawMessages[masterIndex - this.sessionIndex];
+        message.content = messageString;
+        message.edits += 1;
+        this.allRawMessages.modify()[masterIndex - this.sessionIndex] = message;
     }
     
     // 2:
@@ -94,7 +95,6 @@ export class MessageProcessor {
 
     }
      
-
     // 3:
     static handleMessageWarnings(index, newMessage) {
         if (newMessage === "") {

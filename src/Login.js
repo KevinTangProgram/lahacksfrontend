@@ -8,7 +8,7 @@ import LoginAccountUI from './components/loginAccountUI';
 function Login()
 {
     // Create Acc:
-    const [showCreateAcc, setShowCreateAcc] = useState(true);
+    const [showCreateAcc, setShowCreateAcc] = useState(false);
 
     return (<>
         <button id="backButton" className="notWhite" onClick={() => {
@@ -16,7 +16,7 @@ function Login()
         }}>&#10094;Back</button>
         <br></br>
         {/* LOGIN */}
-        {!showCreateAcc && <LoginAccountUI />}
+        {!showCreateAcc && <LoginAccountUI setShowCreateAcc={setShowCreateAcc} />}
         {/* CREATE ACC */}
         {showCreateAcc && <CreateAccountUI setShowCreateAcc={setShowCreateAcc} />}
     </>

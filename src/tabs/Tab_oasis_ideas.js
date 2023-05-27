@@ -1,14 +1,15 @@
 import '../CSS/Test.css';
 import '../CSS/Tab_oasis.css';
 import { MessageProcessor } from '../utilities/messageProcesser';
+import { StorageManager } from '../utilities/storageManager';
 import SingleMessage from '../components/singleMessage';
-//
 import React, { useState, useRef, useEffect } from 'react';
+import ObserverComponent from '../components/observer';
+//
 
 
 function Tab_oasis_ideas({ forceOpenUI }) {
     const [shortInput, setShortInput] = useState("");
-    const [input, setInput] = useState(MessageProcessor.allRawMessages);
     const [charCountString, setCharCountString] = useState("");
     const handleChangeInput = (event) => {
         const textarea = event.target;
@@ -29,15 +30,17 @@ function Tab_oasis_ideas({ forceOpenUI }) {
     // Focus/scroll System:
         // Text area:
     const textareaRef = useRef(null);
-        // Scroll & focus on load:
     useEffect(() => {
-        scrollToMessageID(-1);
+    // Scroll & focus on load:
         focusTextarea();
+        setTimeout(() => {
+            scrollToMessageID(-1);
+        }, 500);
     }, []);
         // Scroll to specific message:
     function scrollToMessageID(messageID) {
         if (messageID === -1) {
-            messageID = input.length - 1 + MessageProcessor.sessionIndex;
+            messageID = MessageProcessor.allRawMessages.length - 1 + MessageProcessor.sessionIndex;
         }
         const messageEle = document.getElementById(`${messageID}`);
         if (messageEle) {
@@ -62,29 +65,31 @@ function Tab_oasis_ideas({ forceOpenUI }) {
             return false;
         }
         setShortInput("");
-        // Update messages on screen:
-        setInput(MessageProcessor.allRawMessages);
         setCharCountString("");
-        setTimeout(() => {
-            scrollToMessageID(messageIndex);
-        }, 0);
     }
     function editThought(index, newMessage) {
         MessageProcessor.editMessage(index, newMessage);
-        setInput(MessageProcessor.allRawMessages);
     }
     function deleteThought(index) {
         MessageProcessor.removeMessage(index);
-        setInput([...MessageProcessor.allRawMessages]);
     }
     function MessageDisplays() {
+        if (!MessageProcessor.readyForMessages()) {
+            return <div className="singleMessage">Loading...</div>;
+        }
+        return (< ObserverComponent dependencies={MessageProcessor.allRawMessagesKey} Component={() => {
         {
-            if (input.length === 0) {
+            useEffect(() => {
+                // Scroll & focus on rerender:
+                scrollToMessageID(-1);
+                focusTextarea();
+            }, []);
+            if (MessageProcessor.allRawMessages.length === 0) {
                 return <div className="singleMessage">Your Oasis is Empty- Add some ideas!</div>;
             }
             return (
                 <div>
-                    {input.map((message, i) => {
+                    {MessageProcessor.allRawMessages.map((message, i) => {
                         return (
                             <SingleMessage key={i} rawMessage={message} index={i} 
                                 functions={{ edit: editThought, delete: deleteThought, refocus: focusTextarea }} />
@@ -93,6 +98,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                 </div>
             );
         }
+        }} />);
     }
 
     return (
@@ -124,6 +130,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                         </button>
                     <button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>
                 </div>
+                < ObserverComponent dependencies={"StorageState"} Component={() => { return <div>{StorageManager.unsyncCounter === 0 ? null : 'saving...'}</div>}} />
             </div>
         </div>
     );
