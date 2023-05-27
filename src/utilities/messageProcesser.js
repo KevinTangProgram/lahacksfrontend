@@ -47,12 +47,12 @@ export class MessageProcessor {
         if (!this.readyForMessages()) {
             return false;
         }
-        const ID = this.allRawMessages[this.allRawMessages.length - 1] + 1;
-        const date = new Date();
-        const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+        console.log(this.allRawMessages);
+        const lastMessage = this.allRawMessages[this.allRawMessages.length - 1];
+        const ID = typeof lastMessage === 'number' ? lastMessage.UUID + 1 : 1;
         this.allRawMessages.modify().push({
             UUID: ID,
-            timestamp: timeString,
+            timestamp: Date.now(),
             sender: "Guest",
             content: newMessageString,
             edits: 0
@@ -96,7 +96,6 @@ export class MessageProcessor {
 
     }
      
-
     // 3:
     static handleMessageWarnings(index, newMessage) {
         if (newMessage === "") {
