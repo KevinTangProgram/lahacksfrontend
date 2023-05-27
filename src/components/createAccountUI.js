@@ -36,7 +36,7 @@ function CreateAccountUI(props) {
                 <br></br>
                 <button className="selectCells" id = "submitAndConfirmLong" style={{"border-radius": "1em", "height": "2em", "width": "80%"}} onClick={() => {
                     createAccount();
-                    props.setShowCreateAcc(false);
+                    //props.setShowCreateAcc(false);
                 }}>Create Account</button>
             </div>
         </>
