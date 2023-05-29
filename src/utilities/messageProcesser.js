@@ -1,4 +1,6 @@
 import { StorageManager } from './storageManager.js';
+import { v4 as uuidv4 } from "uuid";
+
 
 
 export class MessageProcessor {
@@ -48,9 +50,8 @@ export class MessageProcessor {
             return false;
         }
         const lastMessage = this.allRawMessages[this.allRawMessages.length - 1];
-        const ID = typeof lastMessage === 'number' ? lastMessage.UUID + 1 : 1;
         this.allRawMessages.modify().push({
-            UUID: ID,
+            UUID: uuidv4(),
             timestamp: Date.now(),
             sender: "Guest",
             content: newMessageString,
@@ -71,7 +72,6 @@ export class MessageProcessor {
         // Delete a message from this session:
         this.allRawMessages.modify().splice(masterIndex - this.sessionIndex, 1);
         this.handleMessageWarnings(masterIndex - this.sessionIndex, "");
-            // remember to update the component ID of messages following the splice.
         this.syncToDatabase;
     }
     static editMessage(masterIndex, messageString) {
@@ -85,6 +85,7 @@ export class MessageProcessor {
         message.content = messageString;
         message.edits += 1;
         this.allRawMessages.modify()[masterIndex - this.sessionIndex] = message;
+        this.handleMessageWarnings(masterIndex - this.sessionIndex, messageString);
     }
     
     // 2:
@@ -103,6 +104,7 @@ export class MessageProcessor {
             return "deleted";
         }
         // Edit or adding message:
+        this.removeMessageWarnings(index);
         if (newMessage.length > this.WARNING_MAX_MESSAGE_LENGTH) {
             this.highContentMessageIndexes.push(index + this.sessionIndex);
             return "max_length";
@@ -111,15 +113,26 @@ export class MessageProcessor {
             this.lowContentMessageIndexes.push(index + this.sessionIndex);
             return "min_length";
         }
-        this.removeMessageWarnings(index);
-        return "edited"
+        return "good"
     }
     static removeMessageWarnings(index) {
         if (this.highContentMessageIndexes.includes(index)) {
             this.highContentMessageIndexes.splice(this.highContentMessageIndexes.indexOf(index), 1);
+            for (let i = 0; i < this.highContentMessageIndexes.length; i++) {
+                // Shift all indexes after the deleted index down by 1:
+                if (this.highContentMessageIndexes[i] > index) {
+                    this.highContentMessageIndexes[i]--;
+                }
+            }
         }
         if (this.lowContentMessageIndexes.includes(index)) {
             this.lowContentMessageIndexes.splice(this.lowContentMessageIndexes.indexOf(index), 1);
+            for (let i = 0; i < this.lowContentMessageIndexes.length; i++) {
+                // Shift all indexes after the deleted index down by 1:
+                if (this.lowContentMessageIndexes[i] > index) {
+                    this.lowContentMessageIndexes[i]--;
+                }
+            }
         }
     }
     static getGenerationWarnings() {

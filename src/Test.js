@@ -5,6 +5,8 @@ import React, { useState, useEffect } from 'react';
 import Tab_oasis from './tabs/Tab_oasis';
 import Tab_home from './tabs/Tab_home';
 import Tab_settings from './tabs/Tab_settings';
+//
+import Debugger from './utilities/debugger';
 
 const userId = "6444bb82eb14ecacdb125107";
 
@@ -35,6 +37,9 @@ function Test()
                 {currentTab[1] === "tabActive" && <Tab_oasis />}
                 {currentTab[2] === "tabActive" && <Tab_settings />}
             </div>
+
+            <Debugger />
+            
         </div>
     );
 }
