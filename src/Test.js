@@ -6,7 +6,7 @@ import Tab_oasis from './tabs/Tab_oasis';
 import Tab_home from './tabs/Tab_home';
 import Tab_settings from './tabs/Tab_settings';
 //
-import Debugger from './utilities/debugger';
+import DebuggerPanel from './utilities/debugger';
 
 const userId = "6444bb82eb14ecacdb125107";
 
@@ -38,7 +38,7 @@ function Test()
                 {currentTab[2] === "tabActive" && <Tab_settings />}
             </div>
 
-            <Debugger />
+            <DebuggerPanel />
             
         </div>
     );

@@ -53,6 +53,43 @@ Test.js CSS file
     justify-content: center;
     align-content: center;
 }
+.debugger-popup
+{
+    width: 250px;
+    height: 300px;
+    background-color: rgba(98, 98, 98, 0.75);
+    border: 2px solid rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    z-index: 1000;
+    overflow-y: auto;
+}
+.debugger-popup-content *
+{
+    margin-bottom: 0;
+}
+.debugger-popup-button
+{
+    background-color: rgba(218, 218, 218, 0.5);
+    border: 2px solid rgba(0, 0, 0, 0.5);
+
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.debugger-popup-button:active
+{
+    transition: background-color 0s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.376);
+}
 
 /* ID NAMES */
 #noBackground
