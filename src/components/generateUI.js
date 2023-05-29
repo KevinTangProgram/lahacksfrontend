@@ -237,10 +237,10 @@ function GenerationOptionsUI(options) {
                                             <li key={index}>{UIStrings[warning] || null}</li>
                                             {warning === 'w_m_low' && <button onClick={() => {
                                                 setSliderValue(sliderValue + 1);
-                                            }}>Increase Mode</button>}
+                                            }}>See Offenders</button>}
                                             {warning === 'w_m_high' && <button onClick={() => {
                                                 setSliderValue(sliderValue - 1);
-                                            }}>Decrease Mode</button>}
+                                            }}>See Offenders</button>}
                                         </div>
                                 ))}
                             </ul>
