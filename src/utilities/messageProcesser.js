@@ -223,7 +223,7 @@ export class MessageProcessor {
     }
     static queueGenerationRequest() {
         // Queue generation request:
-        axios.post(this.backendURL + '/INSERT URL HERE', {
+        axios.post(this.backendURL + '/process', {
             messages: this.allRawMessages,
             options: this.generationOptions
         })
@@ -240,6 +240,10 @@ export class MessageProcessor {
     static processGenerationResponse(response) {
         // Clean and process messages, add to allOrganizedMessages:
         console.log(response);
-        this.allOrganizedMessages.modify().push("MESSAGES"); // Push messages to array.
+        response.forEach((message) => {
+            // Push messages to array.
+            this.allOrganizedMessages.push(message);
+        });
+        this.allOrganizedMessages.modify(); // update synced object
     }
 }

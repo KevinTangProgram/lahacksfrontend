@@ -18,7 +18,7 @@ function Tab_oasis_notes(options) {
                     <div>
                         {MessageProcessor.allOrganizedMessages.map((message, i) => {
                             return (
-                                <SingleMessage key={i} rawMessage={message} index={i}
+                                <SingleMessage key={i} organizedMessage={message} index={i}
                                     functions={{ }} />
                             )
                         })}
