@@ -4,6 +4,7 @@ import {CONST} from '../utilities/CONST.js';
 import '../CSS/Login.css';
 import { GoogleLogin } from 'react-google-login';
 import { gapi } from 'gapi-script';
+import { StorageManager } from '../utilities/storageManager.js';
 //
 
 const client_id = "880561077463-92vhkg43l0fp5v93fdkgkkauf6dbok5s.apps.googleusercontent.com";
@@ -76,7 +77,8 @@ function LoginAccountUI(props) {
                     clientId={client_id}
                     buttonText="Sign in with Google"
                     onSuccess={(res) => {
-                        //window.location.href = "/";
+                        
+                        window.location.href = "/";
                         console.log(res);             //does not work because of widows.location.href. save the information to a local variable
 
                     }}

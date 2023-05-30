@@ -14,10 +14,10 @@ export class OasisManager {
     static lastGeneratedMessageIndex = 0;
 
     // Oasis Cache:
-    static cache = {
+    static oasisCache = StorageManager.createSyncedObject({
         activeTab: 1,
-
-    };
+        toggleCheckboxes: true
+    }, "local", "oasisCache");
 
 
     static cachedOasisState = "I_bottom"; 
