@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../CSS/Test.css"
+//
+import { MessageProcessor } from './messageProcesser.js';
+import { StorageManager } from './storageManager.js';
+import ObserverComponent from '../components/observer.js';
 
-function DebuggerPanel( {customFunction}, {customOutput} ) {
+function DebuggerPanel() {
     if (false) {
         return;
     }
     // Popup:
+    const [renderCount, setRenderCount] = useState(0);
     const [showPopup, setShowPopup] = useState(false);
     const [position, setPosition] = useState({ x: 50, y: 50 });
     const [dragging, setDragging] = useState(false);
@@ -37,19 +42,32 @@ function DebuggerPanel( {customFunction}, {customOutput} ) {
     };
     // Functions:
     function function1() {
-        setOutput("Function 1");
+        Debugger.testObj.modify().test1 += 1;
     }
     function function2() {
-        setOutput("Function 2");
+        Debugger.testObj.modify().test2 += 1;
     }
     function function3() {
-        setOutput("Function 3");
+
+    }
+    function rerender() {
+        setRenderCount(renderCount + 1);
+    }
+    function customOutput() {
+        return "Output";
+    }
+    // Test component:
+    function Test() {
+        useEffect(() => {
+            console.log("rerendered");
+        }, []);
+        return < ObserverComponent dependencies={"testObj.test2"} Component={() => { return <div>{Debugger.testObj.test2} + {renderCount}</div> }} />
     }
     // Displays:
     const [output, setOutput] = useState("");
     useEffect(() => {
         const interval = setInterval(() => {
-            setOutput(customOutput);
+            //setOutput(customOutput());
         }, 50);
         return () => {
             clearInterval(interval);
@@ -65,6 +83,7 @@ function DebuggerPanel( {customFunction}, {customOutput} ) {
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
+            key={renderCount}
         >
             <div className="debugger-popup-content">
                 <button className="debugger-popup-button" onClick={() => { setShowPopup(!showPopup) }}>==</button>
@@ -73,11 +92,13 @@ function DebuggerPanel( {customFunction}, {customOutput} ) {
                         <button className="debugger-popup-button" onClick={function1}>1</button>
                         <button className="debugger-popup-button" onClick={function2}>2</button>
                         <button className="debugger-popup-button" onClick={function3}>3</button>
-                        <h2>Custom</h2>
-                        <button className="debugger-popup-button" onClick={customFunction}>Custom Function</button>
+                        <h3>Display</h3>
+                        <button className="debugger-popup-button" onClick={rerender}>rerender</button>
                         <br></br>
-                    <div className="debugger-popup-button">{output}
-                    </div>
+                        <div className="debugger-popup-button">Display: {output}</div>
+                        <br></br>
+                        <h3>Component</h3>
+                        <Test />
                 </div>}
             </div>
         </div>
@@ -98,6 +119,7 @@ export class Debugger {
         this.customDisplays.set(name, displayFunc);
         this.rerender = true;
     }
-    //
+    // Testing
+    static testObj = StorageManager.createSyncedObject({ test1: 0, test2: 0 }, "temp", "testObj");
 
 }

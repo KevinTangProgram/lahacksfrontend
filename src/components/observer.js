@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { StorageManager } from '../utilities/storageManager.js';
 //
 
 export default function Observer({ dependencies, Component }) {
@@ -16,7 +17,7 @@ export default function Observer({ dependencies, Component }) {
         const keyArray = dependency.split('.');
         const object = StorageManager.read(keyArray[0]);
         let value = object;
-        for (let i = 1; i < dependency.length; i++) {
+        for (let i = 1; i < keyArray.length; i++) {
             // Recursively get the value of the nested property:
             const key = keyArray[i];
             value = value[key];
