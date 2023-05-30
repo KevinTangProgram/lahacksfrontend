@@ -14,7 +14,14 @@ export class MessageProcessor {
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
-    static allOrganizedMessages = []; // Array of objects {string, ID}, index corresponds to order.
+    static allOrganizedMessagesKey = "allOrganizedMessages";
+    static allOrganizedMessages = StorageManager.createSyncedObject([], "local", this.allOrganizedMessagesKey); // Array of objects, index corresponds to order.
+    static sampleOrganizedMessage = {
+        UUID: uuidv4(),
+        marker: "", // empty string = normal message
+        rawUUID: "aa9a98d88ad8dfv", // some raw message UUID
+        content: "My note message"
+    }
     static headerMessageIndexes = []; // Array of indexes.
     static markedGPTMessageIndexes = [];
     // Generation:
@@ -216,26 +223,23 @@ export class MessageProcessor {
     }
     static queueGenerationRequest() {
         // Queue generation request:
-        // axios.post(this.backendURL + '/new/group', {
-        //     messages: this.allRawMessages,
-        //     name: "test"
-        // })
-        // .then((response) => {
-        //     this.processGenerationResponse(response);
-        // })
-        // .catch((error) => {
-        //     console.error(error);
-        //     this.generationStatus = -2;
-        // })
-        setTimeout(() => {
-            this.generationStatus = 2;
-            this.isGenerating = false;
-            console.log("Generation:");
-            this.allRawMessages.forEach(message => console.log(message.content));
-        }, 5000);
+        axios.post(this.backendURL + '/INSERT URL HERE', {
+            messages: this.allRawMessages,
+            options: this.generationOptions
+        })
+        .then((response) => {
+            this.processGenerationResponse(response);
+            this.generationStatus = 2; // Success code
+            this.isGenerating = false; // Reset bool
+        })
+        .catch((error) => {
+            console.error(error);
+            this.generationStatus = -2;
+        })
     }
     static processGenerationResponse(response) {
         // Clean and process messages, add to allOrganizedMessages:
         console.log(response);
+        this.allOrganizedMessages.modify().push("MESSAGES"); // Push messages to array.
     }
 }
