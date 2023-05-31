@@ -61,6 +61,7 @@ export default function Observer({ dependencies, Component }) {
                 const newValue = getNestedValue(dependencies[index]);
                 if (newValue !== subDependencyValues[index]) {
                     // Subdependency value has changed, rerender:
+                    subDependencyValues[index] = newValue;
                     setRenderCount(renderCount => renderCount + 1);
                 }
             }

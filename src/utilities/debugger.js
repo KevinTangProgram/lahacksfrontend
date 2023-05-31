@@ -17,10 +17,15 @@ function DebuggerPanel() {
     const [clickOffset, setClickOffset] = useState({ x: 0, y: 0 });
     const ref = useRef(null);
     const handleMouseDown = (event) => {
+        // Ignore button press:
+        if (event.target instanceof HTMLButtonElement) {
+            return; 
+        }
+        // Setup:
         setDragging(true);
         ref.current.style.cursor = "grabbing";
         event.preventDefault();
-        //
+        // Save click offset:
         const { clientX, clientY } = event;
         const rect = ref.current.getBoundingClientRect();
         const offsetX = clientX - rect.left;
@@ -58,10 +63,11 @@ function DebuggerPanel() {
     }
     // Test component:
     function Test() {
-        useEffect(() => {
-            console.log("rerendered");
-        }, []);
-        return < ObserverComponent dependencies={"testObj.test2"} Component={() => { return <div>{Debugger.testObj.test2} + {renderCount}</div> }} />
+        return < ObserverComponent dependencies={"testObj.test2"} Component={() => { 
+            useEffect(() => {
+                Debugger.testObj.test1++;
+            }, []);
+            return <div>{Debugger.testObj.test2} + {Debugger.testObj.test1}</div> }} />
     }
     // Displays:
     const [output, setOutput] = useState("");
@@ -79,7 +85,7 @@ function DebuggerPanel() {
             ref={ref}
             className="debugger-popup"
             style={{ left: position.x, top: position.y, position: 'absolute',
-                width: showPopup ? '250px' : '60px', height: showPopup ? '300px' : '80px' }}
+                width: showPopup ? '250px' : '60px', height: showPopup ? '300px' : '80px'}}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
