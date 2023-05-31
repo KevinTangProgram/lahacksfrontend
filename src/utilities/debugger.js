@@ -47,13 +47,13 @@ function DebuggerPanel() {
     };
     // Functions:
     function function1() {
-        Debugger.testObj.modify().test1 += 1;
+        Debugger.testObj.modify().test.test1 += 1;
     }
     function function2() {
-        Debugger.testObj.modify().test2 += 1;
+        Debugger.testObj.modify().test.test2 += 1;
     }
     function function3() {
-
+        Debugger.testObj.modify().test= { test1: 3, test2: 3 };
     }
     function rerender() {
         setRenderCount(renderCount + 1);
@@ -63,11 +63,11 @@ function DebuggerPanel() {
     }
     // Test component:
     function Test() {
-        return < ObserverComponent dependencies={"testObj.test2"} Component={() => { 
+        return < ObserverComponent dependencies={["testObj.test.test1", "testObj.test.test2"]} Component={() => { 
             useEffect(() => {
-                Debugger.testObj.test1++;
+                Debugger.testObj.test3++;
             }, []);
-            return <div>{Debugger.testObj.test2} + {Debugger.testObj.test1}</div> }} />
+            return <div>test.test1: {Debugger.testObj.test.test1}, test.test2:{Debugger.testObj.test.test2}, test3: {Debugger.testObj.test3}</div> }} />
     }
     // Displays:
     const [output, setOutput] = useState("");
@@ -126,6 +126,6 @@ export class Debugger {
         this.rerender = true;
     }
     // Testing
-    static testObj = StorageManager.createSyncedObject({ test1: 0, test2: 0 }, "temp", "testObj");
+    static testObj = StorageManager.createSyncedObject({ test: {test1: 0, test2: 0}, test3: 0 }, "temp", "testObj");
 
 }

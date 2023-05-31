@@ -28,6 +28,9 @@ export default function Observer({ dependencies, Component }) {
         }
         return value;
     }
+    function refreshDependencies(index) {
+        
+    }
     // Setup dependencies:
     dependencies = Array.isArray(dependencies) ? dependencies : [dependencies];
     const subDependencyValues = [];
@@ -60,9 +63,27 @@ export default function Observer({ dependencies, Component }) {
                 // Check if the subdependency value has changed:
                 const newValue = getNestedValue(dependencies[index]);
                 if (newValue !== subDependencyValues[index]) {
-                    // Subdependency value has changed, rerender:
+                    // Find other subdependencies of the same object:
+                    const mainObjString = dependencies[index].split('.')[0];
+                    const objSubIndexes = dependencies.reduce((subDependencies, string, stringIndex) => {
+                        // Find indexes:
+                        if (string.includes(mainObjString) && stringIndex !== index) {
+                            subDependencies.push(index);
+                        }
+                        return subDependencies;
+                    }, []);
+                    // Refresh current subdependency:
                     subDependencyValues[index] = newValue;
+                    // Refresh other subdependencies:
+                    objSubIndexes.map((subIndex) => {
+                        subDependencyValues[subIndex] = getNestedValue(dependencies[subIndex]);
+                    });
+                    // Rerender:
                     setRenderCount(renderCount => renderCount + 1);
+                    //
+                    subDependencyValues.map((value, index) => {
+                        console.log(value);
+                    });
                 }
             }
         };
