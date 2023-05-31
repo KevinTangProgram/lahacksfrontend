@@ -26,20 +26,29 @@ export default function Observer({ dependencies, Component }) {
                 return null;
             }
         }
-        return value;
-    }
-    function refreshDependencies(index) {
-        
+        if (typeof value === "object") {
+            // Store value of objects:
+            if ((Array.isArray(value) && value.length > 10) || (Object.keys(value).length > 10)) {
+                // Too large, don't bother:
+                return null;
+            }
+            return JSON.stringify(value);
+        }
+        else {
+            // Store value of primitives:
+            return value;
+        }
     }
     // Setup dependencies:
     dependencies = Array.isArray(dependencies) ? dependencies : [dependencies];
     const subDependencyValues = [];
     dependencies.map((dependency) => {
-        // subDependencies stores values of subdependencies:
         if (dependency.includes('.')) {
+            // Store subdependency value:
             subDependencyValues.push(getNestedValue(dependency));
         }
         else {
+            // Store null for main syncedObject:
             subDependencyValues.push(null);
         }
     });
@@ -49,43 +58,31 @@ export default function Observer({ dependencies, Component }) {
         // Event listener:
         const handleChange = (event) => {
             // Check the event hits any dependencies:
-            const index = dependencies.findIndex(str => str.includes(event.detail.syncedObject));
-            if (index === -1) {
+            const indexes = dependencies.reduce((array, string, index) => {
+                // Store indexes:
+                if (string === event.detail.syncedObject || string.startsWith(event.detail.syncedObject + ".")) {
+                    array.push(index);
+                }
+                return array;
+            }, []);
+            // No dependencies hit:
+            if (indexes.length === 0) {
                 return;
             }
-            // Check if the event hits any subdependencies:
-            if (subDependencyValues[index] === null) { 
-                // No subdependencies, rerender:
-                setRenderCount(renderCount => renderCount + 1);
-                return;
-            }
-            else {
-                // Check if the subdependency value has changed:
+            // Check change for each dependency:
+            indexes.forEach((index) => {
+                if (subDependencyValues[index] === null) {
+                    // Main syncedObject, rerender:
+                    setRenderCount(renderCount => renderCount + 1);
+                    return;
+                }
+                // Subdependency of syncedObject, check for changes:
                 const newValue = getNestedValue(dependencies[index]);
                 if (newValue !== subDependencyValues[index]) {
-                    // Find other subdependencies of the same object:
-                    const mainObjString = dependencies[index].split('.')[0];
-                    const objSubIndexes = dependencies.reduce((subDependencies, string, stringIndex) => {
-                        // Find indexes:
-                        if (string.includes(mainObjString) && stringIndex !== index) {
-                            subDependencies.push(index);
-                        }
-                        return subDependencies;
-                    }, []);
-                    // Refresh current subdependency:
                     subDependencyValues[index] = newValue;
-                    // Refresh other subdependencies:
-                    objSubIndexes.map((subIndex) => {
-                        subDependencyValues[subIndex] = getNestedValue(dependencies[subIndex]);
-                    });
-                    // Rerender:
-                    setRenderCount(renderCount => renderCount + 1);
-                    //
-                    subDependencyValues.map((value, index) => {
-                        console.log(value);
-                    });
+                    setRenderCount((renderCount) => renderCount + 1);
                 }
-            }
+            });
         };
 
         // Event setup:

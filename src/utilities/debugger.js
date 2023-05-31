@@ -63,7 +63,7 @@ function DebuggerPanel() {
     }
     // Test component:
     function Test() {
-        return < ObserverComponent dependencies={["testObj.test.test1", "testObj.test.test2"]} Component={() => { 
+        return < ObserverComponent dependencies={["testObj.test"]} Component={() => { 
             useEffect(() => {
                 Debugger.testObj.test3++;
             }, []);
