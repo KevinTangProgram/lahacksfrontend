@@ -174,13 +174,18 @@ export class StorageManager {
     }
     static pushToLocal(StorageManagerInfo) {
         // 1. Push object to local storage.
-        this.localStorage.setItem(StorageManagerInfo.key, JSON.stringify(this.objectify(StorageManagerInfo)));
-        if (StorageManagerInfo.status === "unsynced") {
-            this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
-            this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
-            this.addToState(-1);
+        try {
+            this.localStorage.setItem(StorageManagerInfo.key, JSON.stringify(this.objectify(StorageManagerInfo)));
+            if (StorageManagerInfo.status === "unsynced") {
+                this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
+                this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
+                this.addToState(-1);
+            }
+            console.log("Pushed to local storage.");
         }
-        console.log("Pushed to local storage.");
+        catch (error) {
+            console.log("Error pushing to local storage: ", error);
+        }
     }
     static async pullFromDatabase(key) {
         // Pull:

@@ -1,8 +1,8 @@
 import './CSS/Login.css';
 //
 import React, { useState, useEffect } from 'react';
-import CreateAccountUI from './components/createAccountUI';
-import LoginAccountUI from './components/loginAccountUI';
+import CreateAccountUI from '../components/createAccountUI';
+import LoginAccountUI from '../components/loginAccountUI';
 
 function Login()
 {

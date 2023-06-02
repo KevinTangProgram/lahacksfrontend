@@ -43,9 +43,9 @@ function SingleMessage(props) {
             <div className="singleMessage" id={props.index}>
                 <div className="messageBanner">
                     <p className="iconDesc">{rawMessage.sender} at {timeString} (...)</p>
-                    <img className="icons iconCopy" src="./images/icons/iconCopy.png" alt="Copy" onClick={() => { copyToClipboard(editedMessage, copySuccess); }} />
-                    <img className="icons iconEdit" src="./images/icons/iconConfirm.png" alt="Edit" onClick={() => { closeEdit(true); }} />
-                    <img className="icons iconTrash" src="./images/icons/iconCancel.png" alt="Delete" onClick={() => { closeEdit(false); }} />
+                    <img className="icons iconCopy" src="/images/icons/iconCopy.png" alt="Copy" onClick={() => { copyToClipboard(editedMessage, copySuccess); }} />
+                    <img className="icons iconEdit" src="/images/icons/iconConfirm.png" alt="Edit" onClick={() => { closeEdit(true); }} />
+                    <img className="icons iconTrash" src="/images/icons/iconCancel.png" alt="Delete" onClick={() => { closeEdit(false); }} />
                 </div>
                 <div className="messageContent">
                     <textarea ref={textareaRef} className="editableMessage" value={editedMessage} 
@@ -75,9 +75,9 @@ function SingleMessage(props) {
         <div className="singleMessage" id={props.index}>
             <div className="messageBanner">
                 <p className="iconDesc">{rawMessage.sender} at {timeString} {rawMessage.edits > 0 ? " (edited)": ""}</p>
-                <img className="icons iconCopy" src="./images/icons/iconCopy.png" alt="Copy" onClick={() => { copyToClipboard(rawMessage.content, copySuccess); }} />
-                <img className="icons iconEdit" src="./images/icons/iconEdit.png" alt="Edit" onClick={() => { openEdit(); }} />
-                <img className="icons iconTrash" src="./images/icons/iconTrash.png" alt="Delete" onClick={() => { functions.delete(props.index); }} />
+                <img className="icons iconCopy" src="/images/icons/iconCopy.png" alt="Copy" onClick={() => { copyToClipboard(rawMessage.content, copySuccess); }} />
+                <img className="icons iconEdit" src="/images/icons/iconEdit.png" alt="Edit" onClick={() => { openEdit(); }} />
+                <img className="icons iconTrash" src="/images/icons/iconTrash.png" alt="Delete" onClick={() => { functions.delete(props.index); }} />
             </div>
             <div className="messageContent">
                 {lines.map((line, j) => (
