@@ -12,7 +12,9 @@ const userId = "6444bb82eb14ecacdb125107";
 
 function Oasis() {
     const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
-
+    const focusOasis = () => {
+        setCurrentTab(["tabInactive", "tabActive", "tabInactive"]);
+    }
     return (
         <div className="Main">
             <div className="tablet" id="noBackground">
@@ -24,7 +26,7 @@ function Oasis() {
             </div>
 
             <div className="activeTab">
-                {currentTab[0] === "tabActive" && <Tab_home setCurrentTab={setCurrentTab} />}
+                {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
                 {currentTab[1] === "tabActive" && <Tab_oasis />}
                 {currentTab[2] === "tabActive" && <Tab_settings />}
             </div>

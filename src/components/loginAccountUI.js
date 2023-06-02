@@ -51,35 +51,36 @@ function LoginAccountUI(props) {
         })
     }
 
-
-
     // Output:
     return (
-        <>
-            <h1 style={{"text-align": "center"}}>Welcome Back!</h1>
+        <div className="overlay" style={{
+            left: '30%', top: '30%', width: '40%', height: '60%',
+            backgroundColor: '#f3ffff', borderRadius: '1em', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'
+        }}>
+            <h1 style={{ "text-align": "center" }}>Welcome Back!</h1>
+            <img className="icons::hover iconTrash" src="/images/icons/iconCancel.png" alt="Close" onClick={() => { props.setLoginState(0)} } />
             <div className="selectGridSmall">
                 <input placeholder="Email address" value={username} onChange={handleChangeUsername}></input>
-                <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} style={{"margin-top": "20px"}}></input>
-                <div style={{"font-size": "12px", "margin-top": "10px"}}>
+                <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} style={{ "margin-top": "20px" }}></input>
+                <div style={{ "font-size": "12px", "margin-top": "10px" }}>
                     <p1>Don't have an account? </p1>
-                    <button style={{"text-decoration": "none", "border": "none", "background-color": "transparent", "cursor": "pointer", "color": "#10a37f"}} onClick={() => {
-                    props.setShowCreateAcc(true);}}>Sign up</button>
+                    <button style={{ "text-decoration": "none", "border": "none", "background-color": "transparent", "cursor": "pointer", "color": "#10a37f" }} onClick={() => {
+                        props.setLoginState(2);
+                    }}>Sign up</button>
                 </div>
-                <button className="selectCells" id="submitAndConfirmLong" style={{"border-radius": "1em", "height": "2em", "width": "80%", "margin-top": "20px"}} onClick={() => {
+                <button className="selectCells" id="submitAndConfirmLong" style={{ "border-radius": "1em", "height": "2em", "width": "80%", "margin-top": "20px" }} onClick={() => {
                     loginAccount();
                 }}>Login</button>
-                <div style={{"margin-top": "20px"}}>
+                <div style={{ "margin-top": "20px" }}>
                     <p1>or</p1>
                 </div>
             </div>
-            <div style={{"display": "flex", "align-items": "center"}}>
+            <div className="alignCenter">
                 <GoogleLogin
                     clientId={client_id}
                     buttonText="Sign in with Google"
                     onSuccess={(res) => {
-                        
-                        window.location.href = "/";
-                        console.log(res);             //does not work because of widows.location.href. save the information to a local variable
+                        console.log(res);
 
                     }}
                     onFailure={(res) => {
@@ -88,8 +89,7 @@ function LoginAccountUI(props) {
                     cookiePolicy={'single_host_origin'}
                 />
             </div>
-        </>
-        
+        </div>
     );
 }
 
