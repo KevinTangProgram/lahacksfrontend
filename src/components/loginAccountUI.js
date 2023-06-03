@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {CONST} from '../utilities/CONST.js';
 import '../CSS/Login.css';
-import { GoogleLogin } from 'react-google-login';
-import { gapi } from 'gapi-script';
+import { ReactGoogleAuth } from "react-google-auth";
 import { StorageManager } from '../utilities/storageManager.js';
 //
 
-const client_id = "880561077463-92vhkg43l0fp5v93fdkgkkauf6dbok5s.apps.googleusercontent.com";
+const client_id = "1045642159671-60op9ohkrl55eug9gdqu30blv4vdkjg7.apps.googleusercontent.com";
 
 function LoginAccountUI(props) {
     // Textboxes:
@@ -16,20 +15,12 @@ function LoginAccountUI(props) {
     const handleChangeUsername = (event) => { setUsername(event.target.value); }
     const handleChangePassword = (event) => { setPassword(event.target.value); }
 
-    useEffect(() => {
-        function start() {
-            gapi.client.init({
-                clientId: client_id,
-                scope: ""        
-            })
-        };
-        gapi.load('client:auth2', start);
-        // function onSignIn(googleUser) {
-        //     var profile = googleUser.getBasicProfile();
-        //     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-        //     console.log('Name: ' + profile.getName());
-        // }
-    }, []);
+    const onSuccess = (googleUser) => {
+        const profile = googleUser.getBasicProfile();
+        console.log('Name: ' + profile.getName());
+        console.log('Email: ' + profile.getEmail());
+        console.log('Image URL: ' + profile.getImageUrl());
+    };
 
     // Login:
     function loginAccount() {
@@ -76,7 +67,7 @@ function LoginAccountUI(props) {
                 </div>
             </div>
             <div className="alignCenter">
-                <GoogleLogin
+                {/* <GoogleLogin
                     clientId={client_id}
                     buttonText="Sign in with Google"
                     onSuccess={(res) => {
@@ -87,7 +78,9 @@ function LoginAccountUI(props) {
                         console.log(res);
                     }}
                     cookiePolicy={'single_host_origin'}
-                />
+                /> */}
+                <button>Login</button>
+
             </div>
         </div>
     );
