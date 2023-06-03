@@ -14,7 +14,7 @@ function Intro() {
         <div className="backGround alignCenter">
             <h1>Idea Oasis</h1>
             <h2> - Taking Notes, reimagined.</h2>
-            <h2> - A New Style of NoteTaking.</h2>
+            <h2> - A New Style of Notetaking.</h2>
             <br></br>
             <button className="debugger-popup-button"
             onClick = {newOasis}> Try Now </button>

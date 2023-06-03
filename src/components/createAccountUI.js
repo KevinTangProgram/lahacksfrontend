@@ -25,7 +25,10 @@ function CreateAccountUI(props) {
 
     // return:
     return (
-        <>
+        <div className="overlay" style={{
+            left: '30%', top: '30%', width: '40%', height: '60%',
+            backgroundColor: '#f3ffff', borderRadius: '1em', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'
+        }}>
             <h1 style={{"text-align": "center"}}>Create Account</h1>
             <div className="selectGridSmall">
                 <input placeholder="Username" value={username} onChange={handleChangeUsername}></input>
@@ -39,10 +42,10 @@ function CreateAccountUI(props) {
                     //props.setShowCreateAcc(false);
                 }}>Create Account</button>
                 <button className="selectCells" id = "submitAndConfirmLong" style={{"border-radius": "1em", "height": "2em", "width": "80%"}} onClick={() => {
-                    props.setShowCreateAcc(false);
+                    props.setLoginState(1);
                 }}>Back</button>
             </div>
-        </>
+        </div>
     );
 }
 
