@@ -4,6 +4,7 @@ import Oasis from './Pages/Oasis';
 import Pricing from './Pages/Pricing';
 import User from './Pages/User';
 import About from './Pages/About';
+import Kevin from './Pages/Kevin';
 import './CSS/Home.css';
 //
 import {
@@ -19,7 +20,8 @@ function App() {
         <div id="navigation" className="overlay">
           <Link to="/">... | </Link>
           <Link to="/pricing">Pricing | </Link>
-          <Link to="/about">About</Link>
+          <Link to="/about">About | </Link>
+          <Link to="/kevin">Kevin</Link>
         </div>
       <div className="mainHeader">
         <img src="/images/icons/iconLogo.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
@@ -35,6 +37,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/home" element={<Home />} />
             <Route path="/oasis/:id" element={<Oasis />} />
+            <Route path="/kevin" element={<Kevin />} />
           </Routes>
         </div>
     </Router>
