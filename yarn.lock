@@ -4394,10 +4394,8 @@ __metadata:
     "@testing-library/user-event": ^13.2.1
     axios: ^1.3.6
     crypto-js: ^4.1.1
-    gapi-script: ^1.2.0
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-google-login: ^5.2.2
     react-router-dom: ^6.10.0
     react-scripts: 5.0.1
     uuid: ^9.0.0
@@ -6530,15 +6528,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-gensync@^1.0.0-beta.2:
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
-  integrity sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==
+"function.prototype.name@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "function.prototype.name@npm:1.1.5"
+  dependencies:
+    call-bind: ^1.0.2
+    define-properties: ^1.1.3
+    es-abstract: ^1.19.0
+    functions-have-names: ^1.2.2
+  checksum: acd21d733a9b649c2c442f067567743214af5fa248dbeee69d8278ce7df3329ea5abac572be9f7470b4ec1cd4d8f1040e3c5caccf98ebf2bf861a0deab735c27
+  languageName: node
+  linkType: hard
 
-"gapi-script@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "gapi-script@npm:1.2.0"
-  checksum: f61140855e9a4369de15badb2f4568fdd037d949561de5fd86eca379b89423301bc6062748aba6bd1be68a5329f6239ca9c4b6b5fe454ad6046b6b918979d1ba
+"functions-have-names@npm:^1.2.2, functions-have-names@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "functions-have-names@npm:1.2.3"
+  checksum: c3f1f5ba20f4e962efb71344ce0a40722163e85bee2101ce25f88214e78182d2d2476aa85ef37950c579eb6cf6ee811c17b3101bb84004bb75655f3e33f3fdb5
   languageName: node
   linkType: hard
 
@@ -10573,10 +10578,9 @@ gensync@^1.0.0-beta.2:
   languageName: node
   linkType: hard
 
-prop-types@^15.8.1:
-  version "15.8.1"
-  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
-  integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
+"prompts@npm:^2.0.1, prompts@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "prompts@npm:2.4.2"
   dependencies:
     kleur: ^3.0.3
     sisteransi: ^1.0.5
@@ -10584,7 +10588,7 @@ prop-types@^15.8.1:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.6.0, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -10758,10 +10762,12 @@ prop-types@^15.8.1:
   languageName: node
   linkType: hard
 
-react-is@^16.13.1:
-  version "16.13.1"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
-  integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+"react-is@npm:^16.13.1":
+  version: 16.13.1
+  resolution: "react-is@npm:16.13.1"
+  checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
+  languageName: node
+  linkType: hard
 
 "react-is@npm:^17.0.1":
   version: 17.0.2
