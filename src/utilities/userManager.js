@@ -6,7 +6,7 @@ import axios from 'axios';
 
 export class UserManager {
     static userID = 0;
-
+    static theme = "default"; // light, dark, default
 
     // Utils:
     static async continueWithGoogle(token) {
