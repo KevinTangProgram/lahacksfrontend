@@ -13,7 +13,7 @@ export class UserManager {
         try {
             // Token from google:
             const response = await axios.get(CONST.URL + "/continueWithGoogle", {
-                token: token,
+                params: {token: token},
             })
             const googleInfo = response.data;
 
