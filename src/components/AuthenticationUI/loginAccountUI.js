@@ -70,7 +70,7 @@ function LoginAccountUI(props) {
                     <GoogleLogin
                         onSuccess={credentialResponse => {
                             props.setLoginState(3);
-                            UserManager.setup(credentialResponse.credential)
+                            UserManager.continueWithGoogle(credentialResponse.credential)
                                 .then((response) => {
                                     console.log('Response:', response);
                                     props.setLoginState(0);

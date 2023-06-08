@@ -1,5 +1,7 @@
 import { StorageManager } from '../utilities/storageManager.js';
-import jwt_decode from 'jsonwebtoken';
+import { CONST } from './CONST.js';
+import axios from 'axios';
+
 
 
 export class UserManager {
@@ -7,11 +9,20 @@ export class UserManager {
 
 
     // Utils:
-    static async setup(token) {
-        // Token from google:
-        const decodedToken = jwt_decode(token);
-        console.log(decodedToken);
-        return "success";
-        // Token from create-acc:
+    static async continueWithGoogle(token) {
+        try {
+            // Token from google:
+            const response = await axios.get(CONST.URL + "/continueWithGoogle", {
+                token: token,
+            })
+            const googleInfo = response.data;
+
+            // Token from create-acc:
+
+            // Return:
+            return googleInfo;
+        } catch (error) {
+            throw error;
+        }
     }
 }
