@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import crypto from 'crypto-js';
-import {CONST} from '../utilities/CONST.js';
+import {CONST} from '../../utilities/CONST.js';
 //
 
 function CreateAccountUI(props) {
