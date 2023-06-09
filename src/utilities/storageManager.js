@@ -33,8 +33,8 @@ export class StorageManager {
         const syncedObject = obj;
         const info = { key: key, type: type, status: "unsynced", lastSynced: null };
         syncedObject.StorageManagerInfo = info;
-        syncedObject.modify = function () {
-            StorageManager.handleModifications(this.StorageManagerInfo);
+        syncedObject.modify = function (forceSyncNow = false) {
+            StorageManager.handleModifications(this.StorageManagerInfo, forceSyncNow);
             return this;
         };
         this.syncedObjects.set(key, syncedObject);
@@ -115,7 +115,7 @@ export class StorageManager {
     }
     
     // Utils:
-    static handleModifications(StorageManagerInfo, pushMode = true) {
+    static handleModifications(StorageManagerInfo, forceSyncNow, pushMode = true) {
         // Rerender:
         setTimeout(() => {
             this.emitEvent(StorageManagerInfo.key);
@@ -127,15 +127,26 @@ export class StorageManager {
         // Handle Syncing:
         if (pushMode === true) {
             // Sending data to local/database:
-            this.addToState(1);
-            this.setObjectProperty(StorageManagerInfo.key, "status", "unsynced");
-            this.queueSyncObject(StorageManagerInfo);
+            if (forceSyncNow === true) {
+                setTimeout(() => {
+                    this.forceSyncObject(StorageManagerInfo);
+                }, 0);
+            }
+            else {
+                if (StorageManagerInfo.status === "synced") {
+                    this.addToState(1);
+                }
+                this.setObjectProperty(StorageManagerInfo.key, "status", "unsynced");
+                this.queueSyncObject(StorageManagerInfo);
+            }
         }
         else {
             // Just recieved data:
+            if (StorageManagerInfo.status === "unsynced") {
+                this.addToState(-1);
+            }
             this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
             this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
-            this.addToState(-1);
         }
     }
     static queueSyncObject(StorageManagerInfo) {
@@ -166,7 +177,7 @@ export class StorageManager {
         if (json) {
             // this.safeAssign(this.read(StorageManagerInfo.key), JSON.parse(json));
             this.setObjectProperty(StorageManagerInfo.key, "object", JSON.parse(json));
-            this.handleModifications(StorageManagerInfo, false);
+            this.handleModifications(StorageManagerInfo, false, false);
             console.log("Pulled from local storage.");
             return true;
         }
@@ -192,7 +203,7 @@ export class StorageManager {
 
         // Then:
         if (wasFoundInDatabase) {
-            this.handleModifications(key, false);
+            this.handleModifications(key, false, false);
         }
     }
     static async pushToDatabase(key) {

@@ -6,10 +6,14 @@ import axios from 'axios';
 
 export class UserManager {
     static user = StorageManager.createSyncedObject({}, "local", "user");
-    static token = StorageManager.createSyncedObject({}, "local", "token");
+    static token = StorageManager.createSyncedObject({token: ""}, "local", "token");
     static theme = "default"; // light, dark, default
 
     // Utils:
+    static logout() {
+        StorageManager.safeAssign(this.user.modify(true), {});
+        this.token.modify(true).token = "";
+    }
     static async continueWithGoogle(token) {
         try {
             // Token from google:
@@ -20,9 +24,8 @@ export class UserManager {
             // Token from create-acc:
 
             // Store user data:
-            console.log(response.data.user);
-            StorageManager.safeAssign(this.user, response.data.user);
-            StorageManager.safeAssign(this.token, response.data.token);
+            StorageManager.safeAssign(this.user.modify(true), response.data.user);
+            this.token.modify(true).token = response.data.token;
             // Return token:
             return response.data.token;
         } catch (error) {
@@ -30,3 +33,4 @@ export class UserManager {
         }
     }
 }
+
