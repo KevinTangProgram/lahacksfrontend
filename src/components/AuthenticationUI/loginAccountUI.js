@@ -72,7 +72,6 @@ function LoginAccountUI(props) {
                             props.setLoginState(3);
                             UserManager.continueWithGoogle(credentialResponse.credential)
                                 .then((response) => {
-                                    console.log('Response:', response);
                                     props.setLoginState(0);
                                 })
                                 .catch((error) => {
