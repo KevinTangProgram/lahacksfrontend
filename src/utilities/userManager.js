@@ -17,7 +17,7 @@ export class UserManager {
     static async continueWithGoogle(token) {
         try {
             // Token from google:
-            const response = await axios.get(CONST.URL + "/continueWithGoogle", {
+            const response = await axios.get(CONST.URL + "/user/continueWithGoogle", {
                 params: {token: token},
             })
 
