@@ -27,6 +27,7 @@ export class UserManager {
             StorageManager.safeAssign(this.user.modify(true), response.data.user);
             this.token.modify(true).token = response.data.token;
             // Return token:
+            // console.log(response.data);
             return response.data.token;
         } catch (error) {
             throw error;
