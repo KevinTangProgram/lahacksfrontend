@@ -17,12 +17,14 @@ import {
 function App() {
   return (
     <Router>
+      {/*}
         <div id="navigation" className="overlay">
           <Link to="/">... | </Link>
           <Link to="/pricing">Pricing | </Link>
           <Link to="/about">About | </Link>
           <Link to="/kevin">Kevin</Link>
         </div>
+      */}
       <div className="mainHeader">
         <img src="/images/icons/iconLogo.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
         <div className="centerVertically">

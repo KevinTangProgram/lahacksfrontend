@@ -2,6 +2,11 @@
 Test.js CSS file
 */
 
+body
+{
+    background-color: #f8eae7;
+}
+
 /* CLASS NAMES */
 .mainHeader
 {

@@ -6,7 +6,7 @@ import { StorageManager } from './storageManager.js';
 import ObserverComponent from '../components/observer.js';
 
 function DebuggerPanel() {
-    if (false) {
+    if (true) {
         return;
     }
     // Popup:

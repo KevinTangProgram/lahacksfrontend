@@ -9,6 +9,7 @@ function Tab_oasis() {
     // Tab Navigation:
     const [bottomTab, setBottomTab] = useState(["tabActive", "tabInactive"]);
     const [openUIByDefault, setOpenUIByDefault] = useState(false);
+    const [title, setTitle] = useState(false);
     const openNotesTabWithoutUI = () => {
         setOpenUIByDefault(false);
         setBottomTab(["tabInactive", "tabActive"]);
@@ -32,7 +33,12 @@ function Tab_oasis() {
                 <div className="tablet">
                     <div className="dateAndTime">
                         <Clock type={"date"} className={"alignLeft"} />
-                    <input placeholder="Insert Title Here" className="alignCenter" onChange={handleTitleChange}></input>
+                    {
+                        title && <input placeholder="Insert Title Here" className="alignCenter" onChange={() => handleTitleChange} onMouseLeave={() => setTitle(false)}></input>
+                    }
+                    {
+                        !title && <h1 className="alignCenter" onMouseOver={() => setTitle(true)}>{titleValue}</h1>
+                    }
                         <Clock type={"time"} className={"alignRight"} />
                     </div>
                     <div className="twoButtons">

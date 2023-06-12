@@ -25,7 +25,7 @@ let rawMessage = ["Acid-Base Equilibria",
 
 function callApi()
 {
-    axios.put(URL + '/oasis/promptx2', {
+    axios.put(URL + '/oasis/promptx2/header', {
         rawMessage: rawMessage,
         header: "Acid-Base Equilibria",
     })
