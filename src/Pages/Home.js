@@ -1,14 +1,9 @@
-
-
 import '../CSS/Test.css';
-//
-import React, { useState, useEffect } from 'react';
-//
 import Tab_home from '../tabs/Tab_home';
 import Tab_settings from '../tabs/Tab_settings';
-//
 import DebuggerPanel from '../utilities/debugger';
-
+//
+import React, { useState, useEffect } from 'react';
 const userId = "6444bb82eb14ecacdb125107";
 
 function Home() {
