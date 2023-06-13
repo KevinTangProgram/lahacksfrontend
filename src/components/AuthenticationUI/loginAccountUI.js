@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import {CONST} from '../../utilities/CONST.js';
 import '../../CSS/Login.css';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { UserManager } from '../../utilities/userManager.js';
@@ -15,33 +13,12 @@ function LoginAccountUI(props) {
     const handleChangeUsername = (event) => { setUsername(event.target.value); }
     const handleChangePassword = (event) => { setPassword(event.target.value); }
 
-    const onSuccess = (googleUser) => {
-        const profile = googleUser.getBasicProfile();
-        console.log('Name: ' + profile.getName());
-        console.log('Email: ' + profile.getEmail());
-        console.log('Image URL: ' + profile.getImageUrl());
-    };
-
     // Login:
     function loginAccount() {
         props.setLoginState(3);
-        // axios.get(CONST.URL + "/login", {
-        //     params: {
-        //         user: username,
-        //         password: password,
-        //     }
-        // })
-        // .then((response) => {
-        //     if (response.data !== "")
-        //     {
-        //         alert(response.data)
-        //     }
-        //     else
-        //     {
-        //         alert("Incorrect username or password.");
-        //     }
-        // })
     }
+    const [error, setError] = useState(null);
+
 
     // Output:
     return (
@@ -75,7 +52,7 @@ function LoginAccountUI(props) {
                                     props.setLoginState(0);
                                 })
                                 .catch((error) => {
-                                    console.log(error);
+                                    setError(error);
                                 });
                         }}
                         onError={() => {
@@ -84,6 +61,9 @@ function LoginAccountUI(props) {
                         text="continue_with"
                         shape="pill"
                     />
+                    {error && (
+                        <p>Error: {error}</p>
+                    )}
             </div>
         </div>
         </GoogleOAuthProvider>

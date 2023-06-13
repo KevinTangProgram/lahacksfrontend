@@ -35,7 +35,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Intro />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/user" element={<User />} />
+            <Route path="/user/setup/:token" element={<User />} />
             <Route path="/about" element={<About />} />
             <Route path="/home" element={<Home />} />
             <Route path="/oasis/:id" element={<Oasis />} />
