@@ -53,6 +53,7 @@ function LoginAccountUI(props) {
                                 })
                                 .catch((error) => {
                                     setError(error);
+                                    props.setLoginState(2);
                                 });
                         }}
                         onError={() => {

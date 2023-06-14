@@ -20,7 +20,7 @@ function Tab_home({ focusOasis }) {
         else {
             return (
                 <div>
-                    <h2>Welcome, {UserManager.user.info.name.split(" ")[0]}</h2>
+                    <h2>Welcome, {UserManager.user.info.username.split(" ")[0]}</h2>
                     <button onClick={() => {
                         UserManager.logout();
                     }}>logout</button>
