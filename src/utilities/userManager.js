@@ -14,6 +14,28 @@ export class UserManager {
         StorageManager.safeAssign(this.user.modify(true), {});
         this.token.modify(true).token = "";
     }
+    static async login(email, password) {
+        // Login:
+        try {
+            const response = await axios.get(CONST.URL + "/user/login", { params: { email: email, password: password } });
+            // Store user data:
+            StorageManager.safeAssign(this.user.modify(true), response.data.user);
+            this.token.modify(true).token = response.data.token;
+            // Return token:
+            return response.data.token;
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later.";
+                throw errorMessage;
+            }
+        }
+    }
     static async continueWithGoogle(token) {
         // Turn google token into our token:
         try {

@@ -10,9 +10,22 @@ function SetupAccountUI(props) {
             left: '30%', top: '30%', width: '40%', height: '60%',
             backgroundColor: '#f3ffff', borderRadius: '1em', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'
         }}>
-            <h1 style={{ "textAlign": "center" }}>Setting up your account ...</h1>
-            <div className="loader"></div>
-            <button onClick={() => {props.setLoginState(1)}}>Cancel</button>
+            {!props.error && 
+             <div>
+                <h1 style={{ "textAlign": "center" }}>Preparing your account ...</h1>
+                <div className="loader"></div>
+                <button onClick={() => {props.setLoginState(1)}}>Cancel</button>
+            </div>
+            }
+           {props.error &&
+           <div>
+                <h1 style={{ "textAlign": "center" }}>Error</h1>
+                {props.error}
+                <button className="selectCells" id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={() => {
+                props.setLoginState(1) }}>Back</button>
+           </div>
+           }
+
         </div>
     );
 }

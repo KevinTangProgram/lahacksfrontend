@@ -10,9 +10,14 @@ const Tooltip = ({ text }) => {
     return (
         <div className="tooltip-container">
             <span className="tooltip" onClick={toggleTooltip} onMouseEnter={toggleTooltip} onMouseLeave={() => setShowTooltip(false)}>
-                (?)
+                ?
             </span>
-            {showTooltip && <div className="tooltip-text">{text}</div>}
+            {showTooltip && (
+                <div className="tooltip-popup">
+                    <div className="tooltip-arrow" />
+                    <div className="tooltip-content">{text}</div>
+                </div>
+            )}
         </div>
     );
 };

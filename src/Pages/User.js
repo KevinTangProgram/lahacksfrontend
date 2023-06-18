@@ -35,6 +35,7 @@ function User() {
     const [accountCreated, setAccountCreated] = useState(false);
     const validateBoxes = () => {
         let valid = true;
+        // Username checks:
         if (username.length < 3 || username.length > 20) {
             setUsernameError("Username must be between 3 and 20 characters long");
             valid = false;
@@ -46,8 +47,9 @@ function User() {
         else {
             setUsernameError(null);
         }
-        if (password.length < 8 || password.length > 20) {
-            setPasswordError("Password must be between 8 and 20 characters long");
+        // Password checks:
+        if (password.length < 5 || password.length > 20) {
+            setPasswordError("Password must be between 5 and 20 characters long");
             valid = false;
         }
         else if (!/^[a-zA-Z0-9_\-+$!@#%&^*]+$/.test(password)) {
@@ -94,7 +96,7 @@ function User() {
                             if (validateBoxes() && !accountCreated) {
                                 UserManager.createAccount(data, username, password)
                                     .then(() => {
-                                        setCreateAccMessage("Account created successfully! Return to previous tab to log-in.");
+                                        setCreateAccMessage("Account created successfully! You may safely close this tab, returning to the previous page to login.");
                                         setAccountCreated(true);
                                     })
                                     .catch((error) => {
