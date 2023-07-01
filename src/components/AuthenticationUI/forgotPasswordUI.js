@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { UserManager } from '../../utilities/userManager.js';
 import Tooltip from '../tooltip.js';
-//
 
-function CreateAccountUI(props) {
+function ForgotPasswordUI(props) {
     // Email verification:
     const [showLoader, setShowLoader] = useState(false);
     const [error, setError] = useState(null);
@@ -11,7 +10,7 @@ function CreateAccountUI(props) {
     const [email, setEmail] = useState("");
     const handleChangeEmail = (event) => { setEmail(event.target.value); }
     // Cooldowns:
-    const [cooldown, setCooldown] = useState(0); 
+    const [cooldown, setCooldown] = useState(0);
     const startCooldown = () => {
         // Start cooldown:
         const cooldownLength = 60;
@@ -33,27 +32,27 @@ function CreateAccountUI(props) {
             left: '30%', top: '30%', width: '40%', height: '60%',
             backgroundColor: '#f3ffff', borderRadius: '1em', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'
         }}>
-            <h1 style={{"textAlign": "center"}}>Create Account</h1>
-            <h3>To proceed, please verify your email</h3>
-            <Tooltip text="Your email is used for authentication and collaboration. We will never spam you." />
+            <h1 style={{ "textAlign": "center" }}>Reset Account Password</h1>
+            <h3>To proceed, please enter the email associated with your account. </h3>
+            <Tooltip text="We will send you an email with a link to reset your password." />
             <div className="selectGridSmall">
                 <input placeholder="Email" value={email} onChange={handleChangeEmail} ></input>
                 <br></br>
-                <button className={cooldown > 0 ? "selectCells lowOpacity" : "selectCells" } id ="submitAndConfirmLong" style={{"borderRadius": "1em", "height": "2em", "width": "80%"}} onClick={() =>{
+                <button className={cooldown > 0 ? "selectCells lowOpacity" : "selectCells"} id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={() => {
                     if (email.includes("@") && email.includes(".")) {
                         startCooldown();
                         setShowLoader(true);
-                        UserManager.verifyEmail(email)
-                        .then((response) => {
-                            setShowLoader(false);
-                            setResponse(response);
-                            setError(null);
-                        })
-                        .catch((error) => {
-                            setShowLoader(false);
-                            setError(error);
-                            setResponse(null);
-                        });
+                        UserManager.resetPasswordEmail(email)
+                            .then((response) => {
+                                setShowLoader(false);
+                                setResponse(response);
+                                setError(null);
+                            })
+                            .catch((error) => {
+                                setShowLoader(false);
+                                setError(error);
+                                setResponse(null);
+                            });
                     }
                     else {
                         setError("Please enter a valid email");
@@ -61,11 +60,11 @@ function CreateAccountUI(props) {
                 }}
                     disabled={cooldown > 0}
                 >{cooldown > 0 ? "Verify (" + cooldown + "s)" : "Verify"}</button>
-                <button className="selectCells" id = "submitAndConfirmLong" style={{"borderRadius": "1em", "height": "2em", "width": "80%"}} onClick={() => {
+                <button className="selectCells" id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={() => {
                     props.setLoginState(1);
                 }}>Back to login</button>
                 {error && (
-                    <p style={{"color": "red"}}>{error}</p>
+                    <p style={{ "color": "red" }}>{error}</p>
                 )}
                 {response && (
                     <p style={{ "color": "green" }}>{response}</p>
@@ -78,4 +77,4 @@ function CreateAccountUI(props) {
     );
 }
 
-export default CreateAccountUI;
+export default ForgotPasswordUI;

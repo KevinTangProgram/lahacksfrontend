@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { CONST } from '../../utilities/CONST.js';
 import '../../CSS/Login.css';
-import { UserManager } from '../../utilities/userManager.js';
 
 function SetupAccountUI(props) {
     return (
@@ -21,6 +18,12 @@ function SetupAccountUI(props) {
            <div>
                 <h1 style={{ "textAlign": "center" }}>Error</h1>
                 {props.error}
+                    {props.error === "Incorrect email or password combination." && 
+                    <div style={{ "fontSize": "12px", "marginTop": "20px", "marginBottom": "20px" }}>
+                        <button style={{ "textDecoration": "none", "border": "none", "backgroundColor": "transparent", "cursor": "pointer", "color": "#10a37f" }} onClick={() => {
+                            props.setLoginState(4);
+                        }}>Forgot your password?</button>
+                    </div>}
                 <button className="selectCells" id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={() => {
                 props.setLoginState(1) }}>Back</button>
            </div>

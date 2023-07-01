@@ -5,6 +5,7 @@ import Pricing from './Pages/Pricing';
 import User from './Pages/User';
 import About from './Pages/About';
 import Kevin from './Pages/Kevin';
+import Reset from './Pages/Reset';
 import './CSS/Home.css';
 //
 import {
@@ -36,6 +37,7 @@ function App() {
             <Route path="/" element={<Intro />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/user/setup/:token" element={<User />} />
+            <Route path="/user/reset/:token" element={<Reset />} />
             <Route path="/about" element={<About />} />
             <Route path="/home" element={<Home />} />
             <Route path="/oasis/:id" element={<Oasis />} />

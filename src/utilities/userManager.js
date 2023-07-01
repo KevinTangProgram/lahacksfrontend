@@ -14,6 +14,7 @@ export class UserManager {
         StorageManager.safeAssign(this.user.modify(true), {});
         this.token.modify(true).token = "";
     }
+        // Logins:
     static async login(email, password) {
         // Login:
         try {
@@ -58,6 +59,7 @@ export class UserManager {
             }
         }
     }
+        // Account creation:
     static async verifyEmail(email) {
         // Send email to user:
         try {
@@ -82,7 +84,7 @@ export class UserManager {
         // Convert email token to email:
         try {
             const response = await axios.get(CONST.URL + "/user/setup", { params: { token: token } });
-            // Success, email:
+            // Success, return email:
             return response.data;
         }
         catch (error) {
@@ -97,13 +99,68 @@ export class UserManager {
             }
         }
     }
-    static async createAccount(email, username, password) {
+    static async createAccount(token, username, password) {
         // Create account:
         try {
-            const response = await axios.post(CONST.URL + "/user/createAccount", { email: email, username: username, password: password });
-            // Store user data:
-            StorageManager.safeAssign(this.user.modify(true), response.data.user);
-            this.token.modify(true).token = response.data.token;
+            const response = await axios.post(CONST.URL + "/user/createAccount", { token: token, username: username, password: password });
+            // Return token:
+            return response.data.token;
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later.";
+                throw errorMessage;
+            }
+        }
+    }
+        // Password reset:
+    static async resetPasswordEmail(email) {
+        // Send email to user:
+        try {
+            const response = await axios.get(CONST.URL + "/user/resetPassword", { params: { email: email } });
+            // Return 0 (success):
+            return response.data;
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later.";
+                throw errorMessage;
+            }
+        }
+    }
+    static async resetPasswordPage(token) {
+        // Convert email token to email:
+        try {
+            const response = await axios.get(CONST.URL + "/user/resetPage", { params: { token: token } });
+            // Success, return email:
+            return response.data;
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later."
+                throw errorMessage;
+            }
+        }
+    }
+    static async resetPassword(token, password) {
+        // Modify account password:
+        try {
+            const response = await axios.post(CONST.URL + "/user/reset", { token: token, password: password });
             // Return token:
             return response.data.token;
         }
