@@ -23,7 +23,7 @@ function Home() {
 
             <div className="activeTab">
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
-                {currentTab[1] === "tabActive" && <Tab_settings />}
+                {currentTab[1] === "tabActive" && <Tab_settings default="user" />}
             </div>
 
             <DebuggerPanel />

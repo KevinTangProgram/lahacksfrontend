@@ -28,7 +28,7 @@ function Oasis() {
             <div className="activeTab">
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
                 {currentTab[1] === "tabActive" && <Tab_oasis />}
-                {currentTab[2] === "tabActive" && <Tab_settings />}
+                {currentTab[2] === "tabActive" && <Tab_settings default="oasis" />}
             </div>
 
             <DebuggerPanel />

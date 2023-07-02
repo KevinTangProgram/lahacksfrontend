@@ -176,5 +176,25 @@ export class UserManager {
             }
         }
     }
+        // User Settings:
+    static async updateSettings(settings) {
+        // Update user settings (using token from localStorage):
+        try {
+            const response = await axios.post(CONST.URL + "/user/updateSettings", { token: this.token, settings: settings });
+            // Return 0 (success):
+            return response.data;
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Error saving settings - please retry in a moment."
+                throw errorMessage;
+            }
+        }
+    }
 }
 
