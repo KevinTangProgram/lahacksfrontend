@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { UserManager } from '../../utilities/userManager.js';
+import { StorageManager } from '../../utilities/storageManager.js'
 import Tooltip from '../tooltip.js';
+import '../../CSS/Login.css';
+
 
 function ForgotPasswordUI(props) {
     // Email verification:
@@ -10,64 +13,85 @@ function ForgotPasswordUI(props) {
     const [email, setEmail] = useState("");
     const handleChangeEmail = (event) => { setEmail(event.target.value); }
     // Cooldowns:
-    const [cooldown, setCooldown] = useState(0);
+    const cooldownLength = 60;
+    const cache = StorageManager.createSyncedObject({ cooldownTime: 0 }, "temp", "cachedCooldown");
+    const cooldownSeconds = Math.floor((Date.now() - cache.cooldownTime) / 1000);
+    const [cooldown, setCooldown] = useState(cooldownSeconds < cooldownLength ? cooldownLength - cooldownSeconds : 0);
     const startCooldown = () => {
         // Start cooldown:
-        const cooldownLength = 60;
         setCooldown(cooldownLength);
-        const timer = setInterval(() => {
-            setCooldown(prevValue => prevValue - 1);
-        }, 1000);
-        // Stop timer after cooldown:
-        setTimeout(() => {
-            clearInterval(timer);
-            setCooldown(0);
-        }, cooldownLength * 1000);
+        cache.cooldownTime = Date.now();
     };
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCooldown(prevCooldown => {
+                const newCooldown = prevCooldown - 1;
+                return newCooldown >= 0 ? newCooldown : 0;
+            });
+        }, 1000);
 
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+    // Submit:
+    const submitNow = () => {
+        if (email.includes("@") && email.includes(".")) {
+            startCooldown();
+            setShowLoader(true);
+            UserManager.resetPasswordEmail(email)
+                .then((response) => {
+                    setShowLoader(false);
+                    setResponse(response);
+                    setError(null);
+                })
+                .catch((error) => {
+                    setShowLoader(false);
+                    setError(error);
+                    setResponse(null);
+                });
+        }
+        else {
+            setError("Please enter a valid email");
+        }
+    }
+    const inputRef = useRef(null);
+    useEffect(() => {
+        inputRef.current.focus();
+    }, []);
 
-    // return:
+    // Output:
     return (
-        <div className="overlay" style={{
-            left: '30%', top: '30%', width: '40%', height: '60%',
-            backgroundColor: '#f3ffff', borderRadius: '1em', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'
-        }}>
-            <h1 style={{ "textAlign": "center" }}>Reset Account Password</h1>
+        <div>
+            {/* Description:  */}
+            <h1 className="alignCenter">Reset Password</h1>
             <h3>To proceed, please enter the email associated with your account. </h3>
             <Tooltip text="We will send you an email with a link to reset your password." />
+            
             <div className="selectGridSmall">
-                <input placeholder="Email" value={email} onChange={handleChangeEmail} ></input>
+                {/* Email Textbox: */}
+                <input ref={inputRef} type="text" name="email" autocomplete="on" placeholder="Email" value={email} onChange={handleChangeEmail} onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        if (cooldown < 1)
+                        submitNow();
+                    }
+                }} ></input>
                 <br></br>
-                <button className={cooldown > 0 ? "selectCells lowOpacity" : "selectCells"} id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={() => {
-                    if (email.includes("@") && email.includes(".")) {
-                        startCooldown();
-                        setShowLoader(true);
-                        UserManager.resetPasswordEmail(email)
-                            .then((response) => {
-                                setShowLoader(false);
-                                setResponse(response);
-                                setError(null);
-                            })
-                            .catch((error) => {
-                                setShowLoader(false);
-                                setError(error);
-                                setResponse(null);
-                            });
-                    }
-                    else {
-                        setError("Please enter a valid email");
-                    }
-                }}
+                {/* Submit Button:  */}
+                <button className={cooldown > 0 ? "selectCells lowOpacity" : "selectCells"} id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={submitNow}
                     disabled={cooldown > 0}
                 >{cooldown > 0 ? "Verify (" + cooldown + "s)" : "Verify"}</button>
+                {/* Back Button:  */}
                 <button className="selectCells" id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={() => {
                     props.setLoginState(1);
-                }}>Back to login</button>
+                }}>Back</button>
+                {/* Error/Response Messages */}
                 {error && (
-                    <p style={{ "color": "red" }}>{error}</p>
+                    <p className="loginError">{error}</p>
                 )}
                 {response && (
-                    <p style={{ "color": "green" }}>{response}</p>
+                    <p className="loginResponse">{response}</p>
                 )}
                 {showLoader && (
                     <div className="loader"></div>

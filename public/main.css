@@ -67,65 +67,7 @@ body
     position: absolute;
     z-index: 10;
 }
-.tooltip-container {
-    position: relative;
-    display: inline-block;
-}
-.tooltip {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: #e0e0e0;
-    border: 1px solid #646464;
-    cursor: pointer;
-}
-.tooltip-popup {
-    position: absolute;
-    /* top: -20px;
-    left: 100%; */
-    top: 50%;
-    left: 100%;
-    transform: translate(10px, -50%);
 
-    width: 150px;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    animation: tooltipFadeIn 0.3s;
-}
-.tooltip-arrow {
-    position: absolute;
-    top: 50%;
-    left: -8px;
-    /* Adjust the horizontal position of the arrow */
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 8px solid #fff;
-}
-.tooltip-content {
-    font-size: 14px;
-    color: #333;
-}
-@keyframes tooltipFadeIn {
-    0% {
-        opacity: 0;
-        background-color: transparent;
-    }
-
-    100% {
-        opacity: 1;
-        background-color: #fff;
-    }
-}
 
 /* ID NAMES */
 #submitAndConfirmLong

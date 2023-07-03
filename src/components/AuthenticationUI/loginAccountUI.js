@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../../CSS/Login.css';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { UserManager } from '../../utilities/userManager.js';
@@ -10,11 +10,10 @@ function LoginAccountUI(props) {
     // Textboxes:
     const [email, setEmail] = useState(props.cachedEmail);
     const [password, setPassword] = useState(props.cachedPassword);
-    const [emailError, setEmailError] = useState(null);
-    const [passwordError, setPasswordError] = useState(null);
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
     const handleChangeEmail = (event) => { setEmail(event.target.value); }
     const handleChangePassword = (event) => { setPassword(event.target.value); }
-
     // Login:
     const validateBoxes = () => {
         let valid = true;
@@ -52,34 +51,45 @@ function LoginAccountUI(props) {
         }
     }
     const [error, setError] = useState(null);
+    // Submit:
+    const inputRefEmail = useRef(null);
+    const inputRefPassword = useRef(null);
+    useEffect(() => {
+        inputRefEmail.current.focus();
+    }, []);
 
 
     // Output:
     return (
         <GoogleOAuthProvider clientId={client_id}>
-        <div className="overlay" style={{
-            left: '30%', top: '25%', width: '40%', height: '70%',
-            backgroundColor: '#f3ffff', borderRadius: '1em', boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.2)'
-        }}>
-
-            <img className="icons::hover iconTrash" src="/images/icons/iconCancel.png" alt="Close" onClick={() => { props.setLoginState(0) }} style={{ "position": "absolute", "top": "30px", "right": "30px" }} />
-            <h1 style={{ "textAlign": "center" }}>Welcome!</h1>
+        <div>
+                {/* Header:  */}
+            <h1 className="alignCenter">Welcome!</h1>
             <div className="selectGridSmall">
-                <input placeholder="Email address" value={email} onChange={handleChangeEmail}></input>
-                    {emailError && <p style={{ color: "red", margin: 0, padding: 0 }}>{emailError}</p>}
-                <input placeholder="Password" type="password" value={password} onChange={handleChangePassword} style={{ "marginTop": "20px" }}></input>
-                    {passwordError && <p style={{ color: "red", margin: 0, padding: 0 }}>{passwordError}</p>}
-                <div style={{ "fontSize": "12px", "marginTop": "20px" }}>
-                    <button style={{ "textDecoration": "none", "border": "none", "backgroundColor": "transparent", "cursor": "pointer", "color": "#10a37f" }} onClick={() => {
-                        props.setLoginState(2);
-                    }}>Don't have an account?</button>
-                </div>
-                <button className="selectCells" id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%", "marginTop": "20px" }} onClick={() => {
-                    loginAccount();
-                }}>Login</button>
-                <div style={{ "marginTop": "5px" }}>
-                    <p>or</p>
-                </div>
+                {/* Email address and Password Boxes: */}
+                <input ref={inputRefEmail} type="text" name="email" autocomplete="on" placeholder="Email address" value={email} onChange={handleChangeEmail} onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                            event.preventDefault();
+                            inputRefPassword.current.focus();
+                        }
+                    }}></input>
+                    {emailError && <p className="loginTextboxError">{emailError}</p>}
+                    <input ref={inputRefPassword} type="password" name="password" autocomplete="on" placeholder="Password" value={password} onChange={handleChangePassword} style={{ "marginTop": "1em" }} onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                            event.preventDefault();
+                            loginAccount();
+                        }
+                    }}></input>
+                    {passwordError && <p className="loginTextboxError">{passwordError}</p>}
+                {/* Create Account Button */}
+                <button className="loginSmallButton" onClick={() => {
+                    props.setLoginState(2);
+                }}>Don't have an account?</button>
+                {/* Custom Login Button */}
+                <button className="loginLargeButton" onClick={() => { loginAccount() }}>Login</button>
+                <p className="alignCenter" styles={{"margin-bottom": "auto"}}>or</p>
+                {/* Google Login Button: */}
+                <div className="loginLargeButton">
                     <GoogleLogin
                         onSuccess={credentialResponse => {
                             props.setLoginState(3);
@@ -98,9 +108,11 @@ function LoginAccountUI(props) {
                         text="continue_with"
                         shape="pill"
                     />
-                    {error && (
-                        <p style={{ color: "red" }}>{error}</p>
-                    )}
+                </div>
+                {/* Error Display: */}
+                {error && (
+                    <p className="loginTextboxError">{error}</p>
+                )}
             </div>
         </div>
         </GoogleOAuthProvider>
