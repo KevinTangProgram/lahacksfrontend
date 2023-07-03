@@ -36,33 +36,50 @@ function Setup() {
     const [accountCreated, setAccountCreated] = useState(false);
     const validateBoxes = () => {
         let valid = true;
+        let focus = null;
         // Username checks:
-        if (username.length < 3 || username.length > 20) {
-            setUsernameError("Username must be between 3 and 20 characters long");
-            valid = false;
-        }
-        else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-            setUsernameError("Username can only contain letters, numbers, and underscores");
-            valid = false;
-        }
-        else {
+        const usernameValid = UserManager.validateInput("username", username);
+        if (usernameValid === true) {
             setUsernameError(null);
         }
+        else {
+            setUsernameError(usernameValid);
+            if (!focus) {
+                focus = "username";
+            }
+            valid = false;
+        }
         // Password checks:
-        if (password.length < 5 || password.length > 20) {
-            setPasswordError("Password must be between 5 and 20 characters long");
-            valid = false;
-        }
-        else if (!/^[a-zA-Z0-9_\-+$!@#%&^*]+$/.test(password)) {
-            setPasswordError("Password can only contain letters, numbers, and the following symbols: _ - + $ ! @ # % & ^ *");
-            valid = false;
-        }
-        else if (password !== confirmPassword) {
-            setPasswordError("Passwords do not match");
-            valid = false;
+        const passwordValid = UserManager.validateInput("password", password);
+        if (passwordValid === true) {
+            if (password === confirmPassword) {
+                setPasswordError(null);
+            }
+            else {
+                setPasswordError("Passwords do not match");
+                valid = false;
+                if (!focus) {
+                    focus = "confirmPassword";
+                }
+            }
         }
         else {
-            setPasswordError(null);
+            setPasswordError(passwordValid);
+            valid = false;
+            if (!focus) {
+                focus = "password";
+            }
+        }
+        switch (focus) {
+            case "username":
+                inputRefUsername.current.focus();
+                break;
+            case "password":
+                inputRefPassword.current.focus();
+                break;
+            case "confirmPassword":
+                inputRefConfirmPassword.current.focus();
+                break;
         }
         return valid;
     }
@@ -86,6 +103,7 @@ function Setup() {
                 .catch((error) => {
                     setCreateAccMessage(error);
                     setStatus(0);
+                    inputRefUsername.current.focus();
                 });
         }
     }
@@ -120,7 +138,7 @@ function Setup() {
                         <p>Email:</p>
                         <input value={data} disabled></input>
                         <p>Username:</p>
-                        <input ref={inputRefUsername} placeholder="Username" value={username} onChange={handleChangeUsername} style={{ borderColor: !usernameError ? "black" : "red" }} onKeyDown={(event) => {
+                        <input disabled={accountCreated} ref={inputRefUsername} placeholder="Username" value={username} onChange={handleChangeUsername} style={{ borderColor: !usernameError ? "black" : "red" }} onKeyDown={(event) => {
                             if (event.key === "Enter") {
                                 event.preventDefault();
                                 inputRefPassword.current.focus();
@@ -128,16 +146,22 @@ function Setup() {
                         }}></input>
                         <p className="loginTextboxError">{usernameError}</p>
                         <p>Password:</p>
-                        <input ref={inputRefPassword} placeholder="Password" type="password" value={password} onChange={handleChangePassword} style={{ borderColor: !passwordError ? "black" : "red" }} onKeyDown={(event) => {
+                        <input disabled={accountCreated} ref={inputRefPassword} placeholder="Password" type="password" value={password} onChange={handleChangePassword} style={{ borderColor: !passwordError ? "black" : "red" }} onKeyDown={(event) => {
                             if (event.key === "Enter") {
                                 event.preventDefault();
                                 inputRefConfirmPassword.current.focus();
                             }
+                            if (event.key === " ") {
+                                event.preventDefault();
+                            }
                         }}></input>
-                        <input ref={inputRefConfirmPassword} placeholder="Confirm Password" type="password" value={confirmPassword} onChange={handleChangeConfirmPassword} style={{ "borderColor": !passwordError ? "black" : "red", "margin-top": "1em" }} onKeyDown={(event) => {
+                        <input disabled={accountCreated} ref={inputRefConfirmPassword} placeholder="Confirm Password" type="password" value={confirmPassword} onChange={handleChangeConfirmPassword} style={{ "borderColor": !passwordError ? "black" : "red", "margin-top": "1em" }} onKeyDown={(event) => {
                             if (event.key === "Enter") {
                                 event.preventDefault();
                                 submitNow();
+                            }
+                            if (event.key === " ") {
+                                event.preventDefault();
                             }
                         }}></input>
                         <p className="loginTextboxError">{passwordError}</p>

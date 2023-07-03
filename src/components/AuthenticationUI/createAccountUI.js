@@ -37,7 +37,12 @@ function CreateAccountUI(props) {
     }, []);
     // Submit:
     const submitNow = () => {
-        if (email.includes("@") && email.includes(".")) {
+        if (email === "") {
+            inputRef.current.focus();
+            return;
+        }
+        const validateEmail = UserManager.validateInput("email", email);
+        if (validateEmail === true) {
             startCooldown();
             setShowLoader(true);
             UserManager.verifyEmail(email)
@@ -50,10 +55,12 @@ function CreateAccountUI(props) {
                     setShowLoader(false);
                     setError(error);
                     setResponse(null);
+                    inputRef.current.focus();
                 });
         }
         else {
-            setError("Please enter a valid email");
+            setError(validateEmail);
+            inputRef.current.focus();
         }
     }
     const inputRef = useRef(null);
@@ -76,6 +83,9 @@ function CreateAccountUI(props) {
                         event.preventDefault();
                         if (cooldown < 1)
                         submitNow();
+                    }
+                    if (event.key === " ") {
+                        event.preventDefault();
                     }
                 }} ></input>
                 <br></br>

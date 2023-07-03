@@ -36,7 +36,12 @@ function ForgotPasswordUI(props) {
     }, []);
     // Submit:
     const submitNow = () => {
-        if (email.includes("@") && email.includes(".")) {
+        if (email === "") {
+            inputRef.current.focus();
+            return;
+        }
+        const validateEmail = UserManager.validateInput("email", email);
+        if (validateEmail === true) {
             startCooldown();
             setShowLoader(true);
             UserManager.resetPasswordEmail(email)
@@ -49,10 +54,12 @@ function ForgotPasswordUI(props) {
                     setShowLoader(false);
                     setError(error);
                     setResponse(null);
+                    inputRef.current.focus();
                 });
         }
         else {
-            setError("Please enter a valid email");
+            setError(validateEmail);
+            inputRef.current.focus();
         }
     }
     const inputRef = useRef(null);
@@ -76,14 +83,17 @@ function ForgotPasswordUI(props) {
                         if (cooldown < 1)
                         submitNow();
                     }
+                    if (event.key === " ") {
+                        event.preventDefault();
+                    }
                 }} ></input>
                 <br></br>
                 {/* Submit Button:  */}
-                <button className={cooldown > 0 ? "selectCells lowOpacity" : "selectCells"} id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={submitNow}
+                <button className={cooldown > 0 ? "loginLargeButton lowOpacity" : "loginLargeButton"} onClick={submitNow}
                     disabled={cooldown > 0}
                 >{cooldown > 0 ? "Verify (" + cooldown + "s)" : "Verify"}</button>
                 {/* Back Button:  */}
-                <button className="selectCells" id="submitAndConfirmLong" style={{ "borderRadius": "1em", "height": "2em", "width": "80%" }} onClick={() => {
+                <button className="loginLargeButton" onClick={() => {
                     props.setLoginState(1);
                 }}>Back</button>
                 {/* Error/Response Messages */}

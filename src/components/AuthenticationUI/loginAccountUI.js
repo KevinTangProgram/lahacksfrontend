@@ -17,21 +17,36 @@ function LoginAccountUI(props) {
     // Login:
     const validateBoxes = () => {
         let valid = true;
+        let focus = null;
         // Email checks:
-        if ((!email.includes("@") || !email.includes("."))) {
+        if (UserManager.validateInput("email", email) !== true) {
             setEmailError("Please enter a valid email.");
             valid = false;
+            if (!focus) {
+                focus = "email";
+            }
         }
         else {
             setEmailError(null);
         }
         // Password checks:
-        if (password.length < 5 || password.length > 20) {
+        if (UserManager.validateInput("password", password) !== true) {
             setPasswordError("Please enter a valid password.");
             valid = false;
+            if (!focus) {
+                focus = "password";
+            }
         }
         else {
             setPasswordError(null);
+        }
+        switch (focus) {
+            case "email":
+                inputRefEmail.current.focus();
+                break;
+            case "password":
+                inputRefPassword.current.focus();
+                break;
         }
         return valid;
     }
@@ -72,12 +87,18 @@ function LoginAccountUI(props) {
                             event.preventDefault();
                             inputRefPassword.current.focus();
                         }
+                        if (event.key === " ") {
+                            event.preventDefault();
+                        }
                     }}></input>
                     {emailError && <p className="loginTextboxError">{emailError}</p>}
                     <input ref={inputRefPassword} type="password" name="password" autocomplete="on" placeholder="Password" value={password} onChange={handleChangePassword} style={{ "marginTop": "1em" }} onKeyDown={(event) => {
                         if (event.key === "Enter") {
                             event.preventDefault();
                             loginAccount();
+                        }
+                        if (event.key === " ") {
+                            event.preventDefault();
                         }
                     }}></input>
                     {passwordError && <p className="loginTextboxError">{passwordError}</p>}

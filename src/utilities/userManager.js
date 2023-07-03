@@ -14,6 +14,54 @@ export class UserManager {
         StorageManager.safeAssign(this.user.modify(true), {});
         this.token.modify(true).token = "";
     }
+    static validateInput(type, input) {
+        const hasBadChars = (input) => {
+            const pattern = /[:;[\](){}`'""]/;
+            return pattern.test(input);
+        }
+        if (type === "email") {
+            const maxLength = 254;
+            if (input.length > maxLength) {
+                return "Email cannot be longer than " + maxLength + " characters."
+            }
+            if (hasBadChars(input)) {
+                return "Email cannot contain special characters."
+            }
+            if (input.includes(" ")) {
+                return "Email cannot contain spaces."
+            }
+            const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (pattern.test(input)) {
+                return true;
+            }
+            return "Invalid email address - Check for special characters or whitespace."
+        }
+        if (type === "username") {
+            const minLength = 3;
+            const maxLength = 20;
+            if (input.length < minLength || input.length > maxLength) {
+                return "Username must be between " + minLength + " and " + maxLength + " characters long."
+            }
+            if (hasBadChars(input)) {
+                return "Username cannot contain special characters."
+            }
+            return true;
+        }
+        if (type === "password") {
+            const minLength = 5;
+            const maxLength = 20;
+            if (input.length < minLength || input.length > maxLength) {
+                return "Password must be between " + minLength + " and " + maxLength + " characters long."
+            }
+            if (hasBadChars(input)) {
+                return "Password cannot contain special characters."
+            }
+            if (input.includes(" ")) {
+                return "Password cannot contain spaces."
+            }
+            return true;
+        }
+    }
         // Logins:
     static async login(email, password) {
         // Login:
