@@ -26,12 +26,16 @@ function App() {
           <Link to="/kevin">Kevin</Link>
         </div>
       */}
+      {/*
       <div className="mainHeader">
         <img src="/images/icons/iconLogo.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
         <div className="centerVertically">
           <h1 className="mainTitle">Idea Oasis</h1>
         </div>
       </div>
+
+    */}
+      
         <div id="content">
           <Routes>
             <Route path="/" element={<Intro />} />
