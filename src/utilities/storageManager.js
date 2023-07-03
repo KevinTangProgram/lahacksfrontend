@@ -25,10 +25,15 @@ export class StorageManager {
     // - modify() communicates with StorageManager to perform sync / events.
 
     // Interface:
-    static createSyncedObject(obj, type, key = obj.name) {
+    static createSyncedObject(obj, type, key) {
         // 1. 'temp': unsynced to storage, but works with Observer.
         // 2. 'local': synced to local storage.
         // 3. 'database': synced to database.
+
+        // Prevent duplicates:
+        if (this.syncedObjects.has(key)) {
+            return this.syncedObjects.get(key);
+        }
         // Create object:
         const syncedObject = obj;
         const info = { key: key, type: type, status: "unsynced", lastSynced: null };
@@ -37,6 +42,7 @@ export class StorageManager {
             StorageManager.handleModifications(this.StorageManagerInfo, forceSyncNow);
             return this;
         };
+        // Add to storage:
         this.syncedObjects.set(key, syncedObject);
         // Force sync:
         if (type === 'local') {

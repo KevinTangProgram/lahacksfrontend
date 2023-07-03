@@ -30,6 +30,102 @@ Login.js Elements CSS File
     text-align: center;
 }
 
+/* LOGIN UI */
+.loginOverlay
+{
+    position: fixed;
+    z-index: 9;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.loginPopup
+{
+    position: absolute;
+    z-index: 10;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    min-height: 60%;
+    height: auto;
+    background-color: #f3ffff;
+    border-radius: 1em;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+.loginCloseIcon
+{
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    margin-right: 0em;
+    aspect-ratio: 1/1;
+    width: 3%;
+    padding: 0.3em;
+    transition: background-color 0.1s ease-in-out;
+}
+.loginCloseIcon:hover {
+    transition: background-color 0.1s ease-in-out;
+    background-color: rgb(182, 182, 245, 0.376);
+    cursor: pointer;
+}
+.loginCloseIcon:active {
+    transition: background-color 0s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.376);
+}
+.loginTextboxError {
+    color: red;
+    margin: 0;
+    padding: 0;
+    font-size: 0.85em;
+}
+.loginError {
+    color: red;
+}
+.loginResponse {
+    color: green;
+}
+.loginSmallButton {
+    font-size: 0.85em;
+    margin: 1.25em;
+    text-decoration: none;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    color: #10a37f;
+}
+.loginSmallButton:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.loginLargeButton {
+    border-radius: 1em;
+    height: 1.8em;
+    width: 80%;
+    margin-bottom: auto;
+    font-size: 1em;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1em;
+    transition: background-color 0.1s ease-in-out;
+}
+.loginLargeButton:hover {
+    transition: background-color 0.05s ease-in-out;
+    background-color: rgb(182, 182, 245, 0.376);
+    cursor: pointer;
+}
+.loginLargeButton:active {
+    transition: background-color 0s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.376);
+}
+
+
 
 /* ID NAMES */
 #submitAndConfirmLong

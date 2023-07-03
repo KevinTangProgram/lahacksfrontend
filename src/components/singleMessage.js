@@ -12,7 +12,7 @@ function SingleMessage(props) {
     // Handle copying:
     function copySuccess() {
         if (isEditing) {
-            textareaRef.current.focus();;
+            textareaRef.current.focus();
             textareaRef.current.selectionStart = textareaRef.current.value.length;
             return;
         }

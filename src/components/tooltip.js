@@ -1,23 +1,22 @@
 import React, { useState } from "react";
+import '../CSS/Utils.css';
+
 
 const Tooltip = ({ text }) => {
-    const [showTooltip, setShowTooltip] = useState(false);
-
+    const [showTooltip, setShowTooltip] = useState(null);
     const toggleTooltip = () => {
         setShowTooltip(!showTooltip);
     };
 
     return (
         <div className="tooltip-container">
-            <span className="tooltip" onClick={toggleTooltip} onMouseEnter={toggleTooltip} onMouseLeave={() => setShowTooltip(false)}>
+            <span className="tooltip" onClick={toggleTooltip} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)}>
                 ?
             </span>
-            {showTooltip && (
-                <div className="tooltip-popup">
-                    <div className="tooltip-arrow" />
-                    <div className="tooltip-content">{text}</div>
-                </div>
-            )}
+            <div className={showTooltip===null ? "tooltip-popup initial" : showTooltip ? "tooltip-popup" : "tooltip-popup hidden"}>
+                <div className="tooltip-arrow" />
+                <div className="tooltip-content">{text}</div>
+            </div>
         </div>
     );
 };

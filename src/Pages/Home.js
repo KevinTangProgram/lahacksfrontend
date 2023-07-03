@@ -17,7 +17,7 @@ function Home() {
                 <div className="threeButtons">
                     <button className="selectCells" id={currentTab[0]} onClick={() => { setCurrentTab(["tabActive", "tabInactive"]) }}>Home</button>
                     <button className="selectCells lowOpacity">Oasis</button>
-                    <button className="selectCells" id={currentTab[1]} onClick={() => { setCurrentTab(["tabInactive", "tabActive"]) }}>User Settings</button>
+                    <button className="selectCells" id={currentTab[1]} onClick={() => { setCurrentTab(["tabInactive", "tabActive"]) }}>Settings</button>
                 </div>
             </div>
 
