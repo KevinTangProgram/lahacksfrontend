@@ -17,6 +17,9 @@ function Oasis() {
     }
     return (
         <div className="Main">
+            <img src="/images/icons/ocean.png" style={{"width": "100%", "z-index": "-1", "position": "absolute"}}></img>
+            <h1 style={{"color": "black", "padding-top": "4em", "margin-top": "0px", "text-align": "center"}}>Good Morning, Guest</h1>
+
             <div className="tablet" id="noBackground">
                 <div className="threeButtons">
                     <button className="selectCells" id={currentTab[0]} onClick={() => { setCurrentTab(["tabActive", "tabInactive", "tabInactive"]) }}>Home</button>
@@ -25,6 +28,7 @@ function Oasis() {
                 </div>
             </div>
 
+            
             <div className="activeTab">
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
                 {currentTab[1] === "tabActive" && <Tab_oasis />}
@@ -32,7 +36,6 @@ function Oasis() {
             </div>
 
             <DebuggerPanel />
-
         </div>
 
     );

@@ -1,7 +1,6 @@
 /*
         Main CSS File
 */
-
 .alignCenter
 {
     text-align: center;
@@ -50,7 +49,7 @@
 }
 .backGround
 {
-    background-color: #ffe0b0;
+    background-color: #0a3572;
     height: auto;
 }
 textarea{
