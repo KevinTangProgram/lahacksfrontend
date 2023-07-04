@@ -46,10 +46,11 @@
 .alignRight
 {
     margin-left: auto;
+    margin-right: 0px;
 }
 .backGround
 {
-    background-color: #0a3572;
+    background-color: #206695;
     height: auto;
 }
 textarea{

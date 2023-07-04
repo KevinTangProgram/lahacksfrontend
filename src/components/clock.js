@@ -21,10 +21,10 @@ export default function Clock(props) {
     }, []);
   
     if (props.type === "time") {
-        return <p className={props.className}>{time}</p>;
+        return <p className={props.className} style={{"color": "white"}}>{time}</p>;
     }
     if (props.type === "date") {
-        return <p className={props.className}>{date}</p>;
+        return <p className={props.className} style={{"color": "white"}}>{date}</p>;
     }
     return <p>Hello Aaron</p>
   }

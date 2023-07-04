@@ -7,6 +7,7 @@ import Tab_home from '../tabs/Tab_home';
 import Tab_settings from '../tabs/Tab_settings';
 //
 import DebuggerPanel from '../utilities/debugger';
+import Clock from '../components/clock';
 
 const userId = "6444bb82eb14ecacdb125107";
 
@@ -15,19 +16,22 @@ function Oasis() {
     const focusOasis = () => {
         setCurrentTab(["tabInactive", "tabActive", "tabInactive"]);
     }
+    console.log(currentTab);
     return (
-        <div className="Main">
-            <img src="/images/icons/ocean.png" style={{"width": "100%", "z-index": "-1", "position": "absolute"}}></img>
-            <h1 style={{"color": "black", "padding-top": "4em", "margin-top": "0px", "text-align": "center"}}>Good Morning, Guest</h1>
-
-            <div className="tablet" id="noBackground">
-                <div className="threeButtons">
-                    <button className="selectCells" id={currentTab[0]} onClick={() => { setCurrentTab(["tabActive", "tabInactive", "tabInactive"]) }}>Home</button>
-                    <button className="selectCells" id={currentTab[1]} onClick={() => { setCurrentTab(["tabInactive", "tabActive", "tabInactive"]) }}>Oasis</button>
-                    <button className="selectCells" id={currentTab[2]} onClick={() => { setCurrentTab(["tabInactive", "tabInactive", "tabActive"]) }}>Settings</button>
+        <div>
+            <div style={{"position": "relative", "display": "flex"}}>
+                <img src="/images/icons/ocean.png" style={{"width": "100%", "z-index": "-1"}}>
+                    
+                </img>
+                <h1 style={{"color": "black", "padding-top": "4em", "margin-top": "0", "text-align": "center", "width": "100%", "position": "absolute"}}>Good Morning, Guest</h1>
+                <div id="noBackground" style={{"position": "absolute", "top": "auto", "bottom": "0", "width": "100%"}}>
+                    <div className="threeButtons" style={{}}>
+                        <button className="selectCells" id={currentTab[0]} onClick={() => { setCurrentTab(["tabActive", "tabInactive", "tabInactive"]) }}>Home</button>
+                        <button className="selectCells" id={currentTab[1]} onClick={() => { setCurrentTab(["tabInactive", "tabActive", "tabInactive"]) }}>Oasis</button>
+                        <button className="selectCells" id={currentTab[2]} onClick={() => { setCurrentTab(["tabInactive", "tabInactive", "tabActive"]) }}>Settings</button>
+                    </div>
                 </div>
             </div>
-
             
             <div className="activeTab">
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}

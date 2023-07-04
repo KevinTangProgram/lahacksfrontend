@@ -81,7 +81,7 @@ function SingleMessage(props) {
             </div>
             <div className="messageContent">
                 {lines.map((line, j) => (
-                    <div key={j}>{line}</div>
+                    <div key={j} style={{"color": "whitesmoke"}}>{line}</div>
                 ))}
             </div>
         </div>

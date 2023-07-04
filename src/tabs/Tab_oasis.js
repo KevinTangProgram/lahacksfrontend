@@ -30,22 +30,22 @@ function Tab_oasis() {
 
     return (
         <div className="backGround">
-                <div className="tablet">
-                    <div className="dateAndTime">
-                        <Clock type={"date"} className={"alignLeft"} />
-                    {
-                        title && <input placeholder="Insert Title Here" className="alignCenter" onChange={() => handleTitleChange} onMouseLeave={() => setTitle(false)}></input>
-                    }
-                    {
-                        !title && <h1 className="alignCenter" onMouseOver={() => setTitle(true)}>{titleValue}</h1>
-                    }
-                        <Clock type={"time"} className={"alignRight"} />
-                    </div>
-                    <div className="twoButtons">
-                        <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>Ideas</button>
-                    <button className="selectCells" id={bottomTab[1]} onClick={() => { openNotesTabWithoutUI() }}>Generated Notes</button>
-                    </div>
+            <div className="tablet">
+                <div className="dateAndTime">
+                    <Clock type={"date"} className={"alignLeft"} />
+                {
+                    title && <input placeholder="Insert Title Here" className="alignCenter" onChange={() => handleTitleChange} onMouseLeave={() => setTitle(false)}></input>
+                }
+                {
+                    !title && <h1 className="alignCenter" onMouseOver={() => setTitle(true)}>{titleValue}</h1>
+                }
+                    <Clock type={"time"} className={"alignRight"} />
                 </div>
+                <div className="twoButtons">
+                    <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>Ideas</button>
+                <button className="selectCells" id={bottomTab[1]} onClick={() => { openNotesTabWithoutUI() }}>Generated Notes</button>
+                </div>
+            </div>
             <div className="activeTab">
                 {bottomTab[0] === "tabActive" && <Tab_oasis_ideas forceOpenUI={openNotesTabWithUI}/>}
                 {bottomTab[1] === "tabActive" && <Tab_oasis_notes openUIByDefault={openUIByDefault} titleValue={memoizedTitleValue}/>}

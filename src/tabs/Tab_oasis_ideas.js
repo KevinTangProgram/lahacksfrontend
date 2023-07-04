@@ -91,7 +91,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                 <div>
                     {MessageProcessor.allRawMessages.map((message, i) => {
                         return (
-                            <SingleMessage key={i} rawMessage={message} index={i} 
+                            <SingleMessage key={i} rawMessage={message} index={i}
                                 functions={{ edit: editThought, delete: deleteThought, refocus: focusTextarea }} />
                         )
                     })}

@@ -23,12 +23,14 @@ body
     width: 60em;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 500px;
 }
 .threeButtons
 {
     display: grid;
     grid-template-columns: 33% 34% 33%;
+    width: 60em;
+    margin-left: auto;
+    margin-right: auto;
 }
 .selectCells
 {
