@@ -82,7 +82,7 @@ function LoginAccountUI(props) {
             <h1 className="alignCenter">Welcome!</h1>
             <div className="selectGridSmall">
                 {/* Email address and Password Boxes: */}
-                <input ref={inputRefEmail} type="text" name="email" autocomplete="on" placeholder="Email address" value={email} onChange={handleChangeEmail} onKeyDown={(event) => {
+                <input ref={inputRefEmail} type="text" name="email" autoComplete="on" placeholder="Email address" value={email} onChange={handleChangeEmail} onKeyDown={(event) => {
                         if (event.key === "Enter") {
                             event.preventDefault();
                             inputRefPassword.current.focus();

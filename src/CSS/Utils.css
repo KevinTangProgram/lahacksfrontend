@@ -35,6 +35,7 @@
     border-width: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     animation: tooltipFadeIn 0.3s;
+    z-index: 999;
 }
 .tooltip-popup.initial {
     display: none;
@@ -42,6 +43,7 @@
 .tooltip-popup.hidden {
     opacity: 0;
     transition: opacity 0.15s ease-in-out;
+    z-index: 0;
 }
 .tooltip-arrow {
     position: absolute;
