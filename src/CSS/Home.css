@@ -55,6 +55,47 @@ Home.js Elements CSS File
     display: grid;
     grid-template-columns: 72% 8% 20%;
 }
+/* Oasis View */
+.oasisPreview {
+    background-color: rgba(218, 218, 218, 0.5);
+    border: 2px solid rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 16em;
+    height: 9em;
+}
+.oasisPreview:hover {
+    transition: background-color 0.1s ease-in-out;
+    background-color: rgb(182, 182, 245, 0.376);
+    cursor: pointer;
+}
+.oasisPreview .content {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+.oasisPreview .content .title {
+    font-size: 1.4em;
+    text-decoration: underline;
+    margin-bottom: 0.5em;
+}
+.oasisPreview .content .desc {
+    text-align: left;
+    margin-left: 0.5em;
+    font-size: 1em;
+    margin-bottom: 0.5em;
+    color: #363636;
+}
 
 /* ID NAMES */
 #submitAndConfirmLong

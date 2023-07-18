@@ -74,9 +74,9 @@ export class OasisManager {
             // Guest user, save to localStorage:
             try {
                 const response = await axios.post(CONST.URL + "/oasis/getTemplateOasis", { title: title, description: description });
-                // Sync object and return ID:
-                StorageManager.createSyncedObject(response.data, "local", "oasis/" + response.data.ID);
-                return response.data.ID;
+                // Sync object and return its _id:
+                StorageManager.createSyncedObject(response.data, "local", "oasis/" + response.data._id);
+                return response.data._id;
             }
             catch (error) {
                 if (error.response && error.response.status === 400) {
@@ -107,6 +107,9 @@ export class OasisManager {
                 throw errorMessage;
             }
         }
+    }
+    static async syncLocalOases(oasisKeys) {
+
     }
     // Utils:
     static sortOasisList(list, sort) {

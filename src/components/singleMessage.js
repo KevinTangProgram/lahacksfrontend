@@ -1,7 +1,7 @@
 import '../CSS/Tab_oasis.css';
 //
 import React, { useState, useRef } from 'react';
-import copyToClipboard from '../utilities/utilities';
+import {copyToClipboard} from '../utilities/utilities';
 
 function SingleMessage(props) {
     // Message content:
