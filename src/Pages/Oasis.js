@@ -16,7 +16,6 @@ function Oasis() {
     const focusOasis = () => {
         setCurrentTab(["tabInactive", "tabActive", "tabInactive"]);
     }
-    console.log(currentTab);
     return (
         <div>
             <div style={{"position": "relative", "display": "flex"}}>

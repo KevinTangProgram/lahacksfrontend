@@ -64,6 +64,26 @@ export class StorageManager {
     static read(key) {
         return this.syncedObjects.get(key);
     }
+    static findMatchingInLocal(keyIncludes, readOnly = false, mask = {}) {
+        // Find syncedObjects which include the key:
+        const keys = Object.keys(this.localStorage);
+        const matchingKeys = keys.filter((key) => key.includes(keyIncludes));
+        // Return array of objects (readOnly):
+        if (readOnly === true) {
+            return matchingKeys.map((key) => {
+                const object = JSON.parse(this.localStorage.getItem(key));
+                for (const property in mask) {
+                    delete object[property];
+                }
+                return object;
+            });
+        }
+        // Return array of strings (creates syncedObjects):
+        if (readOnly === false) {
+            matchingKeys.map((key) => this.createSyncedObject({}, "local", key));
+            return matchingKeys;
+        }
+    }
     //
     static safeAssign(syncedObject, otherObject) {
         if (Array.isArray(syncedObject) && Array.isArray(otherObject)) {

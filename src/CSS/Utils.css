@@ -35,6 +35,8 @@
     border-width: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     animation: tooltipFadeIn 0.3s;
+    z-index: 999;
+    overflow-x: visible;
 }
 .tooltip-popup.initial {
     display: none;
@@ -42,6 +44,7 @@
 .tooltip-popup.hidden {
     opacity: 0;
     transition: opacity 0.15s ease-in-out;
+    z-index: 0;
 }
 .tooltip-arrow {
     position: absolute;
@@ -56,8 +59,9 @@
     border-right: 8px solid #e5e5e5;
 }
 .tooltip-content {
-    font-size: 14px;
+    font-size: 0.9em;
     color: #333;
+    word-wrap: break-word;
 }
 @keyframes tooltipFadeIn {
     /* 0% {

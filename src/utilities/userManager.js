@@ -39,8 +39,9 @@ export class UserManager {
         if (type === "username") {
             const minLength = 3;
             const maxLength = 20;
-            if (input.length < minLength || input.length > maxLength) {
-                return "Username must be between " + minLength + " and " + maxLength + " characters long."
+            const nonWhitespaceInput = input.replace(/\s/g, "");
+            if (nonWhitespaceInput.length < minLength || input.length > maxLength) {
+                return "Username must be between " + minLength + " and " + maxLength + " non-whitespace characters long."
             }
             if (hasBadChars(input)) {
                 return "Username cannot contain special characters."
