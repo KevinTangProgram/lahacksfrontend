@@ -25,7 +25,7 @@ export class StorageManager {
     // - modify() communicates with StorageManager to perform sync / events.
 
     // Interface:
-    static createSyncedObject(obj, type, key) {
+    static createSyncedObject(obj, type, key, syncFuncs = {pull: null, push: null, callback: null}) {
         // 1. 'temp': unsynced to storage, but works with Observer.
         // 2. 'local': synced to local storage.
         // 3. 'database': synced to database.
@@ -36,7 +36,7 @@ export class StorageManager {
         }
         // Create object:
         const syncedObject = obj;
-        const info = { key: key, type: type, status: "unsynced", lastSynced: null };
+        const info = { key: key, type: type, syncFuncs: type === 'database' ?  syncFuncs : null, status: "unsynced", lastSynced: null };
         syncedObject.StorageManagerInfo = info;
         syncedObject.modify = function (forceSyncNow = false) {
             StorageManager.handleModifications(this.StorageManagerInfo, forceSyncNow);
@@ -224,17 +224,42 @@ export class StorageManager {
             console.log("Error pushing to local storage: ", error);
         }
     }
-    static async pullFromDatabase(key) {
+    static async pullFromDatabase(StorageManagerInfo) {
         // Pull:
-
-        // Then:
-        if (wasFoundInDatabase) {
-            this.handleModifications(key, false, false);
+        try {
+            const response = await StorageManagerInfo.syncFuncs.pull();
+            if (response) {
+                this.setObjectProperty(StorageManagerInfo.key, "object", response);
+                this.handleModifications(StorageManagerInfo, false, false);
+                console.log("Pulled from database.");
+                return true;
+            }
+            return false;
+        }
+        catch (error) {
+            StorageManagerInfo.syncFuncs.callback(error);
         }
     }
-    static async pushToDatabase(key) {
+    static async pushToDatabase(StorageManagerInfo) {
         // Push:
-        // Then:
+        try {
+            const response = await StorageManagerInfo.syncFuncs.push();
+            if (response) {
+                if (StorageManagerInfo.status === "unsynced") {
+                    this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
+                    this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
+                    this.addToState(-1);
+                }
+                console.log("Pushed to database.");
+                return true;
+            }
+            else {
+                StorageManagerInfo.syncFuncs.callback("Error syncing with database.");
+            }
+        }
+        catch (error) {
+            StorageManagerInfo.syncFuncs.callback(error);
+        }
         
     }
     static async clearDatabase() {
