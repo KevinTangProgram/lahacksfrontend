@@ -133,10 +133,10 @@ export class StorageManager {
         return syncedObject;
     }
     static resetStorage() {
-        // 1. Reset all storage.
+        // 1. Reset all storage except updater.
         this.localStorage.clear();
-        this.clearDatabase();
         this.syncedObjects = new Map();
+        localStorage.setItem('updater', JSON.stringify({ date: CONST.UPDATE_DATE }));
         location.reload(true);
     }
     
@@ -298,8 +298,17 @@ export class StorageManager {
     }
     //
     static setup() {
-        // Sync state for Observer:
-
+        // Check for updates:
+        const updater = JSON.parse(localStorage.getItem('updater'));
+        if (!updater) {
+            // Update:
+            this.resetStorage();
+        }
+        else {
+            if (updater.date !== CONST.UPDATE_DATE) {
+                this.resetStorage();
+            }
+        }
         // Prevent reload:
         window.addEventListener('beforeunload', function (e) {
             if (StorageManager.unsyncCounter > 0) {
