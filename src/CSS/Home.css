@@ -60,19 +60,23 @@ Home.js Elements CSS File
     background-color: rgba(218, 218, 218, 0.5);
     border: 2px solid rgba(0, 0, 0, 0.5);
     color: white;
-    padding: 5px 10px;
+    padding: 0.3em 0.6em;
     text-align: center;
     display: inline-block;
-    margin: 4px 2px;
+    margin: 0.25em 0.125em;
     cursor: pointer;
     border-radius: 3px;
     width: 16em;
-    height: 9em;
+    height: 9.5em;
+    text-decoration: none;
+}
+.oasisPreview.active {
+    /* background-color: #f8eae7; */
+    border: 4px solid rgba(31, 107, 236, 0.5);
 }
 .oasisPreview:hover {
     transition: background-color 0.1s ease-in-out;
     background-color: rgb(182, 182, 245, 0.376);
-    cursor: pointer;
 }
 .oasisPreview .content {
     position: relative;
@@ -92,9 +96,31 @@ Home.js Elements CSS File
 .oasisPreview .content .desc {
     text-align: left;
     margin-left: 0.5em;
-    font-size: 1em;
+    font-size: 0.9em;
     margin-bottom: 0.5em;
     color: #363636;
+    padding: 0.5em;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+    background-color: rgba(205, 205, 205, 0.376);
+}
+.oasisCreate {
+    background-color: rgba(218, 218, 218, 0.5);
+    border: 2px solid rgba(0, 0, 0, 0.5);
+    color: white;
+    /* padding: 0.3em 0.6em; */
+    text-align: center;
+    display: inline-block;
+    /* margin: 0.25em 0.125em; */
+    cursor: pointer;
+    border-radius: 3px;
+    width: 2em;
+    height: 2em;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+.oasisCreate:hover {
+    transition: background-color 0.1s ease-in-out;
+    background-color: rgb(182, 182, 245, 0.376);
 }
 
 /* ID NAMES */

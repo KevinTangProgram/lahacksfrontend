@@ -125,4 +125,22 @@ export class OasisManager {
         }
         return list;
     }
+    static validateInput(type, input) {
+        if (type === "title") {
+            const minLength = 3;
+            const maxLength = 20;
+            const nonWhitespaceInput = input.replace(/\s/g, "");
+            if (nonWhitespaceInput.length < minLength || input.length > maxLength) {
+                return "Title must be between " + minLength + " and " + maxLength + " non-whitespace characters long."
+            }
+            return true;
+        }
+        if (type === "description") {
+            const maxLength = 100;
+            if (input.length > maxLength) {
+                return "Description must be less than " + maxLength + " characters long."
+            }
+            return true;
+        }
+    }
 }

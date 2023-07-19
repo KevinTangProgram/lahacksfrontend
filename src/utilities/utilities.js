@@ -4,6 +4,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 
+
+
 // Interface:
 export function copyToClipboard(text, onSuccess) {
     navigator.clipboard.writeText(text)
@@ -21,5 +23,4 @@ export function getHumanizedDate(date) {
     const dayjsDate = dayjs(date);
     return dayjsDate.fromNow();
 } 
-
 
