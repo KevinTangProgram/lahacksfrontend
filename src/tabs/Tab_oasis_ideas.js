@@ -105,9 +105,9 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         <div className="ideaContainer">
             <div className="selectGrid">
                 <div className="messageContainer">
-                    <MessageDisplays />
+                    <MessageDisplays/>
                 </div>
-                <div className="inputGrid">
+                <div style={{"margin-bottom": "30px", "display": "grid", "grid-template-columns": "90% 10%", "margin-top": "30px"}}>
                     <textarea ref={textareaRef} placeholder="Insert Thought" value={shortInput} onChange={handleChangeInput}
                         // Add onKeyPress to add thought on enter
                         onKeyDown={(event) => {
@@ -123,12 +123,12 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                             }
                         }}
                     ></textarea>
-                    <button className="selectCells" id="submitAndConfirm" onClick={() => { addThought(); }}>
+                    <button className="selectCells" style={{"border-radius": "10px", "border": "none", "margin-left": "10px"}} onClick={() => { addThought(); }}>
                         +
-                        <br></br>
-                        {charCountString}
+                        {/*<br></br>
+                        {charCountString}*/}
                         </button>
-                    <button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>
+                    {/*<button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>*/}
                 </div>
                 < ObserverComponent dependencies={"StorageState"} Component={() => { return <div>{StorageManager.unsyncCounter === 0 ? null : 'saving...'}</div>}} />
             </div>

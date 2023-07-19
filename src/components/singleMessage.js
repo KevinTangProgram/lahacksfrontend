@@ -72,7 +72,7 @@ function SingleMessage(props) {
 
     // Normal display:
     return (
-        <div className="singleMessage" id={props.index}>
+        <div className="singleMessage" id={props.index} style={{"width": "90%", "margin-left": "auto", "margin-right": "auto"}}>
             <div className="messageBanner">
                 <p className="iconDesc">{rawMessage.sender} at {timeString} {rawMessage.edits > 0 ? " (edited)": ""}</p>
                 <img className="icons iconCopy" src="/images/icons/iconCopy.png" alt="Copy" onClick={() => { copyToClipboard(rawMessage.content, copySuccess); }} />
