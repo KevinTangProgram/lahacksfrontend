@@ -81,15 +81,18 @@ function CreateOasisUI(props) {
                 <h2>New Oasis</h2>
                 <div className="selectGridSmall">
                     {/* Title */}
-                    <input ref={inputRefTitle} type="text" name="title" autoComplete="off" placeholder="Oasis Title" value={oasisTitle} onChange={handleChangeTitle} onKeyDown={(event) => {
+                    <input ref={inputRefTitle} type="text" name="title" autoComplete="off" placeholder="Title" value={oasisTitle} onChange={handleChangeTitle} onKeyDown={(event) => {
                         if (event.key === "Enter") {
                             event.preventDefault();
-                            inputRefDescription.current.focus();
+                            if (validateBoxes()) {
+                                inputRefDescription.current.focus();
+                            }
                         }
                     }}></input>
                     {oasisTitleError && <p className="loginTextboxError">{oasisTitleError}</p>}
+                    <br></br>
                     {/* Description */}
-                    <textarea ref={inputRefDescription} type="text" name="description" autoComplete="off" placeholder="Oasis Description" value={oasisDescription} onChange={handleChangeDescription} onKeyDown={(event) => {
+                    <textarea ref={inputRefDescription} type="text" name="description" autoComplete="off" placeholder="Description (Optional)" value={oasisDescription} onChange={handleChangeDescription} onKeyDown={(event) => {
                         if (event.key === "Enter" && event.shiftKey) {
                             event.preventDefault();
                             setOasisDescription(oasisDescription + "\n")
@@ -100,6 +103,7 @@ function CreateOasisUI(props) {
                         }
                     }}></textarea>
                     {oasisDescriptionError && <p className="loginTextboxError">{oasisDescriptionError}</p>}
+                    <br></br>
                     {/* Submit */}
                     <button className="loginLargeButton" onClick={() => { createOasis() }}>Create Oasis</button>
                     {/* Error Display: */}
