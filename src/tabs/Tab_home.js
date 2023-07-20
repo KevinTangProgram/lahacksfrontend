@@ -23,7 +23,7 @@ function Tab_home({ focusOasis }) {
                 // Guest user:
                 return (
                     <div>
-                        <h2 style={{"margin-top": "0", "padding-top": "15px"}}>Welcome, Guest User</h2>
+                        <h2 style={{"margin-top": "0", "padding-top": "1em"}}>Welcome, Guest User</h2>
                         <button onClick={() => {
                             setShowLogin(true);
                         }}>login</button>
@@ -35,7 +35,7 @@ function Tab_home({ focusOasis }) {
                 // Logged in user:
                 return (
                     <div>
-                        <h2>Welcome, {UserManager.user.info.username.split(" ")[0]}</h2>
+                        <h2 style={{ "margin-top": "0", "padding-top": "1em" }}>Welcome, {UserManager.user.info.username.split(" ")[0]}</h2>
                         <button onClick={() => {
                             UserManager.logout();
                         }}>logout</button>
@@ -88,7 +88,7 @@ function Tab_home({ focusOasis }) {
                                 </NavLink>
                             ))
                         ) : (
-                            <p>No oases found.</p>
+                            <p styles={{marginTop: 0, marginBottom: 0, padding: 0}}>No oases found.</p>
                         )}
                     </div>
                 );

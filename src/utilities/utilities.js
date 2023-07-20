@@ -3,9 +3,6 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
-
-
-
 // Interface:
 export function copyToClipboard(text, onSuccess) {
     navigator.clipboard.writeText(text)

@@ -6,7 +6,8 @@ import { OasisManager } from '../utilities/oasisManager';
 
 function GenerationOptionsUI(options) {
     // UI Title:
-    const [topicValue, setTopicValue] = useState(OasisManager.cachedMenuSettings.topic || options.titleValue);
+    // const [topicValue, setTopicValue] = useState(OasisManager.cachedMenuSettings.topic || options.titleValue);
+    const [topicValue, setTopicValue] = useState("sample topic");
     const handleTopicChange = (event) => {
         setTopicValue(event.target.value);
     }
