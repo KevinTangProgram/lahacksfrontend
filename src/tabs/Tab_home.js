@@ -23,7 +23,7 @@ function Tab_home({ focusOasis }) {
                 // Guest user:
                 return (
                     <div>
-                        <h2>Welcome, Guest User</h2>
+                        <h2 style={{"margin-top": "0", "padding-top": "15px"}}>Welcome, Guest User</h2>
                         <button onClick={() => {
                             setShowLogin(true);
                         }}>login</button>

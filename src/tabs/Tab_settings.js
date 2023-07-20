@@ -8,9 +8,9 @@ function Tab_settings(props) {
     const [bottomTab, setBottomTab] = useState([props.default === "user" ? "tabActive" : "tabInactive", props.default === "oasis" ? "tabActive" : "tabInactive"]);
 
     return (
-        <div className="backGround">
+        <div className="backGround" style={{"padding-bottom": "30px"}}>
             <div className="tablet">
-                <h2 className="alignCenter" >Settings</h2>
+                <h2 className="alignCenter" style={{"margin-top": "0", "padding-top": "15px"}}>Settings</h2>
                 <div className="twoButtons">
                     <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>User</button>
                     <button className="selectCells" id={bottomTab[1]} onClick={() => { setBottomTab(["tabInactive", "tabActive"]) }}>Oasis</button>
