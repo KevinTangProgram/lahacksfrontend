@@ -32,10 +32,10 @@ function Tab_oasis_ideas({ forceOpenUI }) {
     const textareaRef = useRef(null);
     useEffect(() => {
     // Scroll & focus on load:
-        focusTextarea();
-        setTimeout(() => {
-            scrollToMessageID(-1);
-        }, 500);
+        // focusTextarea();
+        // setTimeout(() => {
+        //     scrollToMessageID(-1);
+        // }, 500);
     }, []);
         // Scroll to specific message:
     function scrollToMessageID(messageID) {
@@ -81,7 +81,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         {
             useEffect(() => {
                 // Scroll & focus on rerender:
-                scrollToMessageID(-1);
+                // scrollToMessageID(-1);
                 focusTextarea();
             }, []);
             if (MessageProcessor.allRawMessages.length === 0) {
