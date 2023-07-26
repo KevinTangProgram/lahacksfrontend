@@ -13,12 +13,12 @@ import { UserManager } from '../utilities/userManager';
 const userId = "6444bb82eb14ecacdb125107";
 
 function Oasis() {
-    
+
     function getHour() {
         const timeString = (new Date()).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
         const hour = Number(timeString.substring(0, timeString.indexOf(':')));
         const ante = timeString.includes("AM");
-        if (ante && hour > 5 && hour < 12)
+        if (ante && hour > 5)
         {
             return 0;
         }
