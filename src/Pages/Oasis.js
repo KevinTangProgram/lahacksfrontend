@@ -17,7 +17,7 @@ let temp = 0;
 if (timeString.includes("AM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 12 && Number(timeString.substring(0, timeString.indexOf(':'))) > 5) {
     temp = 0;
 }
-else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 5)
+else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 5 || Number(timeString.substring(0, timeString.indexOf(':'))) == 12)
 {
     temp = 1;
 }
@@ -50,7 +50,7 @@ function Oasis() {
             if (timeString.includes("AM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 12 && Number(timeString.substring(0, timeString.indexOf(':'))) > 5) {
                 setTracker(0);
             }
-            else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 5)
+            else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 5 || Number(timeString.substring(0, timeString.indexOf(':'))) == 12)
             {
                 setTracker(1);
             }
@@ -63,7 +63,7 @@ function Oasis() {
             else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) > 8) {
                 setTracker(4);
             }
-            else if (timeString.includes("AM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 6)
+            else if (timeString.includes("AM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 6 || Number(timeString.substring(0, timeString.indexOf(':'))) == 12)
             {
                 setTracker(5);
             }
