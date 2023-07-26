@@ -12,61 +12,49 @@ import { UserManager } from '../utilities/userManager';
 
 const userId = "6444bb82eb14ecacdb125107";
 
-const timeString = (new Date()).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-let temp = 0;
-if (timeString.includes("AM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 12 && Number(timeString.substring(0, timeString.indexOf(':'))) > 5) {
-    temp = 0;
-}
-else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 5 || Number(timeString.substring(0, timeString.indexOf(':'))) == 12)
-{
-    temp = 1;
-}
-else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) > 4 && Number(timeString.substring(0, timeString.indexOf(':'))) < 7) {
-    temp = 2;
-}
-else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) > 6 && Number(timeString.substring(0, timeString.indexOf(':'))) < 9) {
-    temp = 3;
-}
-else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) > 8) {
-    temp = 4;
-}
-else if (timeString.includes("AM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 6)
-{
-    temp = 5;
-}
-
 function Oasis() {
+    
+    function getHour() {
+        const timeString = (new Date()).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+        const hour = Number(timeString.substring(0, timeString.indexOf(':')));
+        const ante = timeString.includes("AM");
+        if (ante && hour > 5 && hour < 12)
+        {
+            return 0;
+        }
+        else if (!ante && hour < 5 || hour == 12)
+        {
+            return 1;
+        }
+        else if (!ante && hour > 4 && hour < 7)
+        {
+            return 2;
+        }
+        else if (!ante && hour > 6 && hour < 9)
+        {
+            return 3;
+        }
+        else if (!ante && hour > 8)
+        {
+            return 4;
+        }
+        else if (ante && hour < 6 || hour == 12)
+        {
+            return 5;
+        }
+    }
+
     const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
     const focusOasis = () => {
         setCurrentTab(["tabInactive", "tabActive", "tabInactive"]);
     }
-    const [tracker, setTracker] = useState(temp);
+    const [tracker, setTracker] = useState(getHour());
     const welcome = ["Good Morning ", "Good Afternoon ", "Good Afternoon ", "Good Evening ", "Good Evening ", "Good Morning "];
     const image = ["morning.png", "ocean.png", "afternoon.png", "evening.png", "night.png", "night.png"];
 
     useEffect(() => {
         const interval = setInterval(() => {
-            const timeString = (new Date()).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-            if (timeString.includes("AM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 12 && Number(timeString.substring(0, timeString.indexOf(':'))) > 5) {
-                setTracker(0);
-            }
-            else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 5 || Number(timeString.substring(0, timeString.indexOf(':'))) == 12)
-            {
-                setTracker(1);
-            }
-            else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) > 4 && Number(timeString.substring(0, timeString.indexOf(':'))) < 7) {
-                setTracker(2);
-            }
-            else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) > 6 && Number(timeString.substring(0, timeString.indexOf(':'))) < 9) {
-                setTracker(3);
-            }
-            else if (timeString.includes("PM") && Number(timeString.substring(0, timeString.indexOf(':'))) > 8) {
-                setTracker(4);
-            }
-            else if (timeString.includes("AM") && Number(timeString.substring(0, timeString.indexOf(':'))) < 6 || Number(timeString.substring(0, timeString.indexOf(':'))) == 12)
-            {
-                setTracker(5);
-            }
+            setTracker(getHour());
         }, 3000);
     }, []);
 
