@@ -3,7 +3,9 @@ import Authenticator from '../components/AuthenticationUI/authenticator';
 import ObserverComponent from '../components/observer';
 import { useNavigate } from 'react-router-dom';
 import { UserManager } from '../utilities/userManager';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import OasisContext from '../Pages/Oasis';
+
 import { OasisManager } from '../utilities/oasisManager';
 import Tooltip from '../components/tooltip';
 import { getHumanizedDate } from '../utilities/utilities';

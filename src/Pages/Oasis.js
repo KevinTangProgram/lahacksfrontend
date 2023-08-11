@@ -1,8 +1,8 @@
 import '../CSS/Test.css';
 //
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from "react-router-dom";
-// import OasisContext from '../context/OasisContext';
+import { Context } from '../utilities/context';
 //
 import Tab_oasis from '../tabs/Tab_oasis';
 import Tab_home from '../tabs/Tab_home';
@@ -11,8 +11,7 @@ import Tab_settings from '../tabs/Tab_settings';
 import DebuggerPanel from '../utilities/debugger';
 import { UserManager } from '../utilities/userManager';
 import { OasisManager } from '../utilities/oasisManager';
-
-export const OasisContext = createContext();
+   
 
 function Oasis() {
     // Meridian Display Logic:
@@ -62,21 +61,22 @@ function Oasis() {
 
     // Oasis Instance Logic:
     const { id } = useParams();
-    const [oasisInstance, setOasisInstance] = useState(null);
+    const context = useContext(Context);
     const [error, setError] = useState(null);
-    const fetchData = async () => {
+    const fetchOasis = async () => {
         try {
             const oasis = await OasisManager.createOasisInstance(id);
-            setOasisInstance(oasis);
+            context.oasisInstance = oasis;
             setError(null);
         }
         catch (error) {
             setOasisInstance(null);
+            context.oasisInstance = null;
             setError(error);
         }
     };
     useEffect(() => {
-        fetchData();
+        fetchOasis();
     }, [id]);
 
     // Content Logic:
@@ -102,8 +102,7 @@ function Oasis() {
         );
     }
     return (
-        <OasisContext.Provider value={oasisInstance}>
-            <div>
+        <div>
             <div style={{"position": "relative", "display": "flex"}}>
                 <img src={"/images/icons/" + image[tracker]} style={{"width": "100%", "z-index": "-1"}}>
                     
@@ -125,8 +124,7 @@ function Oasis() {
             </div>
 
             <DebuggerPanel />
-            </div>
-        </OasisContext.Provider>
+        </div>
     );
 }
 

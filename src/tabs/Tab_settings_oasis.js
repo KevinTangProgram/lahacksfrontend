@@ -1,8 +1,7 @@
 import '../CSS/Test.css';
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { OasisManager } from '../utilities/oasisManager';
-import OasisContext from '../Pages/Oasis';
-
+import { Context } from '../utilities/context';
 //
 function Tab_settings_oasis() {
     const [theme, setTheme] = useState('default');
@@ -30,12 +29,23 @@ function Tab_settings_oasis() {
     };
 
     // Test:
-    const oasis = useContext(OasisContext);
+    const oasisInstance = useContext(Context).oasisInstance;
     // oasis.data.settings.sharing
-    const [sharing, setSharing] = useState(oasis.data.settings.sharing);
+    const [sharing, setSharing] = useState("loading...");
     const handleSharingChange = (event) => {
         setSharing(event.target.value);
     }
+    useEffect(() => {
+        if (oasisInstance) {
+            setSharing(oasisInstance.data.settings.sharing);
+        }
+    }, [oasisInstance]);
+    const updateSharing = () => {
+        if (oasisInstance) {
+            oasisInstance.getData(false).settings.sharing = sharing;
+        }
+    }
+
 
     return (
         <div className="backGround alignCenter">
@@ -49,15 +59,7 @@ function Tab_settings_oasis() {
                     onChange={handleSharingChange}
                     value={sharing}
                 />
-                <button onClick={() => {
-                    // const oasis = OasisManager.createOasisInstance("64b8c85ec43ee3c7eef0bf93")
-                    // .then((oasis) => {
-                    //     oasis.foo({generationOptions: {}, sharing: sharing, misc: []});
-                    // })
-                    // .catch((error) => {
-                    //     console.log(error);
-                    // });
-                }}>update</button>
+                <button onClick={updateSharing}>update</button>
             </div>
 
             <div>

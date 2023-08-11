@@ -171,6 +171,12 @@ export class OasisManager {
         this.error = ""; 
     }
         // Interface:
+    getData(readOnly = true) {
+        if (readOnly) {
+            return this.data;
+        }
+        return this.data.modify();
+    }
     foo(settings) {
         this.data.modify().settings = settings;
     }

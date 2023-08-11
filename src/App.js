@@ -14,28 +14,12 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import { ContextProvider } from './utilities/context';
 //
 function App() {
   return (
-    <Router>
-      {/*}
-        <div id="navigation" className="overlay">
-          <Link to="/">... | </Link>
-          <Link to="/pricing">Pricing | </Link>
-          <Link to="/about">About | </Link>
-          <Link to="/kevin">Kevin</Link>
-        </div>
-      */}
-      {/*
-      <div className="mainHeader">
-        <img src="/images/icons/iconLogo.png" id="homeImage" height="150" width="150" alt="Palm Tree"></img>
-        <div className="centerVertically">
-          <h1 className="mainTitle">Idea Oasis</h1>
-        </div>
-      </div>
-
-    */}
-      
+    <ContextProvider>
+      <Router>
         <div id="content">
           <Routes>
             <Route path="/" element={<Intro />} />
@@ -48,7 +32,8 @@ function App() {
             <Route path="/kevin" element={<Kevin />} />
           </Routes>
         </div>
-    </Router>
+      </Router>
+    </ContextProvider>
   )
 }
 
