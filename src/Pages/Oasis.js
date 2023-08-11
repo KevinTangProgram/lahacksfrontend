@@ -1,19 +1,21 @@
 import '../CSS/Test.css';
 //
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
+import { useParams } from "react-router-dom";
+// import OasisContext from '../context/OasisContext';
 //
 import Tab_oasis from '../tabs/Tab_oasis';
 import Tab_home from '../tabs/Tab_home';
 import Tab_settings from '../tabs/Tab_settings';
 //
 import DebuggerPanel from '../utilities/debugger';
-import Clock from '../components/clock';
 import { UserManager } from '../utilities/userManager';
+import { OasisManager } from '../utilities/oasisManager';
 
-const userId = "6444bb82eb14ecacdb125107";
+export const OasisContext = createContext();
 
 function Oasis() {
-
+    // Meridian Display Logic:
     function getHour() {
         const timeString = (new Date()).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
         const hour = Number(timeString.substring(0, timeString.indexOf(':')));
@@ -43,40 +45,70 @@ function Oasis() {
             return 5;
         }
     }
-
-    const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
-    const focusOasis = () => {
-        setCurrentTab(["tabInactive", "tabActive", "tabInactive"]);
-    }
-    const [tracker, setTracker] = useState(getHour());
-    const welcome = ["Good Morning ", "Good Afternoon ", "Good Afternoon ", "Good Evening ", "Good Evening ", "Good Morning "];
-    const image = ["morning.png", "ocean.png", "afternoon.png", "evening.png", "night.png", "night.png"];
-
     useEffect(() => {
         const interval = setInterval(() => {
             setTracker(getHour());
         }, 3000);
     }, []);
+    const [tracker, setTracker] = useState(getHour());
+    const welcome = ["Good Morning ", "Good Afternoon ", "Good Afternoon ", "Good Evening ", "Good Evening ", "Good Morning "];
+    const image = ["morning.png", "ocean.png", "afternoon.png", "evening.png", "night.png", "night.png"];
+    
+    // Tab Logic:
+    const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
+    const focusOasis = () => {
+        setCurrentTab(["tabInactive", "tabActive", "tabInactive"]);
+    }
 
+    // Oasis Instance Logic:
+    const { id } = useParams();
+    const [oasisInstance, setOasisInstance] = useState(null);
+    const [error, setError] = useState(null);
+    const fetchData = async () => {
+        try {
+            const oasis = await OasisManager.createOasisInstance(id);
+            setOasisInstance(oasis);
+            setError(null);
+        }
+        catch (error) {
+            setOasisInstance(null);
+            setError(error);
+        }
+    };
+    useEffect(() => {
+        fetchData();
+    }, [id]);
+
+    // Content Logic:
     function welcomeMessage()
     {
         if (!UserManager.user._id)
         {
-            return "Guest";
+            return ""; // Good evening
         }
         else
         {
-            return UserManager.user.info.username.split(" ")[0];
+            return ", " + UserManager.user.info.username.split(" ")[0]; // Good evening, [username]
         }
     }
-
+    
+    // Output:
+    if (error) {
+        return (
+            <div>
+                <br></br><br></br>
+                <p>Error: {error}</p>
+            </div>
+        );
+    }
     return (
-        <div>
+        <OasisContext.Provider value={oasisInstance}>
+            <div>
             <div style={{"position": "relative", "display": "flex"}}>
                 <img src={"/images/icons/" + image[tracker]} style={{"width": "100%", "z-index": "-1"}}>
                     
                 </img>
-                <h1 style={{"color": "black", "padding-top": "5em", "margin-top": "0", "text-align": "center", "width": "100%", "position": "absolute"}}>{welcome[tracker] + welcomeMessage()}</h1>
+                <h1 style={{"color": "black", "padding-top": "5em", "margin-top": "0", "text-align": "center", "width": "100%", "position": "absolute", "fontStyle": "italic"}}>{welcome[tracker] + welcomeMessage()}</h1>
                 <div id="noBackground" style={{"position": "absolute", "top": "auto", "bottom": "0", "width": "100%"}}>
                     <div className="threeButtons" style={{}}>
                         <button className="selectCells" id={currentTab[0]} onClick={() => { setCurrentTab(["tabActive", "tabInactive", "tabInactive"]) }}>Home</button>
@@ -93,8 +125,8 @@ function Oasis() {
             </div>
 
             <DebuggerPanel />
-        </div>
-
+            </div>
+        </OasisContext.Provider>
     );
 }
 

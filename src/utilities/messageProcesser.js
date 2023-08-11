@@ -1,8 +1,9 @@
 import { StorageManager } from './storageManager.js';
+import { CONST } from './CONST.js';
 import { v4 as uuidv4 } from "uuid";
 //
 export class MessageProcessor {
-    // Constants:
+    // Static Constants:
     static ERROR_MAX_MESSAGE_LENGTH = 1000; // 1000 characters, ~200 words.
     static WARNING_MAX_MESSAGE_LENGTH = 250; // 1000 characters, ~50 words.
     static WARNING_MIN_MESSAGE_LENGTH = 20; // 20 characters, ~3-4 words.
@@ -35,7 +36,6 @@ export class MessageProcessor {
     // 2:  Generation complete
     static currentIndex = 0; // Index of the message currently being generated.
     // Backend:
-    static backendURL = "http://localhost:8080";
     static syncedFromDatabase = false;
     static guestUser = true;
     static sessionIndex = 0; // Obtained from database, the true index of allRawMessages[0].
@@ -48,7 +48,18 @@ export class MessageProcessor {
     // 4. Sync to and from database.
     // 5. Connect with backend for GPT-3 generation.
     // 6. Handle API failures.
-
+    constructor() {
+        // Menu: 0: closed, 1: open, 2: openWithWarnings.
+        this.cachedMenuSettings = { // Object (message indexes, topic, mode, options)
+            generateRecent: true,
+            startIndex: 0,
+            endIndex: 0,
+            topic: null,
+            mode: 0,
+            generateHeaders: false,
+            useBulletFormat: false,
+        }
+    }
     // 1:
     static addMessage(newMessageString) {
         if (!this.readyForMessages()) {
@@ -223,7 +234,7 @@ export class MessageProcessor {
     }
     static queueGenerationRequest() {
         // Queue generation request:
-        axios.post(this.backendURL + '/process', {
+        axios.post(CONST.URL + '/process', {
             messages: this.allRawMessages,
             options: this.generationOptions
         })

@@ -1,5 +1,7 @@
 import '../CSS/Test.css';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { OasisManager } from '../utilities/oasisManager';
+import OasisContext from '../Pages/Oasis';
 
 //
 function Tab_settings_oasis() {
@@ -27,9 +29,36 @@ function Tab_settings_oasis() {
         setBubbleSort(event.target.value);
     };
 
+    // Test:
+    const oasis = useContext(OasisContext);
+    // oasis.data.settings.sharing
+    const [sharing, setSharing] = useState(oasis.data.settings.sharing);
+    const handleSharingChange = (event) => {
+        setSharing(event.target.value);
+    }
+
     return (
         <div className="backGround alignCenter">
             <h2>OASIS</h2>
+
+            <div>
+                <h3>Sharing</h3>
+                <input
+                    type="text"
+                    name="Sharing"
+                    onChange={handleSharingChange}
+                    value={sharing}
+                />
+                <button onClick={() => {
+                    // const oasis = OasisManager.createOasisInstance("64b8c85ec43ee3c7eef0bf93")
+                    // .then((oasis) => {
+                    //     oasis.foo({generationOptions: {}, sharing: sharing, misc: []});
+                    // })
+                    // .catch((error) => {
+                    //     console.log(error);
+                    // });
+                }}>update</button>
+            </div>
 
             <div>
                 <h3>Theme</h3>

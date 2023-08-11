@@ -1,4 +1,5 @@
 import { StorageManager } from './storageManager.js';
+import { MessageProcessor } from './messageProcesser.js';
 import { UserManager } from './userManager.js';
 import { CONST } from './CONST.js';
 import axios from 'axios';
@@ -6,42 +7,8 @@ import axios from 'axios';
 
 //
 export class OasisManager {
-    // Constructor:
-    constructor(UUID) {
-        // Oasis Info:
-
-        // Oasis Settings:
-
-        // Oasis Stats:
-
-        // Oasis Users:
-
-        // Oasis Content:
-        this.lastGeneratedMessageIndex = 0;
-
-        // Oasis Cache:
-        this.oasisCache = StorageManager.createSyncedObject({
-            activeTab: 1,
-            toggleCheckboxes: true
-        }, "local", "oasisCache");
-        this.cachedOasisState = "I_bottom";
-        // I_X: ideas tab, scroll to message index X.
-        // I_bottom: ideas tab, scroll to bottom.
-        // I_low: ideas tab, highlight + scroll to low content messages.
-        // I_high: ideas tab, highlight + scroll to high content messages.
-        // N: scroll to message,
-        // Menu: 0: closed, 1: open, 2: openWithWarnings.
-        this.cachedMenuSettings = { // Object (message indexes, topic, mode, options)
-            generateRecent: true,
-            startIndex: 0,
-            endIndex: 0,
-            topic: null,
-            mode: 0,
-            generateHeaders: false,
-            useBulletFormat: false,
-        } 
-    }
-    // Interface:
+    // Static Logic:
+        // Interface:
     static async getHomeView(type, sort) {
         const token = UserManager.token.token;
         if (token === "") {
@@ -68,7 +35,7 @@ export class OasisManager {
             }
         }
     }
-    static async createOasis(title, description) {
+    static async createNewOasis(title, description) {
         const token = UserManager.token.token;
         if (token === "") {
             // Guest user, save to localStorage:
@@ -109,9 +76,49 @@ export class OasisManager {
         }
     }
     static async syncLocalOases(oasisKeys) {
-
+        // Transform local oases -> database oases:
     }
-    // Utils:
+    static async createOasisInstance(UUID) {
+        // Search localStorage:
+        const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, false);
+        if (oasisMatches && oasisMatches.length > 0) {
+            return new OasisManager(StorageManager.read(oasisMatches[0]));
+        }
+        // Search database:
+        try {
+            const response = await axios.get(CONST.URL + "/oasis/access", { params: { token: token, UUID: UUID } });
+            // Create synced Object and return data:
+            const oasis = new OasisManager(response.data, "synced");
+            const callback = (error) => {
+                oasis.error = error;
+            };
+            const push = () => {
+                // Push to database:
+                axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, data: oasis.data })
+                    .then(() => {
+                        // Success:
+                        callback("");
+                    }).catch((error) => {
+                        // Fail:
+                        callback(error);
+                    });
+            };
+            StorageManager.createSyncedObject(response.data, "database", "oasis/" + UUID, { pull: null, push: push, callback: callback });
+            return oasis;
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later.";
+                throw errorMessage;
+            }
+        }
+    }
+        // Utils:
     static sortOasisList(list, sort) {
         if (sort === "recent") {
             list.sort((a, b) => {
@@ -143,4 +150,29 @@ export class OasisManager {
             return true;
         }
     }
+
+    // Instance Logic:
+    constructor(data, type) {
+        // Setup vars:
+        this.type = type;
+        this.data = data;
+        this.UUID = data._id;
+        this.messageProcessor = new MessageProcessor(data.content);
+        this.cache = {
+            activeTab: 1,
+            toggleCheckboxes: true,
+            state: "I_bottom"
+        // I_X: ideas tab, scroll to message index X.
+        // I_bottom: ideas tab, scroll to bottom.
+        // I_low: ideas tab, highlight + scroll to low content messages.
+        // I_high: ideas tab, highlight + scroll to high content messages.
+        // N: scroll to message,
+        };     
+        this.error = ""; 
+    }
+        // Interface:
+    foo(settings) {
+        this.data.modify().settings = settings;
+    }
+        // Utils:
 }

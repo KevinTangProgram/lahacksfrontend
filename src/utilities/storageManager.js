@@ -47,10 +47,10 @@ export class StorageManager {
         // Force sync:
         if (type === 'local') {
             // Check if exists in local:
-            this.addToState(1);
-            if (this.pullFromLocal(info) === false) {
-                this.pushToLocal(info);
-            }
+            this.addToState(1); // set overall status unsynced.
+            if (this.pullFromLocal(info) === false) { // if true, syncs overall status.
+                this.pushToLocal(info); // will sync overall status.
+            } 
         }
         if (type === 'database') {
             // Check if exists in database:
@@ -225,6 +225,10 @@ export class StorageManager {
         }
     }
     static async pullFromDatabase(StorageManagerInfo) {
+        if (StorageManagerInfo.syncFuncs.pull === null) {
+            this.handleModifications(StorageManagerInfo, false, false);
+            return true;
+        }
         // Pull:
         try {
             const response = await StorageManagerInfo.syncFuncs.pull();
