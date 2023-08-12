@@ -130,7 +130,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                         </button>
                     {/*<button className="selectCells" id="submitAndConfirmLong" onClick={() => { forceOpenUI() }}>Open Menu</button>*/}
                 </div>
-                < ObserverComponent dependencies={"StorageState"} Component={() => { return <div>{StorageManager.unsyncCounter === 0 ? null : 'saving...'}</div>}} />
+                {/* < ObserverComponent dependencies={"StorageState"} Component={() => { return <div>{StorageManager.unsyncCounter === 0 ? null : 'saving...'}</div>}} /> */}
             </div>
         </div>
     );

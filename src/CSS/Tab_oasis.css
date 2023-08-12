@@ -74,6 +74,14 @@ Tab_oasis_ideas.js CSS file
     aspect-ratio: 1/1;
     width: 3%;
 }
+.iconSync {
+    position: absolute;
+    /* margin-right: 0em; */
+    margin-left: 8em;
+    padding: 0em;
+    aspect-ratio: 1/1;
+    width: 3%;
+}
 
 .generationOptionsMenu {
     position: relative;

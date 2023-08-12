@@ -1,9 +1,12 @@
 import '../CSS/Test.css';
 //
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
 import Clock from '../components/clock';
 import Tab_oasis_ideas from './Tab_oasis_ideas';
 import Tab_oasis_notes from './Tab_oasis_notes';
+import { Context } from '../utilities/context';
+import Observer from '../components/observer';
+import { StorageManager } from '../utilities/storageManager';
 
 function Tab_oasis() {
     // Tab Navigation:
@@ -19,28 +22,45 @@ function Tab_oasis() {
         setBottomTab(["tabInactive", "tabActive"]);
     };
     // Title input:
-    const [titleValue, setTitleValue] = useState("");
+    const oasisInstance = useContext(Context).oasisInstance;
+    const [titleValue, setTitleValue] = useState("loading...");
     const handleTitleChange = (event) => {
         setTitleValue(event.target.value);
+        if (oasisInstance) {
+            oasisInstance.getData(false).info.title = event.target.value;
+        }
     }
+    useEffect(() => {
+        if (oasisInstance) {
+            setTitleValue(oasisInstance.data.info.title);
+        }
+    }, [oasisInstance]);
+
     const memoizedTitleValue = useMemo(() => titleValue, [openNotesTabWithoutUI, openNotesTabWithUI]);
-
-
-
 
     return (
         <div className="backGround">
             <div className="tablet">
+                {/* start banner */}
                 <div className="dateAndTime">
                     <Clock type={"date"} className={"alignLeft"} />
+                    <Observer dependencies={"StorageState"} Component={() => {
+                        if (StorageManager.unsyncCounter === 0) {
+                            // Synced:
+                            return <img className="iconSync" src="/images/icons/iconConfirm.png" alt="Synced" />
+                        }
+                        // Syncing:
+                        return <div className="loader iconSync"></div>
+                    }} />
                 {
-                    title && <input placeholder="Insert Title Here" className="alignCenter" onChange={() => handleTitleChange} onMouseLeave={() => setTitle(false)}></input>
+                    title && <input value={titleValue} className="alignCenter" onChange={handleTitleChange} onMouseLeave={() => setTitle(false)}></input>
                 }
                 {
-                    !title && <h1 className="alignCenter" onMouseOver={() => setTitle(true)}>{titleValue}</h1>
+                    !title && <h3 className="alignCenter" onMouseOver={() => setTitle(true)}>{titleValue}</h3>
                 }
                     <Clock type={"time"} className={"alignRight"} />
                 </div>
+                {/* end banner */}
                 <div className="twoButtons">
                     <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>Ideas</button>
                 <button className="selectCells" id={bottomTab[1]} onClick={() => { openNotesTabWithoutUI() }}>Generated Notes</button>

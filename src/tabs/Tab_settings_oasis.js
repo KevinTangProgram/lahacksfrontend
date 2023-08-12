@@ -1,6 +1,5 @@
 import '../CSS/Test.css';
 import React, { useState, useEffect, useContext } from 'react';
-import { OasisManager } from '../utilities/oasisManager';
 import { Context } from '../utilities/context';
 //
 function Tab_settings_oasis() {
