@@ -58,11 +58,11 @@ function CreateOasisUI(props) {
         }
         return valid;
     }
-    function createOasis() {
+    function createNewOasis() {
         if (validateBoxes()) {
             setError(null);
             setLoading(true);
-            OasisManager.createOasis(oasisTitle, oasisDescription)
+            OasisManager.createNewOasis(oasisTitle, oasisDescription)
                 .then((response) => {
                     setLoading(false);
                     props.navFunc(response);
@@ -99,13 +99,13 @@ function CreateOasisUI(props) {
                         }
                         else if (event.key === "Enter") {
                             event.preventDefault();
-                            createOasis();
+                            createNewOasis();
                         }
                     }}></textarea>
                     {oasisDescriptionError && <p className="loginTextboxError">{oasisDescriptionError}</p>}
                     <br></br>
                     {/* Submit */}
-                    <button className="loginLargeButton" onClick={() => { createOasis() }}>Create Oasis</button>
+                    <button className="loginLargeButton" onClick={() => { createNewOasis() }}>Create Oasis</button>
                     {/* Error Display: */}
                     {error && <p className="loginTextboxError">{error}</p>}
                     {/* Loading Display: */}

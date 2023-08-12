@@ -85,25 +85,26 @@ export class OasisManager {
             return new OasisManager(StorageManager.read(oasisMatches[0]));
         }
         // Search database:
+        const token = UserManager.token.token;
         try {
             const response = await axios.get(CONST.URL + "/oasis/access", { params: { token: token, UUID: UUID } });
             // Create synced Object and return data:
-            const oasis = new OasisManager(response.data, "synced");
+                // Note that we set our oasis data to a synced object, allowing us to delegate syncing and rerendering to StorageManager.
+                // This requires us to pass in a pull, push, and callback function.
+                // We leave pull null as we do this manually.
+            const oasis = new OasisManager(response.data);
             const callback = (error) => {
                 oasis.error = error;
             };
-            const push = () => {
-                // Push to database:
-                axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, data: oasis.data })
-                    .then(() => {
-                        // Success:
-                        callback("");
-                    }).catch((error) => {
-                        // Fail:
-                        callback(error);
-                    });
+            const push = async () => {
+                try {
+                    const response = await axios.post(CONST.URL + "/oasis/push", { token: token, oasisInstance: oasis });
+                }
+                catch (error) {
+                    throw error;
+                }
             };
-            StorageManager.createSyncedObject(response.data, "database", "oasis/" + UUID, { pull: null, push: push, callback: callback });
+            oasis.data = StorageManager.createSyncedObject(response.data, "database", "oasis/" + UUID, { pull: null, push: push, callback: callback });
             return oasis;
         }
         catch (error) {
@@ -152,11 +153,12 @@ export class OasisManager {
     }
 
     // Instance Logic:
-    constructor(data, type) {
+    constructor(data) {
         // Setup vars:
-        this.type = type;
+        this.type = data.users.owner ? "synced" : "local";
         this.data = data;
         this.UUID = data._id;
+        this.error = null;
         this.messageProcessor = new MessageProcessor(data.content);
         this.cache = {
             activeTab: 1,
@@ -176,9 +178,6 @@ export class OasisManager {
             return this.data;
         }
         return this.data.modify();
-    }
-    foo(settings) {
-        this.data.modify().settings = settings;
     }
         // Utils:
 }

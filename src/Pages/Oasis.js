@@ -50,7 +50,7 @@ function Oasis() {
         }, 3000);
     }, []);
     const [tracker, setTracker] = useState(getHour());
-    const welcome = ["Good Morning ", "Good Afternoon ", "Good Afternoon ", "Good Evening ", "Good Evening ", "Good Morning "];
+    const welcome = ["Good Morning", "Good Afternoon", "Good Afternoon", "Good Evening", "Good Evening", "Good Morning"];
     const image = ["morning.png", "ocean.png", "afternoon.png", "evening.png", "night.png", "night.png"];
     
     // Tab Logic:
@@ -70,7 +70,6 @@ function Oasis() {
             setError(null);
         }
         catch (error) {
-            setOasisInstance(null);
             context.oasisInstance = null;
             setError(error);
         }

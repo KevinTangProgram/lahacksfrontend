@@ -28,9 +28,8 @@ function Tab_settings_oasis() {
         setBubbleSort(event.target.value);
     };
 
-    // Test:
+    // Test Instanced Sharing:
     const oasisInstance = useContext(Context).oasisInstance;
-    // oasis.data.settings.sharing
     const [sharing, setSharing] = useState("loading...");
     const handleSharingChange = (event) => {
         setSharing(event.target.value);

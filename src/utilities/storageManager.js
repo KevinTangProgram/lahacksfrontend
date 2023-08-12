@@ -242,29 +242,35 @@ export class StorageManager {
         }
         catch (error) {
             StorageManagerInfo.syncFuncs.callback(error);
+            console.log("Error pulling from database: ", error);
         }
     }
     static async pushToDatabase(StorageManagerInfo) {
         // Push:
         try {
             const response = await StorageManagerInfo.syncFuncs.push();
-            if (response) {
-                if (StorageManagerInfo.status === "unsynced") {
-                    this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
-                    this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
-                    this.addToState(-1);
-                }
-                console.log("Pushed to database.");
-                return true;
+            if (StorageManagerInfo.status === "unsynced") {
+                this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
+                this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
+                this.addToState(-1);
             }
-            else {
-                StorageManagerInfo.syncFuncs.callback("Error syncing with database.");
-            }
+            StorageManagerInfo.syncFuncs.callback(null);
+            console.log("Pushed to database.");
+            return true;
         }
         catch (error) {
-            StorageManagerInfo.syncFuncs.callback(error);
+            let errorMessage;
+            if (error.response && error.response.status === 400) {
+                // My error:
+                errorMessage = error.response.data.error;
+                StorageManagerInfo.syncFuncs.callback(errorMessage);
+            } else {
+                // Network error:
+                errorMessage = "Network error - please try again later.";
+                StorageManagerInfo.syncFuncs.callback(errorMessage);
+            }
+            console.log("Error pushing to database: ", errorMessage);
         }
-        
     }
     static async clearDatabase() {
 
