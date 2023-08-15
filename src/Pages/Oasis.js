@@ -63,15 +63,18 @@ function Oasis() {
     const { id } = useParams();
     const context = useContext(Context);
     const [error, setError] = useState(null);
+    const [loaded, setLoaded] = useState(false);
     const fetchOasis = async () => {
         try {
             const oasis = await OasisManager.createOasisInstance(id);
             context.oasisInstance = oasis;
             setError(null);
+            setLoaded(true);
         }
         catch (error) {
             context.oasisInstance = null;
             setError(error);
+            setLoaded(false);
         }
     };
     useEffect(() => {
@@ -115,11 +118,14 @@ function Oasis() {
                     </div>
                 </div>
             </div>
-            
+            {/* Note: because the following components are not loaded until oasisInstance exists, 
+            we can freely access oasisInstance inside them without null checks. */}
             <div className="activeTab">
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
-                {currentTab[1] === "tabActive" && <Tab_oasis />}
-                {currentTab[2] === "tabActive" && <Tab_settings default="oasis" />}
+                {currentTab[1] === "tabActive" && !loaded && <div className="loader"></div>}
+                {currentTab[1] === "tabActive" && loaded && <Tab_oasis />}
+                {currentTab[2] === "tabActive" && !loaded && <div className="loader"></div>}
+                {currentTab[2] === "tabActive" && loaded  && <Tab_settings default="oasis" />}
             </div>
 
             <DebuggerPanel />

@@ -1,6 +1,7 @@
 import '../CSS/Test.css';
 import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../utilities/context';
+import { StorageManager } from '../utilities/storageManager';
 //
 function Tab_settings_oasis() {
     const [theme, setTheme] = useState('default');
@@ -29,18 +30,16 @@ function Tab_settings_oasis() {
 
     // Test Instanced Sharing:
     const oasisInstance = useContext(Context).oasisInstance;
-    const [sharing, setSharing] = useState("loading...");
+    const [sharing, setSharing] = useState(oasisInstance.getData().settings.sharing);
     const handleSharingChange = (event) => {
         setSharing(event.target.value);
+        oasisInstance.setData().settings.sharing = event.target.value;
     }
-    useEffect(() => {
-        if (oasisInstance) {
-            setSharing(oasisInstance.data.settings.sharing);
-        }
-    }, [oasisInstance]);
     const updateSharing = () => {
-        if (oasisInstance) {
-            oasisInstance.getData(false).settings.sharing = sharing;
+        const printTest = () => {console.log("printTest ")};
+        const debouncePrintTest = StorageManager.debounce(printTest, 1000);
+        for (let i = 0; i < 30; i++) {
+            debouncePrintTest();
         }
     }
 

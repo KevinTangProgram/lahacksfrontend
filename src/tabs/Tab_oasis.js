@@ -23,18 +23,11 @@ function Tab_oasis() {
     };
     // Title input:
     const oasisInstance = useContext(Context).oasisInstance;
-    const [titleValue, setTitleValue] = useState("loading...");
+    const [titleValue, setTitleValue] = useState(oasisInstance.getData().info.title);
     const handleTitleChange = (event) => {
         setTitleValue(event.target.value);
-        if (oasisInstance) {
-            oasisInstance.getData(false).info.title = event.target.value;
-        }
+        oasisInstance.setData().info.title = event.target.value;
     }
-    useEffect(() => {
-        if (oasisInstance) {
-            setTitleValue(oasisInstance.data.info.title);
-        }
-    }, [oasisInstance]);
 
     const memoizedTitleValue = useMemo(() => titleValue, [openNotesTabWithoutUI, openNotesTabWithUI]);
 
@@ -53,10 +46,10 @@ function Tab_oasis() {
                         return <div className="loader iconSync"></div>
                     }} />
                 {
-                    title && <input value={titleValue} className="alignCenter" onChange={handleTitleChange} onMouseLeave={() => setTitle(false)}></input>
+                        title && <input value={titleValue} className="alignCenter" onChange={handleTitleChange} onBlur={() => setTitle(false)}></input>
                 }
                 {
-                    !title && <h3 className="alignCenter" onMouseOver={() => setTitle(true)}>{titleValue}</h3>
+                    !title && <h3 className="alignCenter" onClick={() => setTitle(true)}>{titleValue}</h3>
                 }
                     <Clock type={"time"} className={"alignRight"} />
                 </div>

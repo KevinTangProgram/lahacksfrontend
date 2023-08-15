@@ -173,10 +173,10 @@ export class OasisManager {
         this.error = ""; 
     }
         // Interface:
-    getData(readOnly = true) {
-        if (readOnly) {
-            return this.data;
-        }
+    getData() {
+        return this.data;
+    }
+    setData() {
         return this.data.modify();
     }
         // Utils:

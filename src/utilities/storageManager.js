@@ -8,12 +8,13 @@ export class StorageManager {
     // Storage:
     static syncedObjects = new Map(); // {key -> syncedObject}
     // syncedObject: {property1, property2..., modify(), 
-    //              StorageManagerInfo: {key, type, status, lastSynced} }
+    //              StorageManagerInfo: {key, type, status, lastSynced, {syncFuncs}} }
+    static pendingSyncs = new Map(); // Store pending sync tasks. {StorageManagerInfo.key -> timeoutId}
 
     // Workflow:
     // 1. Creating a synced object (createSyncedObject) returns a synced object.
     // 2. The synced object will automatically sync to storage.
-    // 3. Communicates with observerManager to rerender when synced object is modified.
+    // 3. Communicates with dependent observer components to rerender when synced object is modified.
     // Rules:
     // - Access syncedObject properties as usual, but only modify through modify().
     // - If you need to assign the whole object, use safeAssign().
@@ -142,7 +143,7 @@ export class StorageManager {
     
     // Utils:
     static handleModifications(StorageManagerInfo, forceSyncNow, pushMode = true) {
-        // Rerender:
+        // Rerender dependent observers:
         setTimeout(() => {
             this.emitEvent(StorageManagerInfo.key);
         }, 0);
@@ -150,15 +151,16 @@ export class StorageManager {
         if (StorageManagerInfo.type === 'temp') {
             return;
         }
-        // Handle Syncing:
+        // Handle Syncing for 3 types of events:
         if (pushMode === true) {
-            // Sending data to local/database:
+            // Pushing to remote:
             if (forceSyncNow === true) {
                 setTimeout(() => {
                     this.forceSyncObject(StorageManagerInfo);
                 }, 0);
             }
             else {
+                // Object was just modified at origin:
                 if (StorageManagerInfo.status === "synced") {
                     this.addToState(1);
                 }
@@ -167,7 +169,7 @@ export class StorageManager {
             }
         }
         else {
-            // Just recieved data:
+            // Just recieved data from remote:
             if (StorageManagerInfo.status === "unsynced") {
                 this.addToState(-1);
             }
@@ -176,9 +178,19 @@ export class StorageManager {
         }
     }
     static queueSyncObject(StorageManagerInfo) {
-        this.debounce(() => {
-            StorageManager.forceSyncObject(StorageManagerInfo);
-        }, 5000)();
+        // Prepare an object to be synced, debounce multiple requests.
+        if (this.pendingSyncs.has(StorageManagerInfo.key)) {
+            // Defer the pending sync:
+            clearTimeout(this.pendingSyncs.get(StorageManagerInfo.key));
+            this.pendingSyncs.delete(StorageManagerInfo.key);
+        }
+        // Start a timeout to sync object:
+        const sync = () => {
+            this.forceSyncObject(StorageManagerInfo);
+            this.pendingSyncs.delete(StorageManagerInfo.key);
+        }
+        const timeoutId = setTimeout(sync, 5000);
+        this.pendingSyncs.set(StorageManagerInfo.key, timeoutId);
     }
     static forceSyncObject(StorageManagerInfo) {
         if (StorageManagerInfo.type === 'temp') {
