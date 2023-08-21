@@ -75,30 +75,35 @@
     } */
 }
 
-/* loading / syncing icons: */
+/* oasis status bar: */
+.statusBar {
+    display: grid;
+    grid-template-columns: 12% 21% 33% 33%;
+    align-items: center;
+}
 .icon-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* width: 30px;
-        height: 30px; */
+    width: 3em;
+    height: 3em;
 }
 .iconSynced {
-    position: absolute;
-    /* margin-right: 0em; */
-    margin-left: 8em;
+    position: relative;
+    margin-right: 0em;
+    margin-left: 0em;
     padding: 0em;
     aspect-ratio: 1/1;
-    width: 3%;
+    width: 100%;
 }
 .iconLoading {
-    border: 6px solid #f3f3f3;
+    border: 1em solid #f3f3f3;
     /* Light grey */
-    border-top: 6px solid #3498db;
+    border-top: 1em solid #3498db;
     /* Blue */
     border-radius: 50%;
-    /* width: 30px;
-    height: 30px; */
+    width: 30px;
+    height: 30px;
     animation: spin 1s linear infinite;
     margin-left: auto;
     margin-right: auto;

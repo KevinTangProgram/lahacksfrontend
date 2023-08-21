@@ -10,7 +10,7 @@ function SyncStatus() {
             return (
                <div className="icon-container">
                     {StorageManager.unsyncCounter === 0 ? (
-                        <img src="/images/icons/iconConfirm.png" alt="Synced" />
+                        <img className="iconSynced" src="/images/icons/iconConfirm.png" alt="Synced" />
                     ) : (
                         <div className="loader" alt="Loading"></div>
                     )}

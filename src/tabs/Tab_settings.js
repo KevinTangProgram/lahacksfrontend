@@ -4,6 +4,7 @@ import Tab_settings_oasis from './Tab_settings_oasis';
 import Clock from '../components/clock';
 import '../CSS/Tab_oasis.css';
 import SyncStatus from '../components/syncStatus';
+import StatusBar from '../components/statusBar';
 //
 function Tab_settings(props) {
     // Tab Navigation:
@@ -13,12 +14,7 @@ function Tab_settings(props) {
         <div className="backGround" style={{"padding-bottom": "30px"}}>
             <div className="tablet">
                 {/* start banner */}
-                <div className="dateAndTime">
-                    <Clock type={"date"} className={"alignLeft"} />
-                    <SyncStatus />
-                    <h3 className="alignCenter">Settings</h3>
-                    <Clock type={"time"} className={"alignRight"} />
-                </div>
+                <StatusBar header={"hello"}/>
                 {/* end banner */}
                 <div className="twoButtons">
                     <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>User</button>
