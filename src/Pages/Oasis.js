@@ -125,7 +125,7 @@ function Oasis() {
                 {currentTab[1] === "tabActive" && !loaded && <div className="loader"></div>}
                 {currentTab[1] === "tabActive" && loaded && <Tab_oasis />}
                 {currentTab[2] === "tabActive" && !loaded && <div className="loader"></div>}
-                {currentTab[2] === "tabActive" && loaded  && <Tab_settings default="oasis" />}
+                {currentTab[2] === "tabActive" && loaded  && <Tab_settings type="oasis" />}
             </div>
 
             <DebuggerPanel />
