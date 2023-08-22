@@ -1,18 +1,16 @@
 import '../CSS/Test.css';
 //
-import React, { useState, useMemo, useContext, useEffect } from 'react';
-import Clock from '../components/clock';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import Tab_oasis_ideas from './Tab_oasis_ideas';
 import Tab_oasis_notes from './Tab_oasis_notes';
 import { Context } from '../utilities/context';
-import Observer from '../components/observer';
-import { StorageManager } from '../utilities/storageManager';
+import StatusBar from '../components/statusBar';
 
 function Tab_oasis() {
     // Tab Navigation:
     const [bottomTab, setBottomTab] = useState(["tabActive", "tabInactive"]);
     const [openUIByDefault, setOpenUIByDefault] = useState(false);
-    const [title, setTitle] = useState(false);
+    // const [title, setTitle] = useState(false);
     const openNotesTabWithoutUI = () => {
         setOpenUIByDefault(false);
         setBottomTab(["tabInactive", "tabActive"]);
@@ -22,38 +20,66 @@ function Tab_oasis() {
         setBottomTab(["tabInactive", "tabActive"]);
     };
     // Title input:
-    const oasisInstance = useContext(Context).oasisInstance;
-    const [titleValue, setTitleValue] = useState(oasisInstance.getData().info.title);
-    const handleTitleChange = (event) => {
-        setTitleValue(event.target.value);
-        oasisInstance.setData().info.title = event.target.value;
-    }
+    // const oasisInstance = useContext(Context).oasisInstance;
+    // const [titleValue, setTitleValue] = useState(oasisInstance.getData().info.title);
+    // const handleTitleChange = (event) => {
+    //     setTitleValue(event.target.value);
+    //     oasisInstance.setData().info.title = event.target.value;
+    // }
 
-    const memoizedTitleValue = useMemo(() => titleValue, [openNotesTabWithoutUI, openNotesTabWithUI]);
+    // const memoizedTitleValue = useMemo(() => titleValue, [openNotesTabWithoutUI, openNotesTabWithUI]);
 
     return (
         <div className="backGround">
             <div className="tablet">
-                {/* start banner */}
-                <div className="dateAndTime">
-                    <Clock type={"date"} className={"alignLeft"} />
-                    <Observer dependencies={"StorageState"} Component={() => {
-                        if (StorageManager.unsyncCounter === 0) {
-                            // Synced:
-                            return <img className="iconSync" src="/images/icons/iconConfirm.png" alt="Synced" />
+                <StatusBar headerComponent={() => {
+                    // Title input:
+                    const oasisInstance = useContext(Context).oasisInstance;
+                    const [showInput, setShowInput] = useState(false); 
+                    const [titleValue, setTitleValue] = useState(oasisInstance.getData().info.title);
+                    const handleTitleChange = (event) => {
+                        setTitleValue(event.target.value);
+                        oasisInstance.setData().info.title = event.target.value;
+                    }
+                    // Input - Text transition:
+                    const textRef = useRef(null);
+                    const inputRef = useRef(null);
+                    const [dimensions, setDimensions] = useState({});
+                    const openInput = () => {
+                        setDimensions({
+                            width: textRef.current.offsetWidth,
+                            height: textRef.current.offsetHeight,
+                        });
+                        setShowInput(true);
+                        setTimeout(() => {
+                            inputRef.current.focus();;
+                            inputRef.current.selectionStart = inputRef.current.value.length;
+                        }, 0);
+                    };
+                    const handleKeyDown = (event) => {
+                        console.log("hey");
+                        if (event.key === "Enter") {
+                            event.preventDefault();
+                            closeInput();
                         }
-                        // Syncing:
-                        return <div className="loader iconSync"></div>
-                    }} />
-                {
-                        title && <input value={titleValue} className="alignCenter" onChange={handleTitleChange} onBlur={() => setTitle(false)}></input>
-                }
-                {
-                    !title && <h3 className="alignCenter" onClick={() => setTitle(true)}>{titleValue}</h3>
-                }
-                    <Clock type={"time"} className={"alignRight"} />
-                </div>
-                {/* end banner */}
+                    };
+                    const closeInput = () => {
+                        setShowInput(false);
+                    };
+                    return (
+                        <div className="titleContainer">
+                            {showInput && <textarea className="titleInput" ref={inputRef} style={dimensions} type="text" value={titleValue} onKeyDown={(event) => {
+                                if (event.key === "Enter" || event.key === "Escape") {
+                                    event.preventDefault();
+                                    closeInput();
+                                }
+                            }} onChange={handleTitleChange} onBlur={closeInput} />}
+                            {!showInput && <h3 className="titleText" ref={textRef} onClick={openInput}>{titleValue}</h3>}
+                        </div>
+                    );
+                }} />
+                {/* !title && <h3 className="alignCenter" onClick={() => setTitle(true)}>{titleValue}</h3> */}
+
                 <div className="twoButtons">
                     <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>Ideas</button>
                 <button className="selectCells" id={bottomTab[1]} onClick={() => { openNotesTabWithoutUI() }}>Generated Notes</button>

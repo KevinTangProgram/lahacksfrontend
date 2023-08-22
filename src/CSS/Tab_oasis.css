@@ -74,14 +74,6 @@ Tab_oasis_ideas.js CSS file
     aspect-ratio: 1/1;
     width: 3%;
 }
-.iconSync {
-    position: absolute;
-    /* margin-right: 0em; */
-    margin-left: 8em;
-    padding: 0em;
-    aspect-ratio: 1/1;
-    width: 3%;
-}
 
 .generationOptionsMenu {
     position: relative;
@@ -95,4 +87,37 @@ Tab_oasis_ideas.js CSS file
     background-color: white;
     border: 1px solid black;
     padding: 20px;
+}
+
+/* Oasis Title: */
+.titleContainer {
+    position: relative;
+}
+.titleText {
+    cursor: pointer;
+    padding: 5px;
+    margin: 0;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+    font: 'Helvetica Neue, Arial, sans-serif';
+    font-size: 1.17em
+}
+.titleText:hover {
+    border-color: black;
+}
+.titleInput {
+    padding: 5px;
+    margin: 0;
+    border: 1px solid #0a84f7;
+    box-sizing: border-box;
+    font-family: Verdana, sans-serif;
+    font-size: 1.17em;
+    font-weight: bold;
+    text-align: center;
+    white-space: normal;
+    word-wrap: normal;
+    background-color: transparent;
+    justify-content: center;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
 }

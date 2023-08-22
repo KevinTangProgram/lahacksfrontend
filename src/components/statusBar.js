@@ -23,7 +23,8 @@ function StatusBar(props) {
                 );
             }} />
             {/* Header: */}
-            <h3 className="alignCenter">{props.header}</h3>
+            {props.headerText && <h3 className="alignCenter">{props.headerText}</h3>}
+            {props.headerComponent && <div className="alignCenter">{props.headerComponent()}</div>}
             {/* Time: */}
             <Clock type={"time"} className={"alignRight"} />
         </div>

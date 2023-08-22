@@ -160,7 +160,7 @@ export class StorageManager {
                 }, 0);
             }
             else {
-                // Object was just modified at origin:
+                // Object was just modified locally:
                 if (StorageManagerInfo.status === "synced") {
                     this.addToState(1);
                 }
@@ -365,11 +365,13 @@ export class StorageManager {
         });
     }  
     static addToState(value) {
-        //
-        this.unsyncCounter+= value;
-        setTimeout(() => {
+        // Keep track of overall syncing status:
+        const wasSynced = this.unsyncCounter === 0;
+        this.unsyncCounter += value;
+        const isSynced = this.unsyncCounter === 0;
+        if (wasSynced !== isSynced) {
             this.emitEvent("StorageState");
-        }, 0);
+        }
     } 
 }
 

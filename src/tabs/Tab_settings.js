@@ -13,7 +13,7 @@ function Tab_settings(props) {
     return (
         <div className="backGround" style={{"padding-bottom": "30px"}}>
             <div className="tablet">
-                <StatusBar header={"hello"}/>
+                <StatusBar headerText={"hellohellohellohellohe llohellohellohello hellohellohellohellohellohellohellohello"}/>
                 <div className="twoButtons">
                     <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>User</button>
                     <button className={showOasisSettings ? "selectCells" : "selectCells lowOpacity"} id={showOasisSettings ? bottomTab[1] : null} onClick={() => { if (showOasisSettings) setBottomTab(["tabInactive", "tabActive"]); }}>Oasis</button>
