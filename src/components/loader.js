@@ -1,23 +1,27 @@
 //
 import React, { useState, useRef } from 'react';
+import '../CSS/Utils.css';
 
-function Loader(props) {
-    // Message content:
+const Loader = React.memo((props) => {
+    if (!props.type || props.type === "icon")
     return (
-        <div className="singleMessage" id={props.index}>
-            <div className="messageBanner">
-                <p className="iconDesc">{rawMessage.sender} at {timeString} {rawMessage.edits > 0 ? " (edited)" : ""}</p>
-                <img className="icons iconCopy" src="./images/icons/iconCopy.png" alt="Copy" onClick={() => { copyToClipboard(rawMessage.content, copySuccess); }} />
-                <img className="icons iconEdit" src="./images/icons/iconEdit.png" alt="Edit" onClick={() => { openEdit(); }} />
-                <img className="icons iconTrash" src="./images/icons/iconTrash.png" alt="Delete" onClick={() => { functions.delete(props.index); }} />
-            </div>
-            <div className="messageContent">
-                {lines.map((line, j) => (
-                    <div key={j}>{line}</div>
-                ))}
-            </div>
+        // Singular Loading Icon:
+        <div className="iconLoading"></div>
+    );
+    if (props.type === "fill")
+    return (
+        // Overlay the entire screen:
+        <div class="loading-fill-overlay">
+            <div class="loading-fill-animation"></div>
         </div>
     );
-}
+    if (props.type === "content")
+    return (
+        // Fill content to parent element size:
+        <div>
+            
+        </div>
+        );
+});
 
 export default Loader;

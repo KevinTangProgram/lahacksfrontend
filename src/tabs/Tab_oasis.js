@@ -10,7 +10,6 @@ function Tab_oasis() {
     // Tab Navigation:
     const [bottomTab, setBottomTab] = useState(["tabActive", "tabInactive"]);
     const [openUIByDefault, setOpenUIByDefault] = useState(false);
-    // const [title, setTitle] = useState(false);
     const openNotesTabWithoutUI = () => {
         setOpenUIByDefault(false);
         setBottomTab(["tabInactive", "tabActive"]);
@@ -19,67 +18,51 @@ function Tab_oasis() {
         setOpenUIByDefault(true);
         setBottomTab(["tabInactive", "tabActive"]);
     };
-    // Title input:
-    // const oasisInstance = useContext(Context).oasisInstance;
-    // const [titleValue, setTitleValue] = useState(oasisInstance.getData().info.title);
-    // const handleTitleChange = (event) => {
-    //     setTitleValue(event.target.value);
-    //     oasisInstance.setData().info.title = event.target.value;
-    // }
-
-    // const memoizedTitleValue = useMemo(() => titleValue, [openNotesTabWithoutUI, openNotesTabWithUI]);
+    // Title Editing:
+    const titleComponent = () => {
+        // Title input:
+        const oasisInstance = useContext(Context).oasisInstance;
+        const [showInput, setShowInput] = useState(false);
+        const [titleValue, setTitleValue] = useState(oasisInstance.getData().info.title);
+        const handleTitleChange = (event) => {
+            setTitleValue(event.target.value);
+            oasisInstance.setData().info.title = event.target.value;
+        }
+        // Input - Text transition:
+        const textRef = useRef(null);
+        const inputRef = useRef(null);
+        const [dimensions, setDimensions] = useState({});
+        const openInput = () => {
+            setDimensions({
+                width: textRef.current.offsetWidth,
+                height: textRef.current.offsetHeight,
+            });
+            setShowInput(true);
+            setTimeout(() => {
+                inputRef.current.focus();;
+                inputRef.current.selectionStart = inputRef.current.value.length;
+            }, 0);
+        };
+        const closeInput = () => {
+            setShowInput(false);
+        };
+        return (
+            <div className="titleContainer">
+                {showInput && <textarea className="titleInput" ref={inputRef} style={dimensions} type="text" value={titleValue} onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === "Escape") {
+                        event.preventDefault();
+                        closeInput();
+                    }
+                }} onChange={handleTitleChange} onBlur={closeInput} />}
+                {!showInput && <h3 className="titleText" ref={textRef} onClick={openInput}>{titleValue}</h3>}
+            </div>
+        );
+    }
 
     return (
         <div className="backGround">
             <div className="tablet">
-                <StatusBar headerComponent={() => {
-                    // Title input:
-                    const oasisInstance = useContext(Context).oasisInstance;
-                    const [showInput, setShowInput] = useState(false); 
-                    const [titleValue, setTitleValue] = useState(oasisInstance.getData().info.title);
-                    const handleTitleChange = (event) => {
-                        setTitleValue(event.target.value);
-                        oasisInstance.setData().info.title = event.target.value;
-                    }
-                    // Input - Text transition:
-                    const textRef = useRef(null);
-                    const inputRef = useRef(null);
-                    const [dimensions, setDimensions] = useState({});
-                    const openInput = () => {
-                        setDimensions({
-                            width: textRef.current.offsetWidth,
-                            height: textRef.current.offsetHeight,
-                        });
-                        setShowInput(true);
-                        setTimeout(() => {
-                            inputRef.current.focus();;
-                            inputRef.current.selectionStart = inputRef.current.value.length;
-                        }, 0);
-                    };
-                    const handleKeyDown = (event) => {
-                        console.log("hey");
-                        if (event.key === "Enter") {
-                            event.preventDefault();
-                            closeInput();
-                        }
-                    };
-                    const closeInput = () => {
-                        setShowInput(false);
-                    };
-                    return (
-                        <div className="titleContainer">
-                            {showInput && <textarea className="titleInput" ref={inputRef} style={dimensions} type="text" value={titleValue} onKeyDown={(event) => {
-                                if (event.key === "Enter" || event.key === "Escape") {
-                                    event.preventDefault();
-                                    closeInput();
-                                }
-                            }} onChange={handleTitleChange} onBlur={closeInput} />}
-                            {!showInput && <h3 className="titleText" ref={textRef} onClick={openInput}>{titleValue}</h3>}
-                        </div>
-                    );
-                }} />
-                {/* !title && <h3 className="alignCenter" onClick={() => setTitle(true)}>{titleValue}</h3> */}
-
+                <StatusBar headerComponent={titleComponent} />
                 <div className="twoButtons">
                     <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>Ideas</button>
                 <button className="selectCells" id={bottomTab[1]} onClick={() => { openNotesTabWithoutUI() }}>Generated Notes</button>

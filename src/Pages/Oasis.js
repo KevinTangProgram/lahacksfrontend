@@ -11,6 +11,7 @@ import Tab_settings from '../tabs/Tab_settings';
 import DebuggerPanel from '../utilities/debugger';
 import { UserManager } from '../utilities/userManager';
 import { OasisManager } from '../utilities/oasisManager';
+import Loader from '../components/loader';
    
 
 function Oasis() {
@@ -95,6 +96,7 @@ function Oasis() {
     }
     
     // Output:
+
     if (error) {
         return (
             <div>
@@ -122,10 +124,11 @@ function Oasis() {
             we can freely access oasisInstance inside them without null checks. */}
             <div className="activeTab">
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
-                {currentTab[1] === "tabActive" && !loaded && <div className="loader"></div>}
+                <Loader type="content" />
+                {/* {currentTab[1] === "tabActive" && !loaded && <div className="loader"></div>}
                 {currentTab[1] === "tabActive" && loaded && <Tab_oasis />}
                 {currentTab[2] === "tabActive" && !loaded && <div className="loader"></div>}
-                {currentTab[2] === "tabActive" && loaded  && <Tab_settings type="oasis" />}
+                {currentTab[2] === "tabActive" && loaded  && <Tab_settings type="oasis" />} */}
             </div>
 
             <DebuggerPanel />
