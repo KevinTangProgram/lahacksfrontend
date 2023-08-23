@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react';
 import '../CSS/Utils.css';
 
+
 const Loader = React.memo((props) => {
     if (!props.type || props.type === "icon")
     return (
@@ -18,10 +19,29 @@ const Loader = React.memo((props) => {
     if (props.type === "content")
     return (
         // Fill content to parent element size:
-        <div>
-            
+        <div className="backGround" style={{ "alignItems": "center" }}>
+            <br></br>
+            <div className="loading-content-background">
+                <div className="loading-content-content">
+                    <div className="loading-content-loader1">
+                    </div>
+                    <div className="loading-content-loader2">
+                    </div>
+                    <div class="loading-content-loader3">
+                        <div class="loading-content-subloader"></div>
+                        <div class="loading-content-subloader"></div>
+                        <div class="loading-content-subloader"></div>
+                        <div class="loading-content-subloader"></div>
+                        <div class="loading-content-subloader"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         );
+
+    return (
+        <div className="backGround">hello</div>
+    );
 });
 
 export default Loader;

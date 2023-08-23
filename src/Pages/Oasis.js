@@ -96,15 +96,6 @@ function Oasis() {
     }
     
     // Output:
-
-    if (error) {
-        return (
-            <div>
-                <br></br><br></br>
-                <p>Error: {error}</p>
-            </div>
-        );
-    }
     return (
         <div>
             <div style={{"position": "relative", "display": "flex"}}>
@@ -120,16 +111,22 @@ function Oasis() {
                     </div>
                 </div>
             </div>
+            {error && <div className="loginError">{error}</div>}
             {/* Note: because the following components are not loaded until oasisInstance exists, 
             we can freely access oasisInstance inside them without null checks. */}
-            <div className="activeTab">
+            {!error && 
+                <div className="activeTab">
+                {/* You can always access the home tab: */}
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
-                <Loader type="content" />
-                {/* {currentTab[1] === "tabActive" && !loaded && <div className="loader"></div>}
+                {/* Display loading component for oasis and settings:  */}
+                {!loaded && currentTab[1] === "tabActive" && <Loader type="content" />}
+                {!loaded && currentTab[2] === "tabActive" && <Loader type="content" />}
+                {/* Display oasis and settings tab once loaded:  */}
                 {currentTab[1] === "tabActive" && loaded && <Tab_oasis />}
-                {currentTab[2] === "tabActive" && !loaded && <div className="loader"></div>}
-                {currentTab[2] === "tabActive" && loaded  && <Tab_settings type="oasis" />} */}
-            </div>
+                {currentTab[2] === "tabActive" && loaded && <Tab_settings type="oasis" />}
+                </div>
+            }
+            
 
             <DebuggerPanel />
         </div>
