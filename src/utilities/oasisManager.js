@@ -93,21 +93,18 @@ export class OasisManager {
                 // This requires us to pass in a pull, push, and callback function.
                 // We leave pull null as we do this manually.
             const oasis = new OasisManager(response.data);
-            const callback = (error) => {
+            const callback = (error, changelog) => {
+                if (changelog) {
+                    error += ". Properties: "
+                    for (const property of changelog) {
+                        error += " " + property;
+                    }
+                }
                 oasis.error = error;
             };
-            const push = async () => {
+            const push = async (oasisData, changelog) => {
                 try {
-                    console.log(oasis);
-                    console.log("properties of changelog: ")
-                    for (const property of oasis.changelog) {
-                        console.log(property);
-                    }
-                    const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasis });
-                    if (response) {
-                        // Clear changelog:
-                        oasis.changelog = [];
-                    }
+                    const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasisData, changelog: Array.from(changelog) });
                 }
                 catch (error) {
                     throw error;
@@ -189,16 +186,7 @@ export class OasisManager {
         return this.data[property];
     }
     setData(property) {
-        if (!this.changelog.includes(property)) {
-            console.log(property + "was modified. ");
-            this.changelog.push(property);
-            //
-            console.log("setData: properties of changelog: ")
-            for (const property of this.changelog) {
-                console.log(property);
-            }
-        }
-        return this.data.modify()[property];
+        return this.data.modify(false, property)[property];
     }
         // Utils:
 }

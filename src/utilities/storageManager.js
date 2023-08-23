@@ -37,10 +37,15 @@ export class StorageManager {
         }
         // Create object:
         const syncedObject = obj;
-        const info = { key: key, type: type, syncFuncs: type === 'database' ?  syncFuncs : null, status: "unsynced", lastSynced: null };
+        const info = { key: key, type: type, syncFuncs: type === 'database' ? syncFuncs : null, status: "unsynced", lastSynced: null, changelog: type === 'database' ? new Set() : null };
         syncedObject.StorageManagerInfo = info;
-        syncedObject.modify = function (forceSyncNow = false) {
-            StorageManager.handleModifications(this.StorageManagerInfo, forceSyncNow);
+        syncedObject.modify = function (forceSyncNow = false, property) {
+            if (property) {
+                StorageManager.handleModificationsOfProperty(this.StorageManagerInfo, forceSyncNow, property);
+            }
+            else {
+                StorageManager.handleModifications(this.StorageManagerInfo, forceSyncNow);
+            }
             return this;
         };
         // Add to storage:
@@ -142,6 +147,14 @@ export class StorageManager {
     }
     
     // Utils:
+    static handleModificationsOfProperty(StorageManagerInfo, forceSyncNow, property, pushMode = true) {
+        // If pushing to remote, modify changelog:
+        if (pushMode === true && property && StorageManagerInfo.changelog) {
+            StorageManagerInfo.changelog.add(property);
+        }
+        // Call handleModifications:
+        this.handleModifications(StorageManagerInfo, forceSyncNow, pushMode);
+    }
     static handleModifications(StorageManagerInfo, forceSyncNow, pushMode = true) {
         // Rerender dependent observers:
         setTimeout(() => {
@@ -260,13 +273,14 @@ export class StorageManager {
     static async pushToDatabase(StorageManagerInfo) {
         // Push:
         try {
-            const response = await StorageManagerInfo.syncFuncs.push();
+            const response = await StorageManagerInfo.syncFuncs.push(this.objectify(StorageManagerInfo, false), StorageManagerInfo.changelog);
             if (StorageManagerInfo.status === "unsynced") {
                 this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
                 this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
                 this.addToState(-1);
             }
-            StorageManagerInfo.syncFuncs.callback(null);
+            StorageManagerInfo.syncFuncs.callback(null, StorageManagerInfo.changelog);
+            StorageManagerInfo.changelog.clear();
             console.log("Pushed to database.");
             return true;
         }
@@ -275,13 +289,12 @@ export class StorageManager {
             if (error.response && error.response.status === 400) {
                 // My error:
                 errorMessage = error.response.data.error;
-                StorageManagerInfo.syncFuncs.callback(errorMessage);
+                StorageManagerInfo.syncFuncs.callback(errorMessage, StorageManagerInfo.changelog);
             } else {
                 // Network error:
                 errorMessage = "Network error - please try again later.";
-                StorageManagerInfo.syncFuncs.callback(errorMessage);
+                StorageManagerInfo.syncFuncs.callback(errorMessage, StorageManagerInfo.changelog);
             }
-            console.log("Error pushing to database: ", errorMessage);
         }
     }
     static async clearDatabase() {
