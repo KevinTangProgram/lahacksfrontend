@@ -13,7 +13,7 @@ function Tab_settings(props) {
     const [bottomTab, setBottomTab] = useState(!showOasisSettings ? ["tabActive", "tabInactive"] : ["tabInactive", "tabActive"]);
     // Oasis Data:
     const oasisInstance = useContext(Context).oasisInstance;
-    const titleValue = oasisInstance.getData().info.title;
+    const titleValue = oasisInstance.getData("info").title;
 
     return (
         <div className="backGround" style={{"padding-bottom": "30px"}}>

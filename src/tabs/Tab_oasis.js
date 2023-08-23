@@ -23,10 +23,10 @@ function Tab_oasis() {
         // Title input:
         const oasisInstance = useContext(Context).oasisInstance;
         const [showInput, setShowInput] = useState(false);
-        const [titleValue, setTitleValue] = useState(oasisInstance.getData().info.title);
+        const [titleValue, setTitleValue] = useState(oasisInstance.getData("info").title);
         const handleTitleChange = (event) => {
             setTitleValue(event.target.value);
-            oasisInstance.setData().info.title = event.target.value;
+            oasisInstance.setData("info").title = event.target.value;
         }
         // Input - Text transition:
         const textRef = useRef(null);

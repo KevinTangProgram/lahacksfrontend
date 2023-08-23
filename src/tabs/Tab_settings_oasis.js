@@ -30,17 +30,18 @@ function Tab_settings_oasis() {
 
     // Test Instanced Sharing:
     const oasisInstance = useContext(Context).oasisInstance;
-    const [sharing, setSharing] = useState(oasisInstance.getData().settings.sharing);
+    const [sharing, setSharing] = useState(oasisInstance.getData("settings").sharing);
     const handleSharingChange = (event) => {
         setSharing(event.target.value);
-        oasisInstance.setData().settings.sharing = event.target.value;
+        oasisInstance.setData("settings").sharing = event.target.value;
     }
     const updateSharing = () => {
-        const printTest = () => {console.log("printTest ")};
-        const debouncePrintTest = StorageManager.debounce(printTest, 1000);
-        for (let i = 0; i < 30; i++) {
-            debouncePrintTest();
-        }
+        // const printTest = () => {console.log("printTest ")};
+        // const debouncePrintTest = StorageManager.debounce(printTest, 1000);
+        // for (let i = 0; i < 30; i++) {
+        //     debouncePrintTest();
+        // }
+        oasisInstance.cache = {};
     }
 
 

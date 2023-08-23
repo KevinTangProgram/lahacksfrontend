@@ -98,7 +98,16 @@ export class OasisManager {
             };
             const push = async () => {
                 try {
-                    const response = await axios.post(CONST.URL + "/oasis/push", { token: token, oasisInstance: oasis });
+                    console.log(oasis);
+                    console.log("properties of changelog: ")
+                    for (const property of oasis.changelog) {
+                        console.log(property);
+                    }
+                    const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasis });
+                    if (response) {
+                        // Clear changelog:
+                        oasis.changelog = [];
+                    }
                 }
                 catch (error) {
                     throw error;
@@ -171,13 +180,25 @@ export class OasisManager {
         // N: scroll to message,
         };     
         this.error = ""; 
+        
+        // Setup interface for data:
+        this.changelog = [];
     }
         // Interface:
-    getData() {
-        return this.data;
+    getData(property) {
+        return this.data[property];
     }
-    setData() {
-        return this.data.modify();
+    setData(property) {
+        if (!this.changelog.includes(property)) {
+            console.log(property + "was modified. ");
+            this.changelog.push(property);
+            //
+            console.log("setData: properties of changelog: ")
+            for (const property of this.changelog) {
+                console.log(property);
+            }
+        }
+        return this.data.modify()[property];
     }
         // Utils:
 }
