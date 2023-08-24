@@ -4,13 +4,14 @@ import ObserverComponent from '../components/observer';
 import { useNavigate } from 'react-router-dom';
 import { UserManager } from '../utilities/userManager';
 import { useState, useEffect, useContext } from 'react';
-import OasisContext from '../Pages/Oasis';
 
 import { OasisManager } from '../utilities/oasisManager';
 import Tooltip from '../components/tooltip';
 import { getHumanizedDate } from '../utilities/utilities';
 import { NavLink } from 'react-router-dom';
 import CreateOasisUI from '../components/createOasisUI';
+import Loader from '../components/loader';
+
 
 
 
@@ -40,6 +41,7 @@ function Tab_home({ focusOasis }) {
                         <h2 style={{ "margin-top": "0", "padding-top": "1em" }}>Welcome, {UserManager.user.info.username.split(" ")[0]}</h2>
                         <button onClick={() => {
                             UserManager.logout();
+                            navigate("/home");
                         }}>logout</button>
                     </div>
                 );
@@ -71,10 +73,7 @@ function Tab_home({ focusOasis }) {
                         {oasisList.length > 0 ? (
                             oasisList.map((oasis) => (
                                 <NavLink to={"/oasis/" + oasis._id} className="oasisPreview" activeClassName="oasisPreview active" key={oasis._id} onClick={() => {
-                                    // Normal click:
-                                    // navigate('/oasis/' + oasis._id);
                                     focusOasis();
-                                    // console.log("hey");
                                 }}>
                                     <div className="content">
                                         <div className="title">{oasis.info.title}</div>
@@ -96,7 +95,7 @@ function Tab_home({ focusOasis }) {
                 );
             }
             return (
-                <div className="loader"></div>
+                <Loader type="content" />
             );
         };
         function goToNewOasis(ID) {

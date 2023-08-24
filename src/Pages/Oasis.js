@@ -79,6 +79,7 @@ function Oasis() {
         }
     };
     useEffect(() => {
+        setLoaded(false);
         fetchOasis();
     }, [id]);
 
@@ -98,10 +99,9 @@ function Oasis() {
     // Output:
     return (
         <div>
+            {/* Background + Image:  */}
             <div style={{"position": "relative", "display": "flex"}}>
-                <img src={"/images/icons/" + image[tracker]} style={{"width": "100%", "z-index": "-1"}}>
-                    
-                </img>
+                <img src={"/images/icons/" + image[tracker]} style={{"width": "100%", "z-index": "-1"}} />
                 <h1 style={{"color": "black", "padding-top": "5em", "margin-top": "0", "text-align": "center", "width": "100%", "position": "absolute", "fontStyle": "italic"}}>{welcome[tracker] + welcomeMessage()}</h1>
                 <div id="noBackground" style={{"position": "absolute", "top": "auto", "bottom": "0", "width": "100%"}}>
                     <div className="threeButtons" style={{}}>
@@ -111,23 +111,27 @@ function Oasis() {
                     </div>
                 </div>
             </div>
-            {error && <div className="loginError">{error}</div>}
-            {/* Note: because the following components are not loaded until oasisInstance exists, 
+            {/* Content: */}
+            <div className="activeTab">
+                {/* Note: because the following components are not loaded until oasisInstance exists, 
             we can freely access oasisInstance inside them without null checks. */}
-            {!error && 
-                <div className="activeTab">
-                {/* You can always access the home tab: */}
+                {/* Tab_Home selected: */}
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
-                {/* Display loading component for oasis and settings:  */}
-                {!loaded && currentTab[1] === "tabActive" && <Loader type="content" />}
-                {!loaded && currentTab[2] === "tabActive" && <Loader type="content" />}
-                {/* Display oasis and settings tab once loaded:  */}
-                {currentTab[1] === "tabActive" && loaded && <Tab_oasis />}
-                {currentTab[2] === "tabActive" && loaded && <Tab_settings type="oasis" />}
-                </div>
-            }
-            
-
+                {/* Tab_Oasis selected: */}
+                {currentTab[1] === "tabActive" && (
+                    <>
+                        {error && <div className="oasisError">{error}</div>}
+                        {!loaded ? <Loader type="content" /> : <Tab_oasis />}
+                    </>
+                )}
+                {/* Tab_Settings selected: */}
+                {currentTab[2] === "tabActive" && (
+                    <>
+                        {error && <div className="oasisError">{error}</div>}
+                        {!loaded ? <Loader type="content" /> : <Tab_settings type="oasis" />}
+                    </>
+                )}
+            </div>
             <DebuggerPanel />
         </div>
     );

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../../CSS/Login.css';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { UserManager } from '../../utilities/userManager.js';
+import { useNavigate } from 'react-router-dom';
+
 //
 
 const client_id = "1045642159671-60op9ohkrl55eug9gdqu30blv4vdkjg7.apps.googleusercontent.com";
@@ -58,12 +60,17 @@ function LoginAccountUI(props) {
             props.setError(null);
             UserManager.login(email, password)
             .then((response) => {
-                props.setLoginState(0);
+                onLoginSuccess();
             })
             .catch(error => {
                 props.setError(error);
             })
         }
+    }
+    const navigate = useNavigate();
+    function onLoginSuccess() {
+        props.setLoginState(0);
+        navigate("/home");
     }
     const [error, setError] = useState(null);
     // Submit:
@@ -117,7 +124,7 @@ function LoginAccountUI(props) {
                             props.setError(null);
                             UserManager.continueWithGoogle(credentialResponse.credential)
                                 .then((response) => {
-                                    props.setLoginState(0);
+                                    onLoginSuccess();
                                 })
                                 .catch((error) => {
                                     props.setError(error);
