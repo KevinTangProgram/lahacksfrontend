@@ -84,11 +84,21 @@ export class StorageManager {
                 return object;
             });
         }
-        // Return array of strings (creates syncedObjects):
+        // Return array of strings (and create syncedObjects):
         if (readOnly === false) {
             matchingKeys.map((key) => this.createSyncedObject({}, "local", key));
             return matchingKeys;
         }
+    }
+    static removeMatchingInLocal(keyIncludes) {
+        // Remove all objects which include the key:
+        const keys = Object.keys(this.localStorage);
+        const matchingKeys = keys.filter((key) => key.includes(keyIncludes));
+        matchingKeys.map((key) => this.localStorage.removeItem(key));
+    }
+    static removeOneInLocal(key) {
+        // Remove one object:
+        this.localStorage.removeItem(key);
     }
     //
     static safeAssign(syncedObject, otherObject) {

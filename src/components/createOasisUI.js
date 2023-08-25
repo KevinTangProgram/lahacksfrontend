@@ -88,11 +88,15 @@ function CreateOasisUI(props) {
                                 inputRefDescription.current.focus();
                             }
                         }
+                        else if (event.key === "Escape") {
+                            event.preventDefault();
+                            props.closeFunc();
+                        }
                     }}></input>
                     {oasisTitleError && <p className="loginTextboxError">{oasisTitleError}</p>}
                     <br></br>
                     {/* Description */}
-                    <textarea ref={inputRefDescription} type="text" name="description" autoComplete="off" placeholder="Description (Optional)" value={oasisDescription} onChange={handleChangeDescription} onKeyDown={(event) => {
+                    <textarea style={{"min-height" : "4em", "resize" : "none", "overflow" : "auto"}} ref={inputRefDescription} type="text" name="description" autoComplete="off" placeholder="Description (Optional)" value={oasisDescription} onChange={handleChangeDescription} onKeyDown={(event) => {
                         if (event.key === "Enter" && event.shiftKey) {
                             event.preventDefault();
                             setOasisDescription(oasisDescription + "\n")
@@ -100,6 +104,10 @@ function CreateOasisUI(props) {
                         else if (event.key === "Enter") {
                             event.preventDefault();
                             createNewOasis();
+                        }
+                        else if (event.key === "Escape") {
+                            event.preventDefault();
+                            props.closeFunc();
                         }
                     }}></textarea>
                     {oasisDescriptionError && <p className="loginTextboxError">{oasisDescriptionError}</p>}

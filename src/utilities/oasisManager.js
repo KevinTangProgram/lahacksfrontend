@@ -10,18 +10,21 @@ export class OasisManager {
     // Static Logic:
         // Interface:
     static async getHomeView(type, sort) {
+        // Returns an object: { mainOases, syncableOases}.
+        // mainOases is an array containing the requested oases.
+        // syncableOases is an array of local oases that can be synced.
+        let localOasisList = StorageManager.findMatchingInLocal("oasis/", true, { content: 0, user: 0 });
         const token = UserManager.token.token;
+        // Guest User:
         if (token === "") {
-            // Guest user, look in localStorage:
-            let oasisList = StorageManager.findMatchingInLocal("oasis/", true, { content: 0, user: 0 });
-            // Sort and return:
-            return this.sortOasisList(oasisList, sort);
+            // Sort and return localOasisList as mainOases:
+            return { mainOases: this.sortOasisList(localOasisList, sort), syncableOases: []};
         }
-        // Logged in user, look in database:
+        // Logged in user:
         try {
             const response = await axios.get(CONST.URL + "/oasis/homeView", { params: { token: token, type: type } });
             // Sort and return:
-            return this.sortOasisList(response.data, sort);
+            return { mainOases: this.sortOasisList(response.data, sort), syncableOases: this.sortOasisList(localOasisList, sort) };
         }
         catch (error) {
             if (error.response && error.response.status === 400) {
@@ -75,8 +78,44 @@ export class OasisManager {
             }
         }
     }
-    static async syncLocalOases(oasisKeys) {
+    static async syncLocalOases() {
         // Transform local oases -> database oases:
+        try {
+            const localOases = StorageManager.findMatchingInLocal("oasis/", true);
+            const response = await axios.post(CONST.URL + "/oasis/syncLocalOases", { token: UserManager.token.token, localOases: localOases });
+            // Remove synced oases from localStorage:
+            if (response.data.numSynced === localOases.length) {
+                StorageManager.removeMatchingInLocal("oasis/");
+            }
+            else {
+                // Backend sends errorOases as an object with keys as _ids and values as errors.
+                let i = 0;
+                let error = "Error syncing the following oases: \n";
+                for (; i < localOases.length; i++) {
+                    // Determine whether to remove from localStorage:
+                    if (response.data.errorOases[localOases[i]._id]) {
+                        // Error syncing:
+                        error += " ['" + localOases[i].info.title + "' - " + response.data.errorOases[localOases[i]._id] + "] \n";
+                    }
+                    else {
+                        // Successfully synced:
+                        StorageManager.removeMatchingInLocal("oasis/" + localOases[i]._id);
+                    }
+                }
+                throw {response: { status: 400, data: { error: error } }};
+            }
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later.";
+                throw errorMessage;
+            }
+        }
     }
     static async createOasisInstance(UUID) {
         // Search localStorage:
@@ -142,7 +181,7 @@ export class OasisManager {
     static validateInput(type, input) {
         if (type === "title") {
             const minLength = 3;
-            const maxLength = 20;
+            const maxLength = 40;
             const nonWhitespaceInput = input.replace(/\s/g, "");
             if (nonWhitespaceInput.length < minLength || input.length > maxLength) {
                 return "Title must be between " + minLength + " and " + maxLength + " non-whitespace characters long."
