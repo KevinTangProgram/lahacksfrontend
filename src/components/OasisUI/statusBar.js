@@ -1,9 +1,9 @@
 //
-import { StorageManager } from '../utilities/storageManager';
-import Observer from '../components/observer';
-import Clock from '../components/clock';
-import Loader from './loader';
-import '../CSS/Utils.css';
+import { StorageManager } from '../../utilities/storageManager';
+import Observer from '../observer';
+import Clock from '../clock';
+import Loader from '../loader';
+import '../../CSS/Utils.css';
 
 function StatusBar(props) {
     // Display bar for oasis:

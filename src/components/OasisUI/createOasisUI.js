@@ -1,7 +1,7 @@
-import '../CSS/Home.css';
+import '../../CSS/Home.css';
 import { useState, useEffect, useRef } from 'react';
-import { OasisManager } from '../utilities/oasisManager';
-import '../CSS/Login.css';
+import { OasisManager } from '../../utilities/oasisManager';
+import '../../CSS/Login.css';
 
 
 

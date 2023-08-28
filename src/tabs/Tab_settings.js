@@ -5,7 +5,7 @@ import Tab_settings_user from './Tab_settings_user';
 import Tab_settings_oasis from './Tab_settings_oasis';
 import '../CSS/Tab_oasis.css';
 
-import StatusBar from '../components/statusBar';
+import StatusBar from '../components/OasisUI/statusBar';
 //
 function Tab_settings(props) {
     // Tab Navigation:

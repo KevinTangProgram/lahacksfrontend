@@ -9,8 +9,9 @@ import { OasisManager } from '../utilities/oasisManager';
 import Tooltip from '../components/tooltip';
 import { getHumanizedDate } from '../utilities/utilities';
 import { NavLink } from 'react-router-dom';
-import CreateOasisUI from '../components/createOasisUI';
+import CreateOasisUI from '../components/OasisUI/createOasisUI';
 import Loader from '../components/loader';
+import SingleOasisPreview from '../components/OasisUI/singleOasisPreview';
 
 function Tab_home({ focusOasis }) {
     const Output = () => {
@@ -79,6 +80,20 @@ function Tab_home({ focusOasis }) {
                         setSyncLocalLoading(false);
                     })
             }
+            // Context Menu Logic:
+            // We specify which singleOasisPreview should show their menu using setOpenMenuId.
+            // Each singleOasisPreview can call setOpenMenuId to change the currently open menu.
+            const [openMenuId, setOpenMenuId] = useState(null);
+            useEffect(() => {
+                const handleClick = () => {
+                    setOpenMenuId(null);
+                };
+                window.addEventListener('click', handleClick);
+                return () => {
+                    window.removeEventListener('click', handleClick);
+                };
+            }, []);
+
             // Output:
             if (error) {
                 return (
@@ -92,30 +107,7 @@ function Tab_home({ focusOasis }) {
                         {oasisList.length === 0 && oasisSecondaryList.length === 0 && <p styles={{ marginTop: 0, marginBottom: 0, padding: 0 }}>No oases found - create a new one or log in.</p>}
                         {/* Main Oases:  */}
                         <div>
-                        {oasisList.length > 0 && (
-                            oasisList.map((oasis) => (
-                                <NavLink to={"/oasis/" + oasis._id} className="oasisPreview" activeClassName="oasisPreview active" key={oasis._id} onClick={() => {
-                                    focusOasis();
-                                }}>
-                                    <div className="content">
-                                        <div className="title">{oasis.info.title}</div>
-                                        <div className="desc">
-                                            - {oasis.settings.sharing} oasis
-                                            <br></br>
-                                            - {oasis.stats.size.ideaCount} ideas
-                                            <br></br>
-                                            - edited {getHumanizedDate(oasis.stats.state.lastEditDate)}
-                                        </div>
-                                    </div>
-                                    <div style={{"display":"flex", "margin-left":"45%"}}>
-                                        <Tooltip text={oasis.info.description} />
-                                        {/* <div style={{"position":"relative", "left":"45%", "top":"0%"}}>h</div> */}
-                                        <button className="alignRight">=</button>
-                                    </div>
-
-                                </NavLink>
-                            ))
-                        )}
+                            {oasisList.length > 0 && (oasisList.map((oasis) => (<SingleOasisPreview oasis={oasis} setOpenMenuId={setOpenMenuId} showMenu={openMenuId === oasis._id} focusOasis={focusOasis} />)))}
                         </div>
                         {/* Secondary oases:  */}
                         {oasisSecondaryList.length > 0 && (<>

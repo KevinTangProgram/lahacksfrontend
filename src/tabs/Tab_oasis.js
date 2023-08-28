@@ -4,7 +4,7 @@ import React, { useState, useRef, useContext, useEffect } from 'react';
 import Tab_oasis_ideas from './Tab_oasis_ideas';
 import Tab_oasis_notes from './Tab_oasis_notes';
 import { Context } from '../utilities/context';
-import StatusBar from '../components/statusBar';
+import StatusBar from '../components/OasisUI/statusBar';
 
 function Tab_oasis() {
     // Tab Navigation:

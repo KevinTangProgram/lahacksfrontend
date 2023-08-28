@@ -44,7 +44,7 @@
 .tooltip-popup.hidden {
     opacity: 0;
     transition: opacity 0.15s ease-in-out;
-    z-index: 0;
+    z-index: -1;
 }
 .tooltip-arrow {
     position: absolute;
