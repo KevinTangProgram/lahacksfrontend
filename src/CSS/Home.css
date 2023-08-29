@@ -128,6 +128,12 @@ Home.js Elements CSS File
     background-color: rgb(182, 182, 245, 0.376);
 }
 /* Oasis Preview Context Menu: */
+.openContextButton {
+    display: none;
+}
+.oasisPreview:hover .openContextButton {
+    display: inline-block;
+}
 .context-menu {
     position: absolute;
     bottom: 21%;

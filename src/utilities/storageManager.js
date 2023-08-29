@@ -155,6 +155,14 @@ export class StorageManager {
         localStorage.setItem('updater', JSON.stringify({ date: CONST.UPDATE_DATE }));
         location.reload(true);
     }
+    static syncPendingObject(StorageManagerInfo) {
+        if (this.pendingSyncs.has(StorageManagerInfo.key)) {
+            const timeoutId = this.pendingSyncs.get(StorageManagerInfo.key);
+            clearTimeout(timeoutId); // Clear the timeout
+            this.forceSyncObject(StorageManagerInfo); // Sync the object immediately
+            this.pendingSyncs.delete(StorageManagerInfo.key); // Remove it from pendingSyncs
+        }
+    }
     
     // Utils:
     static handleModificationsOfProperty(StorageManagerInfo, forceSyncNow, property, pushMode = true) {

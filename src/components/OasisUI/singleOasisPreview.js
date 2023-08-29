@@ -7,10 +7,8 @@ import Tooltip from '../tooltip';
 
 function SingleOasisPreview(props) {
     // Props:
-    const oasis = props.oasis;
-    const focusOasis = props.focusOasis;
-    const setOpenMenuId = props.setOpenMenuId;
-    const showMenu = props.showMenu;
+    const { oasis, setOpenMenuId, showMenu, focusOasis, openOasisEditUI, openOasisDeleteUI } = props;
+
     // Context Menu:
     const oasisPreviewRef = useRef(null);
     const stopClick = (event) => {
@@ -47,7 +45,7 @@ function SingleOasisPreview(props) {
                 {/* Buttons: */}
                 <div style={{ "display": "flex", "margin-left": "45%" }}>
                     <Tooltip text={oasis.info.description} />
-                    <button className="alignRight" onClick={(event) => {
+                    <button className="openContextButton alignRight" onClick={(event) => {
                         stopClick(event);
                         if (showMenu) {
                             setOpenMenuId(null);
@@ -62,14 +60,12 @@ function SingleOasisPreview(props) {
                     <div className="context-menu" onClick={(event) => { stopClick(event) }}>
                         <div className="context-menu-option"> <a ref={oasisPreviewRef} className="oasisLink" href={oasis._id} target="_blank">
                             Open in New Tab</a></div>
-                        <div className="context-menu-option" onClick={() => {
-                            
-                        }}>Rename</div>
-                        <div className="context-menu-option" onClick={() => {
-                            
-                        }}>Delete</div>
+                        <div className="context-menu-option" onClick={() => {openOasisEditUI(oasis);}}>
+                            Rename</div>
+                        <div className="context-menu-option" onClick={() => {openOasisDeleteUI(oasis);}}>
+                            Delete</div>
                     </div>
-                    </div>}
+                </div>}
             </NavLink>
         </div>
     );

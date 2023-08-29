@@ -119,6 +119,7 @@ export class OasisManager {
     }
     static async createOasisInstance(UUID) {
         // Search localStorage:
+            // If found, StorageManager creates a synced object and returns its key.
         const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, false);
         if (oasisMatches && oasisMatches.length > 0) {
             return new OasisManager(StorageManager.read(oasisMatches[0]));
@@ -162,6 +163,40 @@ export class OasisManager {
                 const errorMessage = "Network error - please try again later.";
                 throw errorMessage;
             }
+        }
+    }
+    static async editOasisInfo(oasis, title, description) {
+        const UUID = oasis._id;
+        // If already in StorageManager (currently active), edit directly:
+        const activeOasis = StorageManager.read("oasis/" + UUID);
+        if (activeOasis) {
+            activeOasis.info.title = title;
+            activeOasis.info.description = description;
+            activeOasis.modify(true, "info");
+            return;
+        }
+        // Otherwise, find oasis and edit:
+            // Search localStorage:
+        const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, false);
+        if (oasisMatches && oasisMatches.length > 0) {
+            // Create temporary syncedObject and edit:
+            const oasis = StorageManager.read(oasisMatches[0]);
+            oasis.info.title = title;
+            oasis.info.description = description;
+            oasis.modify(true);
+            return;
+        }
+            // Search database:
+        try {
+            const token = UserManager.token.token;
+            const oasisData = {
+                info: oasis.info
+            };
+            const changelog = new Set("info");
+            const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasisData, changelog: Array.from(changelog) });
+        }
+        catch (error) {
+            throw error;
         }
     }
         // Utils:
@@ -222,10 +257,12 @@ export class OasisManager {
     }
         // Interface:
     getData(property) {
+        // Property is one of the main properties of oasis (info, settings, etc).
         return this.data[property];
     }
     setData(property) {
+        // Function modify(false, property) updates the changelog and returns data.
         return this.data.modify(false, property)[property];
-    }
+    }   
         // Utils:
 }
