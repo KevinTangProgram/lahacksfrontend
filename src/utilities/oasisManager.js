@@ -226,6 +226,38 @@ export class OasisManager {
             }
         }
     }
+    static async deleteOasis(oasis) {
+        const UUID = oasis._id;
+        // Delete from StorageManager (if active):
+        const activeOasis = StorageManager.read("oasis/" + UUID);
+        if (activeOasis) {
+            StorageManager.safeDecouple("oasis/" + UUID);
+        }
+        // Delete from localStorage:
+        const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, true);
+        if (oasisMatches && oasisMatches.length > 0) {
+            // Delete:
+            StorageManager.removeMatchingInLocal("oasis/" + oasisMatches[0]._id);
+            return;
+        }
+        // Delete from database:
+        try {
+            const token = UserManager.token.token;
+            const response = await axios.post(CONST.URL + "/oasis/deleteOasis", { UUID: UUID, token: token });
+            return;
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later.";
+                throw errorMessage;
+            }
+        }
+    }
         // Utils:
     static sortOasisList(list, sort) {
         if (sort === "recent") {

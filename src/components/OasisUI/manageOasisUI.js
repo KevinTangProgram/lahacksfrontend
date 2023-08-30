@@ -1,6 +1,9 @@
 import '../../CSS/Home.css';
 import { useState, useEffect, useRef } from 'react';
 import { OasisManager } from '../../utilities/oasisManager';
+import { getHumanizedDate } from '../../utilities/utilities';
+import Tooltip from '../tooltip';
+import Loader from '../loader';
 import '../../CSS/Login.css';
 
 function ManageOasisUI(props) {
@@ -139,11 +142,11 @@ function CreateOasisUI(props) {
                     {oasisDescriptionError && <p className="loginTextboxError">{oasisDescriptionError}</p>}
                     <br></br>
                     {/* Submit */}
-                    <button className="loginLargeButton" onClick={() => { createNewOasis() }}>Create Oasis</button>
+                    <button className={loading ? "loginLargeButton lowOpacity" : "loginLargeButton"} onClick={() => { if (!loading) createNewOasis() }}>Create Oasis</button>
                     {/* Error Display: */}
                     {error && <p className="loginTextboxError">{error}</p>}
                     {/* Loading Display: */}
-                    {loading && <div className="loader"></div>}
+                    {loading && <Loader type="icon" />}
                 </div>
             </div>
         </div>
@@ -162,6 +165,7 @@ function EditOasisUI(props) {
     const handleChangeDescription = (event) => { setOasisDescription(event.target.value); }
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    
     useEffect(() => {
         inputRefTitle.current.focus();
     }, []);
@@ -260,16 +264,71 @@ function EditOasisUI(props) {
                     {oasisDescriptionError && <p className="loginTextboxError">{oasisDescriptionError}</p>}
                     <br></br>
                     {/* Submit */}
-                    <button className="loginLargeButton" onClick={() => { editOasisInfo() }}>Save</button>
+                    <button className={loading ? "loginLargeButton lowOpacity" : "loginLargeButton"} onClick={() => { if (!loading) editOasisInfo() }}>Save</button>
                     {/* Error Display: */}
                     {error && <p className="loginTextboxError">{error}</p>}
                     {/* Loading Display: */}
-                    {loading && <div className="loader"></div>}
+                    {loading && <Loader type="icon"/>}
                 </div>
             </div>
         </div>
     );
 }
 function DeleteOasisUI(props) {
-
+    const oasis = props.oasis;
+    // Setup:
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    function deleteOasis() {
+        setError(null);
+        setLoading(true);
+        OasisManager.deleteOasis(oasis)
+            .then((response) => {
+                setLoading(false);
+                props.closeFunc();
+                props.onSuccess();
+            })
+            .catch(error => {
+                setLoading(false);
+                setError(error);
+            })
+    }
+    // Output:
+    return (
+        <div className="loginOverlay" onClick={() => { props.closeFunc() }}>
+            <div className="loginPopup" onClick={(event) => { event.stopPropagation() }}>
+                <img className="loginCloseIcon" src="/images/icons/iconCancel.png" alt="Close" onClick={() => { props.closeFunc() }} />
+                <h2>Delete Oasis</h2>
+                {/* Show Preview Again:  */}
+                <div className="oasisPreview">
+                    {/* Content: */}
+                    <div className="content">
+                        <div className="title">{oasis.info.title}</div>
+                        <div className="desc">
+                            - {oasis.settings.sharing} oasis
+                            <br></br>
+                            - {oasis.stats.size.ideaCount} ideas
+                            <br></br>
+                            - edited {getHumanizedDate(oasis.stats.state.lastEditDate)}
+                        </div>
+                    </div>
+                    {/* Buttons: */}
+                    <div style={{ "display": "flex", "margin-left": "45%" }}>
+                        <Tooltip text={oasis.info.description} />
+                    </div>
+                </div>
+                <div className="selectGridSmall">
+                    {/* Header */}
+                    <p>Are you sure you want to delete this oasis? <br></br>This action cannot be undone.</p>                    
+                    {/* Submit */}
+                    <button className={loading ? "loginLargeButton lowOpacity" : "loginLargeButton"} onClick={() => { if (!loading) deleteOasis() }}>Delete Forever</button>
+                    {/* Error Display: */}
+                    {error && <p className="loginTextboxError">{error}</p>}
+                    {/* Loading Display: */}
+                    {loading && <Loader type="icon" />}
+                    <br></br>
+                </div>
+            </div>
+        </div>
+    );
 }
