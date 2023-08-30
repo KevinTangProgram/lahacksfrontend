@@ -23,10 +23,10 @@ function ManageOasisUI(props) {
     }
     // DeleteOasisUI:
     if (props.type === "delete") {
-        if (!props.oasis || !props.onSuccess || !props.closeFunc) {
+        if (!props.oasis || !props.onSuccess || !props.closeFunc || !props.homeFunc) {
             throw "Missing props";
         }
-        return <DeleteOasisUI oasis={props.oasis} onSuccess={props.onSuccess} closeFunc={props.closeFunc} />
+        return <DeleteOasisUI oasis={props.oasis} onSuccess={props.onSuccess} closeFunc={props.closeFunc} homeFunc={props.homeFunc}/>
     }
 
 }
@@ -283,8 +283,11 @@ function DeleteOasisUI(props) {
         setError(null);
         setLoading(true);
         OasisManager.deleteOasis(oasis)
-            .then((response) => {
+            .then((navHome) => {
                 setLoading(false);
+                if (navHome) {
+                    props.homeFunc(); // navigate back to /home if the deleted oasis is open.
+                }
                 props.closeFunc();
                 props.onSuccess();
             })

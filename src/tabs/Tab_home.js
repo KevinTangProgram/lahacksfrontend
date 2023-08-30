@@ -115,6 +115,9 @@ function Tab_home({ focusOasis }) {
                     navigate('/oasis/' + ID);
                     focusOasis();
                 }
+                function navigateHome() {
+                    navigate('/home');
+                }
                 // Output:
                 return (
                     <div>
@@ -123,7 +126,7 @@ function Tab_home({ focusOasis }) {
                         {/* Oasis Edit UI: */}
                         {activeMenu === "edit" && <ManageOasisUI type="edit" oasis={activeOasis} onSuccess={getOases} closeFunc={() => { setActiveMenu(null) }} />}
                         {/* Oasis Delete UI: */}
-                        {activeMenu === "delete" && <ManageOasisUI type="delete" oasis={activeOasis} onSuccess={getOases} closeFunc={() => { setActiveMenu(null) }} />}
+                        {activeMenu === "delete" && <ManageOasisUI type="delete" oasis={activeOasis} onSuccess={getOases} closeFunc={() => { setActiveMenu(null) }} homeFunc={navigateHome} />}
                     </div>
                 );
             }

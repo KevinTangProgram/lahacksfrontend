@@ -24,7 +24,7 @@ function SingleOasisPreview(props) {
     }   
 
     return (
-        <NavLink to={"/oasis/" + oasis._id} className="oasisPreview" activeClassName="oasisPreview active" key={oasis._id} onClick={() => {
+        <NavLink to={"/oasis/" + oasis._id} className="oasisPreview" activeclassname="oasisPreview active" key={oasis._id} onClick={() => {
                 focusOasis();
             }} onContextMenu={(event) => {
                 event.preventDefault(); 

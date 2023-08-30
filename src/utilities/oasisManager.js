@@ -227,24 +227,25 @@ export class OasisManager {
         }
     }
     static async deleteOasis(oasis) {
+        let navHome = false;
         const UUID = oasis._id;
-        // Delete from StorageManager (if active):
+        // If oasis is open, navigate to home:
         const activeOasis = StorageManager.read("oasis/" + UUID);
         if (activeOasis) {
-            StorageManager.safeDecouple("oasis/" + UUID);
+            navHome = true;
         }
         // Delete from localStorage:
         const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, true);
         if (oasisMatches && oasisMatches.length > 0) {
             // Delete:
             StorageManager.removeMatchingInLocal("oasis/" + oasisMatches[0]._id);
-            return;
+            return navHome;
         }
         // Delete from database:
         try {
             const token = UserManager.token.token;
             const response = await axios.post(CONST.URL + "/oasis/deleteOasis", { UUID: UUID, token: token });
-            return;
+            return navHome;
         }
         catch (error) {
             if (error.response && error.response.status === 400) {
@@ -252,6 +253,7 @@ export class OasisManager {
                 const errorMessage = error.response.data.error;
                 throw errorMessage;
             } else {
+                console.log(error);
                 // Network error:
                 const errorMessage = "Network error - please try again later.";
                 throw errorMessage;
