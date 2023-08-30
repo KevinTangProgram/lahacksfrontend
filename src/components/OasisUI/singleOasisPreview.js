@@ -7,8 +7,8 @@ import Tooltip from '../tooltip';
 
 function SingleOasisPreview(props) {
     // Props:
-    const { oasis, setOpenMenuId, showMenu, focusOasis, openOasisEditUI, openOasisDeleteUI } = props;
-
+    const { oasis, focusOasis, openOasisUI, contextMenuInfo } = props;
+    const { setMenu, showMenu, coords } = contextMenuInfo;
     // Context Menu:
     const oasisPreviewRef = useRef(null);
     const stopClick = (event) => {
@@ -24,13 +24,13 @@ function SingleOasisPreview(props) {
     }   
 
     return (
-        <div className="oasisPreview" activeClassName="oasisPreview active" onContextMenu={(event) => {
-            event.preventDefault(); 
-            setOpenMenuId(oasis._id);
-            }}>
-            <NavLink to={"/oasis/" + oasis._id} className="oasisLink" key={oasis._id} onClick={() => {
+        <NavLink to={"/oasis/" + oasis._id} className="oasisPreview" activeClassName="oasisPreview active" key={oasis._id} onClick={() => {
                 focusOasis();
-            }}>
+            }} onContextMenu={(event) => {
+                event.preventDefault(); 
+                setMenu(oasis._id, event.clientX, event.clientY);
+                }
+            }>
                 {/* Content: */}
                 <div className="content">
                     <div className="title">{oasis.info.title}</div>
@@ -48,26 +48,25 @@ function SingleOasisPreview(props) {
                     <button className="openContextButton alignRight" onClick={(event) => {
                         stopClick(event);
                         if (showMenu) {
-                            setOpenMenuId(null);
+                            setMenu(null);
                         }
                         else {
-                            setOpenMenuId(oasis._id);
+                            setMenu(oasis._id, event.clientX, event.clientY);
                         }
                     }}>=</button>
                 </div>
                 {/* Menu: */}
                 {showMenu && <div>
-                    <div className="context-menu" onClick={(event) => { stopClick(event) }}>
-                        <div className="context-menu-option"> <a ref={oasisPreviewRef} className="oasisLink" href={oasis._id} target="_blank">
-                            Open in New Tab</a></div>
-                        <div className="context-menu-option" onClick={() => {openOasisEditUI(oasis);}}>
+                <div className="context-menu" style={{ position: 'fixed', bottom: `${window.innerHeight - coords.y}px`, left: `${coords.x}px` }} onClick={(event) => { stopClick(event) }}>
+                        <div className="context-menu-option" ref={oasisPreviewRef} onClick={() => { setMenu(null); }}>
+                            Open in New Tab</div>
+                    <div className="context-menu-option" onClick={() => { setMenu(null); openOasisUI(oasis, "edit");}}>
                             Rename</div>
-                        <div className="context-menu-option" onClick={() => {openOasisDeleteUI(oasis);}}>
+                    <div className="context-menu-option" onClick={() => { setMenu(null); openOasisUI(oasis, "delete");}}>
                             Delete</div>
                     </div>
                 </div>}
             </NavLink>
-        </div>
     );
 }
 

@@ -232,6 +232,7 @@ function EditOasisUI(props) {
                             event.preventDefault();
                             if (validateBoxes()) {
                                 inputRefDescription.current.focus();
+                                inputRefDescription.current.selectionStart = inputRefDescription.current.value.length;
                             }
                         }
                         else if (event.key === "Escape") {

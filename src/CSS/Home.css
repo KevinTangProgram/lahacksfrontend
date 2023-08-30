@@ -136,12 +136,12 @@ Home.js Elements CSS File
 }
 .context-menu {
     position: absolute;
-    bottom: 21%;
-    right: -45%;
+    /* bottom: 21%;
+    right: -45%; */
     background-color: rgba(63, 147, 249, 0.737);
     border: 1px solid #ccc;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    z-index: 2;
 }
 .context-menu-option {
     padding: 8px 12px;

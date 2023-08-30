@@ -217,28 +217,33 @@ export class StorageManager {
         }
         // Start a timeout to sync object:
         const sync = () => {
-            this.forceSyncObject(StorageManagerInfo);
             this.pendingSyncs.delete(StorageManagerInfo.key);
+            this.forceSyncObject(StorageManagerInfo);
         }
         const timeoutId = setTimeout(sync, 5000);
         this.pendingSyncs.set(StorageManagerInfo.key, timeoutId);
     }
-    static forceSyncObject(StorageManagerInfo) {
+    static async forceSyncObject(StorageManagerInfo) {
+        // Sync object to storage.
+        // Note: forceSyncObject is used in two ways:
+        // 1: synchronously called by queueSyncObject(), return value is not used.
+        // 2: asynchronously called by calling code, return value is used (success: true, error: string).
         if (StorageManagerInfo.type === 'temp') {
             // No syncing needed.
-            return;
+            return true;
         }
         if (StorageManagerInfo.type === 'local') {
             // Check if exists in local:
             this.pushToLocal(StorageManagerInfo);
-            return;
+            return true;
         }
         if (StorageManagerInfo.type === 'database') {
             // Check if exists in database:
-            this.pushToDatabase(StorageManagerInfo);
-            return;
+            const response = await this.pushToDatabase(StorageManagerInfo);
+            return response;
         }
     }
+    
     //
     static pullFromLocal(StorageManagerInfo) {
         // 1. Pull object from local storage.
@@ -313,6 +318,8 @@ export class StorageManager {
                 errorMessage = "Network error - please try again later.";
                 StorageManagerInfo.syncFuncs.callback(errorMessage, StorageManagerInfo.changelog);
             }
+            console.log(errorMessage);
+            return errorMessage;
         }
     }
     static async clearDatabase() {

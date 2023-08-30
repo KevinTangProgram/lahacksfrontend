@@ -172,8 +172,17 @@ export class OasisManager {
         if (activeOasis) {
             activeOasis.info.title = title;
             activeOasis.info.description = description;
-            activeOasis.modify(true, "info");
-            return;
+            if (activeOasis.StorageManagerInfo.changelog) {
+                // type is database, need to modify changelog:
+                activeOasis.StorageManagerInfo.changelog.add("info");
+            }
+            const response = await StorageManager.forceSyncObject(activeOasis.StorageManagerInfo);
+            if (response === true) {
+                return;
+            }
+            else {
+                throw response;
+            }
         }
         // Otherwise, find oasis and edit:
             // Search localStorage:
@@ -183,20 +192,38 @@ export class OasisManager {
             const oasis = StorageManager.read(oasisMatches[0]);
             oasis.info.title = title;
             oasis.info.description = description;
-            oasis.modify(true);
-            return;
+            const response = await StorageManager.forceSyncObject(oasis.StorageManagerInfo);
+            if (response === true) {
+                StorageManager.safeDecouple(oasisMatches[0]);
+                return;
+            }
+            else {
+                throw response;
+            }
         }
             // Search database:
         try {
+            // Create a version of oasisData with only our updated information, and mark changelogs:
             const token = UserManager.token.token;
             const oasisData = {
                 info: oasis.info
             };
-            const changelog = new Set("info");
-            const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasisData, changelog: Array.from(changelog) });
+            oasis.info.title = title;
+            oasis.info.description = description;
+            const changelog = ["info"];
+            const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasisData, changelog: changelog });
+            return;
         }
         catch (error) {
-            throw error;
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later.";
+                throw errorMessage;
+            }
         }
     }
         // Utils:
