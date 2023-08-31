@@ -165,7 +165,7 @@ export class OasisManager {
             }
         }
     }
-    static async editOasisInfo(oasis, title, description) {
+    static async editOasisInfo(oasis, title, description) { 
         const UUID = oasis._id;
         // If already in StorageManager (currently active), edit directly:
         const activeOasis = StorageManager.read("oasis/" + UUID);

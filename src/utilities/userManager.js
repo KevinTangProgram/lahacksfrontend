@@ -5,10 +5,37 @@ import axios from 'axios';
 
 
 export class UserManager {
+    static refreshTokenPromise = null;
     static user = StorageManager.createSyncedObject({}, "local", "user");
     static token = StorageManager.createSyncedObject({token: ""}, "local", "token");
-    static theme = "default"; // light, dark, default
 
+    // Interface:
+    static async getValidToken() {
+        await this.refreshTokenPromise;
+        return this.token.token;
+    }
+    
+    static getUser() {
+        return this.user;
+    }
+    static async editUserSettings(settings) {
+        // Update user settings (using token from localStorage):
+        try {
+            const response = await axios.post(CONST.URL + "/user/updateSettings", { token: this.getToken(), settings: settings });
+            return;
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later."
+                throw errorMessage;
+            }
+        }
+    }
     // Utils:
     static logout() {
         StorageManager.safeAssign(this.user.modify(true), {});
@@ -245,5 +272,38 @@ export class UserManager {
             }
         }
     }
+        // Setup:
+    static async refreshToken() {
+        const token = this.token.token;
+        // Create a promise to prevent getValidToken from returning before we refresh:
+        this.refreshTokenPromise = new Promise(async (resolve) => {
+            console.log("refreshToken started.");
+            // Guest User:
+            if (!token) {
+                resolve();
+            }
+            // Logged in:
+            try {
+                const response = await axios.get(CONST.URL + "/user/refresh", { params: { token: token } });
+                // Success, update token & user:
+                this.token.modify(true).token = response.data.token;
+                StorageManager.safeAssign(this.user.modify(true), response.data.user);
+                resolve();
+            }
+            catch (error) {
+                if (error.response && error.response.status === 400) {
+                    // My error, token is invalid:
+                    this.logout();
+                    resolve();
+                } else {
+                    // Network error, do nothing:
+                    resolve();
+                }
+            }
+        });
+        // Start the promise:
+        await this.refreshTokenPromise;
+    }
 }
 
+UserManager.refreshToken();
