@@ -27,12 +27,12 @@ const Loader = React.memo((props) => {
                     </div>
                     <div className="loading-content-loader2">
                     </div>
-                    <div class="loading-content-loader3">
-                        <div class="loading-content-subloader"></div>
-                        <div class="loading-content-subloader"></div>
-                        <div class="loading-content-subloader"></div>
-                        <div class="loading-content-subloader"></div>
-                        <div class="loading-content-subloader"></div>
+                    <div className="loading-content-loader3">
+                        <div className="loading-content-subloader"></div>
+                        <div className="loading-content-subloader"></div>
+                        <div className="loading-content-subloader"></div>
+                        <div className="loading-content-subloader"></div>
+                        <div className="loading-content-subloader"></div>
                     </div>
                 </div>
             </div>

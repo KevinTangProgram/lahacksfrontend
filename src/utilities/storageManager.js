@@ -5,6 +5,7 @@ export class StorageManager {
     static localStorage = window.localStorage;
     static databaseStorage = CONST.URL;
     static unsyncCounter = 0;
+    static syncErrors = [];
     // Storage:
     static syncedObjects = new Map(); // {key -> syncedObject}
     // syncedObject: {property1, property2..., modify(), 
@@ -402,6 +403,11 @@ export class StorageManager {
             }
         });
     }  
+    static addToError(error) {
+        // 
+        this.syncErrors.push(error);
+        this.emitEvent("StorageState");
+    }
     static addToState(value) {
         // Keep track of overall syncing status:
         const wasSynced = this.unsyncCounter === 0;

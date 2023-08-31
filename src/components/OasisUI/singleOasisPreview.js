@@ -43,7 +43,7 @@ function SingleOasisPreview(props) {
                     </div>
                 </div>
                 {/* Buttons: */}
-                <div style={{ "display": "flex", "margin-left": "45%" }}>
+                <div style={{ "display": "flex", "marginLeft": "45%" }}>
                     <Tooltip text={oasis.info.description} />
                     <button className="openContextButton alignRight" onClick={(event) => {
                         stopClick(event);

@@ -5,36 +5,13 @@ import axios from 'axios';
 
 
 export class UserManager {
-    static refreshTokenPromise = null;
+    static refreshTokenPromise = undefined; // replaced with a valid promise on load.
     static user = StorageManager.createSyncedObject({}, "local", "user");
     static token = StorageManager.createSyncedObject({token: ""}, "local", "token");
 
     // Interface:
-    static async getValidToken() {
-        await this.refreshTokenPromise;
-        return this.token.token;
-    }
-    
     static getUser() {
         return this.user;
-    }
-    static async editUserSettings(settings) {
-        // Update user settings (using token from localStorage):
-        try {
-            const response = await axios.post(CONST.URL + "/user/updateSettings", { token: this.getToken(), settings: settings });
-            return;
-        }
-        catch (error) {
-            if (error.response && error.response.status === 400) {
-                // My error:
-                const errorMessage = error.response.data.error;
-                throw errorMessage;
-            } else {
-                // Network error:
-                const errorMessage = "Network error - please try again later."
-                throw errorMessage;
-            }
-        }
     }
     // Utils:
     static logout() {
@@ -253,12 +230,29 @@ export class UserManager {
         }
     }
         // User Settings:
-    static async updateSettings(settings) {
-        // Update user settings (using token from localStorage):
+    static createUserSyncedObject() {
+        // Unused, but here for reference:
+        const callback = (error, changelog) => {
+            // StorageManager will display the error on its statusbar, so we do nothing here.
+        };
+        const push = async (userData, changelog) => {
+            try {
+                // We only ever push settings:
+                const response = await axios.post(CONST.URL + "/user/updateSettings", { token: await UserManager.getValidToken(), settings: userData.settings });
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        };
+        return StorageManager.createSyncedObject({}, "database", "user", {pull: null, push: push, callback: callback});
+    }
+    static getSettings() {
+        return this.user.settings;
+    }
+    static async syncSettings() {
         try {
-            const response = await axios.post(CONST.URL + "/user/updateSettings", { token: this.token, settings: settings });
-            // Return 0 (success):
-            return response.data;
+            const response = await axios.post(CONST.URL + "/user/updateSettings", { token: await this.getValidToken(), settings: this.getSettings() });
         }
         catch (error) {
             if (error.response && error.response.status === 400) {
@@ -267,20 +261,33 @@ export class UserManager {
                 throw errorMessage;
             } else {
                 // Network error:
-                const errorMessage = "Error saving settings - please retry in a moment."
+                const errorMessage = "Network error - please try again later.";
                 throw errorMessage;
             }
         }
     }
-        // Setup:
+    // Setup:
+    static async getValidToken() {
+        // Returns a valid token, awaiting refresh if necessary.
+        // Usage: Call this function using await, and almost always get a token back instantly.
+        // Pages 'Home' and 'Oasis' call refreshToken() then getValidToken() on load, which lets users refresh their session and detects invalid tokens.
+        const response = await this.refreshTokenPromise;
+        if (response === true) {
+            // Success, token refreshed:
+            return this.token.token;
+        }
+        else {
+            return response; // false=invalid, null=guest or network error, undefined=refreshToken() was never called.
+        }
+    }
     static async refreshToken() {
         const token = this.token.token;
         // Create a promise to prevent getValidToken from returning before we refresh:
         this.refreshTokenPromise = new Promise(async (resolve) => {
-            console.log("refreshToken started.");
             // Guest User:
-            if (!token) {
-                resolve();
+            if (token === "") {
+                resolve(null);
+                return;
             }
             // Logged in:
             try {
@@ -288,22 +295,19 @@ export class UserManager {
                 // Success, update token & user:
                 this.token.modify(true).token = response.data.token;
                 StorageManager.safeAssign(this.user.modify(true), response.data.user);
-                resolve();
+                resolve(true);
             }
             catch (error) {
+                console.log(error);
                 if (error.response && error.response.status === 400) {
                     // My error, token is invalid:
-                    this.logout();
-                    resolve();
+                    StorageManager.safeAssign(this.user.modify(true), {});
+                    resolve(false);
                 } else {
                     // Network error, do nothing:
-                    resolve();
+                    resolve(null);
                 }
             }
         });
-        // Start the promise:
-        await this.refreshTokenPromise;
     }
 }
-
-UserManager.refreshToken();

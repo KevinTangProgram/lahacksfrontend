@@ -21,7 +21,7 @@ function Tab_home({ focusOasis }) {
                 // Guest user:
                 return (
                     <div>
-                        <h2 style={{"margin-top": "0", "padding-top": "1em"}}>Welcome, Guest User</h2>
+                        <h2 style={{"marginTop": "0", "paddingTop": "1em"}}>Welcome, Guest User</h2>
                         <button onClick={() => {
                             setShowLogin(true);
                         }}>login</button>
@@ -33,7 +33,7 @@ function Tab_home({ focusOasis }) {
                 // Logged in user:
                 return (
                     <div>
-                        <h2 style={{ "margin-top": "0", "padding-top": "1em" }}>Welcome, {UserManager.user.info.username.split(" ")[0]}</h2>
+                        <h2 style={{ "marginTop": "0", "paddingTop": "1em" }}>Welcome, {UserManager.user.info.username.split(" ")[0]}</h2>
                         <button onClick={() => {
                             UserManager.logout();
                             navigate("/home");
@@ -159,7 +159,7 @@ function Tab_home({ focusOasis }) {
                                 openOasisUI,
                                 contextMenuInfo: {setMenu: openContextMenu, showMenu: openMenuId === oasis._id, coords: coords}
                             };
-                            return <SingleOasisPreview {...props}/>
+                            return <SingleOasisPreview {...props} key={oasis._id}/>
                         }))}                            
                     </div>
                     {/* Secondary Oases:  */}

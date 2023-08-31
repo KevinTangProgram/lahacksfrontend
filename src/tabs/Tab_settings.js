@@ -17,7 +17,7 @@ function Tab_settings(props) {
     const headerValue = (showOasis ? oasisInstance.getData("info").title : "Settings");
 
     return (
-        <div className="backGround" style={{"padding-bottom": "30px"}}>
+        <div className="backGround" style={{"paddingBottom": "30px"}}>
             <div className="tablet">
                 <StatusBar headerText={headerValue}/>
                 <div className="twoButtons">

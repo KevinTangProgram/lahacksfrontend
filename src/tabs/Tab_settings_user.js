@@ -2,6 +2,7 @@ import '../CSS/Test.css';
 import React, { useState } from 'react';
 import Authenticator from '../components/AuthenticationUI/authenticator';
 import { UserManager } from '../utilities/userManager';
+import Tooltip from '../components/tooltip';
 
 //
 function Tab_settings_user() {
@@ -16,38 +17,69 @@ function Tab_settings_user() {
             {showLogin && <Authenticator closeFunc={() => { setShowLogin(false) }} />}
         </div>);
     }
-    // Promise tests:
-    let promiseTest = new Promise((resolve, reject) => {
-        console.log("starting promise");
-        setTimeout(() => {
-            console.log("promise resolved");
-            resolve('hi');
-        }, 2000);
-    });;
-    const startPromise = () => {
-        promiseTest = new Promise((resolve, reject) => {
-            console.log("starting promise");
-            setTimeout(() => {
-                console.log("promise resolved");
-                resolve('hi');
-            }, 2000);
+    // User Settings:
+    const settings = UserManager.getSettings();
+    const { theme, notifications, oasisSort, privacy, misc } = settings;
+    const syncSettings = () => {
+        UserManager.syncSettings()
+        .then(() => {
+            console.log("Settings synced");
+        })
+        .catch((error) => {
+            console.log(error);
         });
     }
-    const checkPromise = async () => {
-        if (promiseTest) {
-            promiseTest.then((value) => {
-                console.log(value);
-            });
-        }
+    // Theme:
+    const [themeState, setThemeState] = useState(theme);
+    const handleThemeChange = (event) => {
+        setThemeState(event.target.value);
+        settings.theme = event.target.value;
     }
-    const checkPromise2 = async () => {
-        const response = await promiseTest;
-        console.log(response);
+    // Notifications:
+
+    // Oasis Sorting:
+    const [oasisSortState, setOasisSortState] = useState(oasisSort);
+    const handleOasisSortChange = (event) => {
+        setOasisSortState(event.target.value);
+        settings.oasisSort = event.target.value;
     }
+
     return (
         <div className="backGround alignCenter">
-            <button onClick={startPromise}>start Promise</button>
-            <button onClick={checkPromise2}>check Promise</button>
+            <div>
+                <h3>Theme</h3>
+                <select value={themeState} onChange={handleThemeChange}>
+                    <option value="default" disabled={false}>default</option>
+                    <option value="light" disabled={true}>light</option>
+                    <option value="dark" disabled={true}>dark</option>
+                </select>
+                <Tooltip text={"More themes coming soon!"} />
+            </div>
+
+            <div>
+                <h3>Oasis Preview Sorting</h3>
+                <label>
+                    Recently Edited:
+                    <input
+                        type="radio"
+                        name="oasisSort"
+                        value="recent"
+                        checked={oasisSortState === 'recent'}
+                        onChange={handleOasisSortChange}
+                    />
+                </label>
+                <label>
+                    Alphabetical:
+                    <input
+                        type="radio"
+                        name="oasisSort"
+                        value="alphabetical"
+                        checked={oasisSortState === 'alphabetical'}
+                        onChange={handleOasisSortChange}
+                    />
+                </label>
+            </div>
+            <button onClick={syncSettings}>sync now</button>
         </div>
     );
 }

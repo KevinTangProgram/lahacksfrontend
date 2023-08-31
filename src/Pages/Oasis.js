@@ -11,10 +11,22 @@ import Tab_settings from '../tabs/Tab_settings';
 import DebuggerPanel from '../utilities/debugger';
 import { UserManager } from '../utilities/userManager';
 import { OasisManager } from '../utilities/oasisManager';
+import Authenticator from '../components/AuthenticationUI/authenticator';
 import Loader from '../components/loader';
    
 
 function Oasis() {
+    // User popups:
+    const [showLogin, setShowLogin] = useState(false);
+    useEffect(() => {
+        UserManager.refreshToken();
+        const checkToken = async () => {
+            if (await UserManager.getValidToken() === false) {
+                setShowLogin(true);
+            }
+        }
+        checkToken();
+    }, []);
     // Meridian Display Logic:
     function getHour() {
         const timeString = (new Date()).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
@@ -132,6 +144,8 @@ function Oasis() {
                     </>
                 )}
             </div>
+            {showLogin && <Authenticator closeFunc={() => { setShowLogin(false) }} />}
+
             <DebuggerPanel />
         </div>
     );
