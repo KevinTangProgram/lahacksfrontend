@@ -1,9 +1,8 @@
 //
-import React, { useState, useRef } from 'react';
 import '../CSS/Utils.css';
 
 
-const Loader = React.memo((props) => {
+function Loader() {
     if (!props.type || props.type === "icon")
     return (
         // Singular Loading Icon:
@@ -42,6 +41,6 @@ const Loader = React.memo((props) => {
     return (
         <div className="backGround">hello</div>
     );
-});
+};
 
 export default Loader;

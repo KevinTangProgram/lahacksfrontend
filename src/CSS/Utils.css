@@ -81,12 +81,28 @@
     grid-template-columns: 12% 21% 33% 33%;
     align-items: center;
 }
+.twoIcon-container {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    justify-content: center;
+    align-items: left;
+}
 .icon-container {
-    /* display: flex; */
     justify-content: center;
     align-items: center;
     width: 1.8em;
     height: 1.8em;
+}
+.iconError {
+    position: relative;
+    margin-right: 0em;
+    margin-left: 0em;
+    padding: 0em;
+    aspect-ratio: 1/1;
+    width: 80%;
+    opacity: 50%;
+    outline: 2px dashed #000;
+    border: 2px dashed transparent;
 }
 .iconSynced {
     position: relative;
@@ -104,6 +120,7 @@
     width: 1em;
     height: 1em;
     animation: spin 1s linear infinite;
+    animation-fill-mode: forwards;
     margin-left: auto;
     margin-right: auto;
 }

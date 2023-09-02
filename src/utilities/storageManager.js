@@ -5,7 +5,7 @@ export class StorageManager {
     static localStorage = window.localStorage;
     static databaseStorage = CONST.URL;
     static unsyncCounter = 0;
-    static syncErrors = [];
+    static syncError = null;
     // Storage:
     static syncedObjects = new Map(); // {key -> syncedObject}
     // syncedObject: {property1, property2..., modify(), 
@@ -304,6 +304,7 @@ export class StorageManager {
                 this.addToState(-1);
             }
             StorageManagerInfo.syncFuncs.callback(null, StorageManagerInfo.changelog);
+            this.setError(null);
             StorageManagerInfo.changelog.clear();
             console.log("Pushed to database.");
             return true;
@@ -319,7 +320,7 @@ export class StorageManager {
                 errorMessage = "Network error - please try again later.";
                 StorageManagerInfo.syncFuncs.callback(errorMessage, StorageManagerInfo.changelog);
             }
-            console.log(errorMessage);
+            this.setError(errorMessage);
             return errorMessage;
         }
     }
@@ -403,9 +404,9 @@ export class StorageManager {
             }
         });
     }  
-    static addToError(error) {
+    static setError(error) {
         // 
-        this.syncErrors.push(error);
+        this.syncError = error;
         this.emitEvent("StorageState");
     }
     static addToState(value) {
@@ -414,6 +415,7 @@ export class StorageManager {
         this.unsyncCounter += value;
         const isSynced = this.unsyncCounter === 0;
         if (wasSynced !== isSynced) {
+            console.log("emiting storagestate");
             this.emitEvent("StorageState");
         }
     } 

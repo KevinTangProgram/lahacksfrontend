@@ -10,7 +10,7 @@ export default function Observer({ dependencies, Component }) {
     // Rules:
     // - dependencies: array of strings, each string is a key in StorageManager.syncedObjects. 
     // - Accepts the '.' operator to create dependencies on a specific property of a syncedObject.
-    
+
     // Utils:
     function getNestedValue(dependency) {
         // Takes in a dependency string, returns the value of the nested property.
@@ -74,6 +74,7 @@ export default function Observer({ dependencies, Component }) {
                 if (subDependencyValues[index] === null) {
                     // Main syncedObject, rerender:
                     setRenderCount(renderCount => renderCount + 1);
+                    console.log("rerendering because of " + dependencies[index]);
                     return;
                 }
                 // Subdependency of syncedObject, check for changes:

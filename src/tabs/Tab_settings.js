@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { Context } from '../utilities/context';
-
 import Tab_settings_user from './Tab_settings_user';
 import Tab_settings_oasis from './Tab_settings_oasis';
 import '../CSS/Tab_oasis.css';
@@ -14,12 +13,11 @@ function Tab_settings(props) {
     // Tab Navigation:
     const [bottomTab, setBottomTab] = useState(!showOasis ? ["tabActive", "tabInactive"] : ["tabInactive", "tabActive"]);
     // Oasis Data:
-    const headerValue = (showOasis ? oasisInstance.getData("info").title : "Settings");
 
     return (
         <div className="backGround" style={{"paddingBottom": "30px"}}>
             <div className="tablet">
-                <StatusBar headerText={headerValue}/>
+                <StatusBar />
                 <div className="twoButtons">
                     <button className="selectCells" id={bottomTab[0]} onClick={() => { setBottomTab(["tabActive", "tabInactive"]) }}>User</button>
                     <button className={showOasis ? "selectCells" : "selectCells lowOpacity"} id={showOasis ? bottomTab[1] : null} onClick={() => { if (showOasis) setBottomTab(["tabInactive", "tabActive"]); }}>Oasis</button>
