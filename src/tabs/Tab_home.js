@@ -51,8 +51,9 @@ function Tab_home({ focusOasis }) {
             const [error, setError] = useState(null);
             const [syncLocalLoading, setSyncLocalLoading] = useState(false);
             const [syncLocalError, setSyncLocalError] = useState(null);
+            const oasisSort = ((UserManager.user._id && UserManager.user.settings.oasisSort) ? UserManager.user.settings.oasisSort : "recent");
             const getOases = async () => {
-                OasisManager.getHomeView("all", "recent")
+                OasisManager.getHomeView("all", oasisSort)
                     .then((response) => {
                         setOasisList(response.mainOases);
                         setOasisSecondaryList(response.syncableOases);

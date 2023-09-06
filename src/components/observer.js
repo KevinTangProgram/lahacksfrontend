@@ -74,7 +74,6 @@ export default function Observer({ dependencies, Component }) {
                 if (subDependencyValues[index] === null) {
                     // Main syncedObject, rerender:
                     setRenderCount(renderCount => renderCount + 1);
-                    console.log("rerendering because of " + dependencies[index]);
                     return;
                 }
                 // Subdependency of syncedObject, check for changes:

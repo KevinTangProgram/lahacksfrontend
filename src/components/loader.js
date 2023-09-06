@@ -2,7 +2,7 @@
 import '../CSS/Utils.css';
 
 
-function Loader() {
+function Loader(props) {
     if (!props.type || props.type === "icon")
     return (
         // Singular Loading Icon:

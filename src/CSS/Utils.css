@@ -26,7 +26,7 @@
     top: 50%;
     left: 100%;
     transform: translate(10px, -50%);
-
+    white-space: pre-line;
     width: 150px;
     padding: 10px;
     background-color: #fff;
@@ -36,7 +36,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     animation: tooltipFadeIn 0.3s;
     z-index: 999;
-    overflow-x: visible;
+    overflow: visible !important;
 }
 .tooltip-popup.initial {
     display: none;
@@ -99,7 +99,7 @@
     margin-left: 0em;
     padding: 0em;
     aspect-ratio: 1/1;
-    width: 80%;
+    width: 60%;
     opacity: 50%;
     outline: 2px dashed #000;
     border: 2px dashed transparent;

@@ -3,6 +3,8 @@ import { Context } from '../utilities/context';
 import Tab_settings_user from './Tab_settings_user';
 import Tab_settings_oasis from './Tab_settings_oasis';
 import '../CSS/Tab_oasis.css';
+import { UserManager } from '../utilities/userManager';
+import Authenticator from '../components/AuthenticationUI/authenticator';
 
 import StatusBar from '../components/OasisUI/statusBar';
 //
@@ -12,7 +14,25 @@ function Tab_settings(props) {
     const showOasis = oasisInstance && (props.type === "oasis");
     // Tab Navigation:
     const [bottomTab, setBottomTab] = useState(!showOasis ? ["tabActive", "tabInactive"] : ["tabInactive", "tabActive"]);
-    // Oasis Data:
+    // Login Tab:
+    const [showUserSettings, setShowUserSettings] = useState(UserManager.user._id !== undefined);
+    const [showLogin, setShowLogin] = useState(false);
+    const closeMenuAndRefresh = () => {
+        setShowLogin(false);
+        setShowUserSettings(UserManager.user._id !== undefined);
+    }
+    const LoginMenu = () => {
+        return (
+            <div className="alignCenter">
+                <br></br>
+                <button onClick={() => {
+                    setShowLogin(true);
+                }}>login</button>
+                {showLogin && <Authenticator closeFunc={closeMenuAndRefresh} />}
+            </div>
+        );
+    }
+
 
     return (
         <div className="backGround" style={{"paddingBottom": "30px"}}>
@@ -24,11 +44,14 @@ function Tab_settings(props) {
                 </div>
             </div>
             <div className="activeTab">
-                {bottomTab[0] === "tabActive" && <Tab_settings_user />}
+                {bottomTab[0] === "tabActive" && (
+                    showUserSettings ? <Tab_settings_user /> : <LoginMenu />)}
                 {bottomTab[1] === "tabActive" &&  <Tab_settings_oasis />}
             </div>
         </div>
     );
 }
+
+
 
 export default Tab_settings;

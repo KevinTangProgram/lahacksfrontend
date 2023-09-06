@@ -229,30 +229,29 @@ export class UserManager {
             }
         }
     }
-        // User Settings:
-    static createUserSyncedObject() {
-        // Unused, but here for reference:
-        const callback = (error, changelog) => {
-            // StorageManager will display the error on its statusbar, so we do nothing here.
-        };
-        const push = async (userData, changelog) => {
-            try {
-                // We only ever push settings:
-                const response = await axios.post(CONST.URL + "/user/updateSettings", { token: await UserManager.getValidToken(), settings: userData.settings });
-            }
-            catch (error) {
-                console.log(error);
-                throw error;
-            }
-        };
-        return StorageManager.createSyncedObject({}, "database", "user", {pull: null, push: push, callback: callback});
-    }
-    static getSettings() {
-        return this.user.settings;
-    }
-    static async syncSettings() {
+        // User Changes:
+    static async syncChanges() {
+        await new Promise(resolve => setTimeout(resolve, 2000));
         try {
-            const response = await axios.post(CONST.URL + "/user/updateSettings", { token: await this.getValidToken(), settings: this.getSettings() });
+            const response = await axios.post(CONST.URL + "/user/updateUser", { token: await this.getValidToken(), user: this.user });
+        }
+        catch (error) {
+            if (error.response && error.response.status === 400) {
+                // My error:
+                const errorMessage = error.response.data.error;
+                throw errorMessage;
+            } else {
+                // Network error:
+                const errorMessage = "Network error - please try again later.";
+                throw errorMessage;
+            }
+        }
+    }
+    static async deleteAccount() {
+        try {
+            const response = await axios.post(CONST.URL + "/user/deleteAccount", { token: await this.getValidToken() });
+            this.logout();
+            return true;
         }
         catch (error) {
             if (error.response && error.response.status === 400) {

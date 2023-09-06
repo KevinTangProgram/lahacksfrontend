@@ -310,6 +310,12 @@ export class StorageManager {
             return true;
         }
         catch (error) {
+            if (StorageManagerInfo.status === "unsynced") {
+                // Pretend its synced anyways for statusbar display:
+                this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
+                this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
+                this.addToState(-1);
+            }
             let errorMessage;
             if (error.response && error.response.status === 400) {
                 // My error:
@@ -320,12 +326,21 @@ export class StorageManager {
                 errorMessage = "Network error - please try again later.";
                 StorageManagerInfo.syncFuncs.callback(errorMessage, StorageManagerInfo.changelog);
             }
-            this.setError(errorMessage);
+            this.setError(StorageManagerInfo, errorMessage);
             return errorMessage;
         }
     }
     static async clearDatabase() {
 
+    }
+    static async retryLastErrorSync() {
+        if (this.syncError === null) {
+            return;
+        }
+        // Clear error and retry:
+        const StorageManagerInfo = this.syncError.StorageManagerInfo;
+        this.syncError = null;
+        this.handleModifications(StorageManagerInfo, false, true);
     }
     //
     static objectify(info, modifyObject = false) {
@@ -404,9 +419,9 @@ export class StorageManager {
             }
         });
     }  
-    static setError(error) {
+    static setError(StorageManagerInfo, error) {
         // 
-        this.syncError = error;
+        this.syncError = { StorageManagerInfo: StorageManagerInfo, error: error};
         this.emitEvent("StorageState");
     }
     static addToState(value) {
@@ -415,7 +430,6 @@ export class StorageManager {
         this.unsyncCounter += value;
         const isSynced = this.unsyncCounter === 0;
         if (wasSynced !== isSynced) {
-            console.log("emiting storagestate");
             this.emitEvent("StorageState");
         }
     } 

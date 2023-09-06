@@ -10,7 +10,7 @@ function ForgotPasswordUI(props) {
     const [showLoader, setShowLoader] = useState(false);
     const [error, setError] = useState(null);
     const [response, setResponse] = useState(null);
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState(props.email ? props.email : "");
     const handleChangeEmail = (event) => { setEmail(event.target.value); }
     // Cooldowns:
     const cooldownLength = 60;
@@ -77,7 +77,7 @@ function ForgotPasswordUI(props) {
             
             <div className="selectGridSmall">
                 {/* Email Textbox: */}
-                <input ref={inputRef} type="text" name="email" autocomplete="on" placeholder="Email" value={email} onChange={handleChangeEmail} onKeyDown={(event) => {
+                <input ref={inputRef} type="text" name="email" autoComplete="on" placeholder="Email" value={email} onChange={handleChangeEmail} onKeyDown={(event) => {
                     if (event.key === "Enter") {
                         event.preventDefault();
                         if (cooldown < 1)
