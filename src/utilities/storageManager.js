@@ -421,6 +421,11 @@ export class StorageManager {
     }  
     static setError(StorageManagerInfo, error) {
         // 
+        if (StorageManagerInfo === null || error === null) {
+            this.syncError = null;
+            this.emitEvent("StorageState");
+            return;
+        }
         this.syncError = { StorageManagerInfo: StorageManagerInfo, error: error};
         this.emitEvent("StorageState");
     }

@@ -5,6 +5,7 @@ import { UserManager } from '../utilities/userManager';
 import Tooltip from '../components/tooltip';
 import Loader from '../components/loader';
 import { getHumanizedDate } from '../utilities/utilities';
+import StatusIcons from '../components/OasisUI/statusIcons';
 
 //
 function Tab_settings_user() {
@@ -57,12 +58,12 @@ function Tab_settings_user() {
         if (STATE.isLoading()) {
             return;
         }
+        setError(null);
         setUserState(STATE.DIRTY_SYNCING);
         user.STATE = user.STATE = STATE.CLEAN_INITIAL;
         UserManager.syncChanges()
             .then(() => {
                 setUserState(STATE.CLEAN_CLOSE_BANNER);
-                setError(null);
             })
             .catch((error) => {
                 setUserState(STATE.DIRTY_ERROR);
@@ -240,7 +241,7 @@ function Tab_settings_user() {
                         You have unsaved changes:
                         {STATE.showButton() && <button className={STATE.isLoading() ? "lowOpacity" : ""} onClick={saveChanges}> save </button>}
                     </div>
-                {STATE.isDirty() && <div className="twoIcon-container">
+                {/* {STATE.isDirty() && <div className="twoIcon-container">
                     <div className="icon-container">
                         {STATE.isLoading() && (
                         <Loader type="icon" />)}
@@ -251,7 +252,13 @@ function Tab_settings_user() {
                         {error && (
                         <Tooltip text={error} iconComponent={() => { return <img className="iconError" src="/images/icons/iconExclamation.png" alt="Error" /> }} />)}
                     </div>
-                </div>}
+                </div>} */}
+                    {!STATE.showButton() && <StatusIcons syncProps={{
+                        syncLoading: STATE.isLoading(),
+                        syncSuccess: STATE.isSynced(),
+                        syncError: error,
+                        syncRetryFunc: saveChanges
+                    }} />}
             </div>}
 
             <button style={{"textDecoration": (tab === "profile" ? "underline" : "none")}} onClick={() => {setTab("profile")}}>Profile</button>

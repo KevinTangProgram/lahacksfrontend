@@ -144,8 +144,8 @@ Tab_oasis_ideas.js CSS file
     animation: expandAnimation 0.5s ease forwards;
 }
 .saveChangesBanner.closing {
-    animation: collapseAnimation 0.5s ease forwards;
-    animation-delay: 1.5s;
+    animation: collapseAnimation 0.3s ease forwards;
+    animation-delay: 1s;
     overflow: hidden;
 }
 .saveChangesBanner .content {
@@ -160,6 +160,7 @@ Tab_oasis_ideas.js CSS file
 .saveChangesBanner .twoIcon-container {
     margin-top: 0.4em;
     padding: 0;
+    display: inline-flex;
 }
 
 @keyframes expandAnimation {

@@ -144,7 +144,6 @@ export class OasisManager {
             };
             const push = async (oasisData, changelog) => {
                 try {
-                    throw "error tehe";
                     const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasisData, changelog: Array.from(changelog) });
                 }
                 catch (error) {

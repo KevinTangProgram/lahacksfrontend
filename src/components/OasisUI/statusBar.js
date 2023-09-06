@@ -2,63 +2,14 @@
 import { StorageManager } from '../../utilities/storageManager';
 import Observer from '../observer';
 import Clock from '../clock';
-import Loader from '../loader';
-import Tooltip from '../tooltip';
+import StatusIcons from './statusIcons';
 import '../../CSS/Utils.css';
 import { useState, useRef, useContext } from 'react';
 import { useParams } from "react-router-dom";
 import { Context } from '../../utilities/context';
 
-function StatusBar({ customSettings }) {
+function StatusBar() {
     // Components:
-    function StatusBarIcons({syncProps}) {
-        // Custom dependency icons:
-        if (syncProps) {
-            console.log("sync props!");
-            const { syncLoading, syncFinished, syncError, syncRetryFunc } = syncProps;
-            return (
-                <div className="twoIcon-container">
-                <div className="icon-container">
-                        {syncLoading && <Loader type="icon" />}
-                        {syncFinished && <img className="iconSynced" src="/images/icons/iconConfirm.png" alt="Synced" />}
-                        {syncError && <img className="iconSynced" src="/images/icons/iconCancel.png" alt="Synced with error" />}
-                </div>
-                <div className="icon-container">
-                    {syncError && 
-                        <div onClick={() => { syncRetryFunc() }}>
-                            <Tooltip text={syncError + "\n\n [Click to retry]"} iconComponent={() => { return <img className="iconError" src="/images/icons/iconExclamation.png" alt="Error" /> }} />
-                        </div>} 
-                </div>
-            </div>
-            );
-        }
-        // Default StorageManager icons:
-        return (
-            <div className="twoIcon-container">
-                <div className="icon-container">
-                    {StorageManager.unsyncCounter === 0 ? (
-                        StorageManager.syncError ? (
-                            // Synced, but error:
-                            <img className="iconSynced" src="/images/icons/iconCancel.png" alt="Synced with error" />
-                        ) : (
-                            // Synced, success:
-                            <img className="iconSynced" src="/images/icons/iconConfirm.png" alt="Synced" />
-                        )
-                    ) : (
-                        // Syncing...
-                        <Loader type="icon" />
-                    )}
-                </div>
-                <div className="icon-container">
-                    {StorageManager.syncError ? (
-                        // Display error:
-                        <div onClick={() => { StorageManager.retryLastErrorSync() }}>
-                            <Tooltip text={StorageManager.syncError.error + "\n\n [Click to retry]"} iconComponent={() => { return <img className="iconError" src="/images/icons/iconExclamation.png" alt="Error" /> }} />
-                        </div> ) : null} 
-                </div>
-            </div>
-        );
-    }
     function StatusBarHeader() {
         // Setup:
         const { id } = useParams();
@@ -111,23 +62,10 @@ function StatusBar({ customSettings }) {
         );
     }
 
-    // Custom settings:
-    if (customSettings) {
-        const { Clock, StatusBarIcons, StatusBarHeader, syncProps } = customSettings;
-        return (
-            <div className="tablet statusBar">
-                {Clock && <Clock type={"date"} className={"alignLeft"} />}
-                {StatusBarIcons && <Observer dependencies={"StorageState"} Component={() => <StatusBarIcons syncProps={syncProps} />} />}
-                {StatusBarHeader && <StatusBarHeader />}
-                {Clock && <Clock type={"time"} className={"alignRight"} />}
-            </div>
-        );
-    }
-    // No custom settings, default header:
     return (
         <div className="tablet statusBar">
             <Clock type={"date"} className={"alignLeft"} />
-            <Observer dependencies={"StorageState"} Component={StatusBarIcons} />
+            <Observer dependencies={"StorageState"} Component={StatusIcons} />
             <StatusBarHeader />
             <Clock type={"time"} className={"alignRight"} />
         </div>
