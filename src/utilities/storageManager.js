@@ -227,7 +227,7 @@ export class StorageManager {
     static async forceSyncObject(StorageManagerInfo) {
         // Sync object to storage.
         // Note: forceSyncObject is used in two ways:
-        // 1: synchronously called by queueSyncObject(), return value is not used.
+        // 1: synchronously called by queueSyncObject() by StorageManager, return value is not used.
         // 2: asynchronously called by calling code, return value is used (success: true, error: string).
         if (StorageManagerInfo.type === 'temp') {
             // No syncing needed.
@@ -268,9 +268,28 @@ export class StorageManager {
                 this.addToState(-1);
             }
             console.log("Pushed to local storage.");
+            return true;
         }
         catch (error) {
             console.log("Error pushing to local storage: ", error);
+            if (StorageManagerInfo.status === "unsynced") {
+                // Pretend its synced anyways for statusbar display:
+                this.setObjectProperty(StorageManagerInfo.key, "status", "synced");
+                this.setObjectProperty(StorageManagerInfo.key, "lastSynced", Date.now());
+                this.addToState(-1);
+            }
+            let errorMessage;
+            if (error.name === 'QuotaExceededError') {
+                errorMessage = "We're sorry, but your local storage is full. Please clear some oases and try again.";
+            }
+            else if (error.name === 'SecurityError') {
+                errorMessage = "We're sorry, but your browser is blocking local storage. Please allow local storage and try again.";
+            }
+            else {
+                errorMessage = "We're sorry, but there was an error saving your changes to localStorage. Please try again later.";
+            }
+            this.setError(StorageManagerInfo, errorMessage);
+            return errorMessage;
         }
     }
     static async pullFromDatabase(StorageManagerInfo) {
