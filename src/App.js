@@ -6,13 +6,14 @@ import Setup from './Pages/Setup';
 import About from './Pages/About';
 import Kevin from './Pages/Kevin';
 import Reset from './Pages/Reset';
+import FourOFour from './Pages/404';
 import './CSS/Home.css';
 //
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  Navigate
 } from "react-router-dom";
 import { ContextProvider } from './utilities/context';
 //
@@ -28,8 +29,10 @@ function App() {
             <Route path="/user/reset/:token" element={<Reset />} />
             <Route path="/about" element={<About />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/oasis" element={<Navigate to="/home" replace />} />
             <Route path="/oasis/:id" element={<Oasis />} />
             <Route path="/kevin" element={<Kevin />} />
+            <Route path="*" element={<FourOFour />} />
           </Routes>
         </div>
       </Router>

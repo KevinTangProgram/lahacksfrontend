@@ -226,3 +226,60 @@
     margin: 5% 5% 5% 5%;
     background-color: #eee;
 }
+
+
+
+/* 404 page logic: */
+.container404 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+.content404 {
+    height: 25%;
+    align-items: center;
+    display: flex;
+}
+.number404 {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #000000;
+}
+.logo404 {
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 4rem;
+    height: 4rem;
+    margin: 0 1rem;
+    border-radius: 50%;
+    border: 0.4em solid #000000;
+    box-sizing: border-box;
+}
+.errorMessage404 {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    color: #000000;
+}
+.return-button404 {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.return-button404:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+.return-button404-container {
+    text-align: center;
+    margin-top: 20px;
+}

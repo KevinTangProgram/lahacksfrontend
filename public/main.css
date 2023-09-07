@@ -8,6 +8,7 @@
 .lowOpacity
 {
     opacity: 50%;
+    cursor: not-allowed !important;
 }
 /* .loader {
     border: 6px solid #f3f3f3;
