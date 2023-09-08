@@ -8,6 +8,7 @@ import Kevin from './Pages/Kevin';
 import Reset from './Pages/Reset';
 import FourOFour from './Pages/404';
 import './CSS/Home.css';
+import { Helmet } from 'react-helmet';
 //
 import {
   BrowserRouter as Router,
@@ -19,7 +20,23 @@ import { ContextProvider } from './utilities/context';
 //
 function App() {
   return (
-    <ContextProvider>
+    <div className="App">
+      {/* Main Helmet (can be overriden in child components):  */}
+      <Helmet>
+        <title>Idea Oasis - A New Style of Note Taking</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="description"
+          content="Experience the future of note-taking - capture ideas one by one, and let AI weave them into beautiful, organized notes!"
+        />
+        <link rel="icon" href="blackpalm.png" />
+        <link rel="apple-touch-icon" href="blackpalm.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="stylesheet" href="/main.css" />
+      </Helmet>
+      {/* Content:  */}
+      <ContextProvider>
       <Router>
         <div id="content">
           <Routes>
@@ -37,6 +54,7 @@ function App() {
         </div>
       </Router>
     </ContextProvider>
+    </div>
   )
 }
 

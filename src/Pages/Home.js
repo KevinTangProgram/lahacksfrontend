@@ -4,6 +4,7 @@ import Tab_settings from '../tabs/Tab_settings';
 import DebuggerPanel from '../utilities/debugger';
 import { UserManager } from '../utilities/userManager';
 import Authenticator from '../components/AuthenticationUI/authenticator';
+import { Helmet } from 'react-helmet';
 //
 import React, { useState, useEffect } from 'react';
 
@@ -28,6 +29,9 @@ function Home() {
 
     return (
         <div className="Main">
+            <Helmet>
+                <title>Homepage - Idea Oasis</title>
+            </Helmet>
             <div className="tablet" id="noBackground">
                 <div className="threeButtons">
                     <button className="selectCells" id={currentTab[0]} onClick={() => { setCurrentTab(["tabActive", "tabInactive"]) }}>Home</button>

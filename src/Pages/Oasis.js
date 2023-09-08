@@ -13,6 +13,7 @@ import { UserManager } from '../utilities/userManager';
 import { OasisManager } from '../utilities/oasisManager';
 import Authenticator from '../components/AuthenticationUI/authenticator';
 import Loader from '../components/loader';
+import { Helmet } from 'react-helmet';
    
 
 function Oasis() {
@@ -111,6 +112,10 @@ function Oasis() {
     // Output:
     return (
         <div>
+            {/* Helmet: */}
+            {context.oasisInstance && <Helmet>
+                <title>'{context.oasisInstance.getData("info").title}' - Idea Oasis</title>
+            </Helmet>}
             {/* Background + Image:  */}
             <div style={{"position": "relative", "display": "flex"}}>
                 <img src={"/images/icons/" + image[tracker]} style={{"width": "100%", "z-index": "-1"}} />

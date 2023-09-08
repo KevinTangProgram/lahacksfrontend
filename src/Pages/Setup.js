@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { UserManager } from '../utilities/userManager.js';
 import '../CSS/Login.css'
+import { Helmet } from 'react-helmet';
+
 
 function Setup() {
     // Obtain email:
@@ -123,6 +125,9 @@ function Setup() {
     if (error) {
         return (
             <div>
+                <Helmet>
+                    <title>Account Setup - Idea Oasis</title>
+                </Helmet>
                 <br></br><br></br>
                 <p>Error: {error}</p>
             </div>
@@ -131,6 +136,9 @@ function Setup() {
     // Output:
     return (
         <div>
+            <Helmet>
+                <title>Account Setup - Idea Oasis</title>
+            </Helmet>
             {data ? (
                 <div>
                     <h1 className="alignCenter">Setup Your Account</h1>

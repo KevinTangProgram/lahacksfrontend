@@ -1,9 +1,15 @@
+import { Helmet } from 'react-helmet';
 
 
 function Pricing() {
 
     return (
-        <img src="./images/temp/pricingmodel.png" alt="Pricing Model" />
+        <div>
+            <Helmet>
+                <title>Pricing Options - Idea Oasis</title>
+            </Helmet>
+            <img src="./images/temp/pricingmodel.png" alt="Pricing Model" />
+        </div>
     );
 }
 

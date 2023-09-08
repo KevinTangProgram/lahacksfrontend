@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { UserManager } from '../utilities/userManager.js';
+import { Helmet } from 'react-helmet';
+
 
 function Reset() {
     // Obtain email:
@@ -102,6 +104,9 @@ function Reset() {
     if (error) {
         return (
             <div>
+                <Helmet>
+                    <title>Reset Password - Idea Oasis</title>
+                </Helmet>
                 <br></br><br></br>
                 <p>Error: {error}</p>
             </div>
@@ -110,6 +115,9 @@ function Reset() {
     // Output:
     return (
         <div>
+            <Helmet>
+                <title>Reset Password - Idea Oasis</title>
+            </Helmet>
             {data ? (
                 <div>
                     <h1 className="alignCenter">Reset Account Password</h1>
