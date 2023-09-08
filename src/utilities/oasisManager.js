@@ -3,6 +3,7 @@ import { MessageProcessor } from './messageProcesser.js';
 import { UserManager } from './userManager.js';
 import { CONST } from './CONST.js';
 import axios from 'axios';
+import { getHumanizedDate } from './utilities.js';
 
 
 //
@@ -122,7 +123,9 @@ export class OasisManager {
             // If found, StorageManager creates a synced object and returns its key.
         const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, false);
         if (oasisMatches && oasisMatches.length > 0) {
-            return new OasisManager(StorageManager.read(oasisMatches[0]));
+            const oasisData = StorageManager.read(oasisMatches[0]);
+            oasisData.stats.state.lastViewDate = Date.now();
+            return new OasisManager(oasisData);
         }
         // Search database:
         const token = UserManager.token.token;
@@ -151,6 +154,11 @@ export class OasisManager {
                 }
             };
             oasis.data = StorageManager.createSyncedObject(response.data, "database", "oasis/" + UUID, { pull: null, push: push, callback: callback });
+            if (oasis.data.StorageManagerInfo.changelog) {
+                // Modify last view date:
+                oasis.data.stats.state.lastViewDate = Date.now();
+                oasis.data.StorageManagerInfo.changelog.add("stats");
+            }
             return oasis;
         }
         catch (error) {
@@ -172,6 +180,7 @@ export class OasisManager {
         if (activeOasis) {
             activeOasis.info.title = title;
             activeOasis.info.description = description;
+            oasis.stats.state.lastEditDate = Date.now();
             if (activeOasis.StorageManagerInfo.changelog) {
                 // type is database, need to modify changelog:
                 activeOasis.StorageManagerInfo.changelog.add("info");
@@ -192,6 +201,7 @@ export class OasisManager {
             const oasis = StorageManager.read(oasisMatches[0]);
             oasis.info.title = title;
             oasis.info.description = description;
+            oasis.stats.state.lastEditDate = Date.now();
             const response = await StorageManager.forceSyncObject(oasis.StorageManagerInfo);
             if (response === true) {
                 StorageManager.safeDecouple(oasisMatches[0]);
@@ -210,6 +220,7 @@ export class OasisManager {
             };
             oasis.info.title = title;
             oasis.info.description = description;
+            oasis.stats.state.lastEditDate = Date.now();
             const changelog = ["info"];
             const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasisData, changelog: changelog });
             return;
@@ -323,6 +334,7 @@ export class OasisManager {
     }
     setData(property) {
         // Function modify(false, property) updates the changelog and returns data.
+        this.data.stats.state.lastEditDate = Date.now();
         return this.data.modify(false, property)[property];
     }   
         // Utils:
