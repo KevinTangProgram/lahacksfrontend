@@ -6,19 +6,24 @@ export class StorageManager {
     static pendingSyncTasks = new Map();
 
     // Main Interface:
-    static initializeSyncedObject(key, options) {
+    static initializeSyncedObject(key, type, options) {
         // Initialize a new synced object using provided options.
         // Check for duplicates:
         if (this.syncedObjects.has(key)) {
-            return;
+            return this.syncedObjects.get(key);
         }
         // Validate input:
-        const { type, defaultValue = {}, debounceTime = 0, reloadBehavior = "prevent", customSyncFunctions, callbackFunctions } = options;
+        if (!key || !type) {
+            throw new Error(`Failed to initialize synced object with key '${key}': Missing parameters.`);
+        }
+        const { defaultValue = {}, debounceTime = 0, reloadBehavior = "prevent", customSyncFunctions, callbackFunctions } = options || {};
         try {
             this.validateInput("key", key);
             this.validateInput("type", type);
             this.validateInput("debounceTime", debounceTime);
             this.validateInput("reloadBehavior", reloadBehavior);
+            this.validateInput("customSyncFunctions", customSyncFunctions);
+            this.validateInput("callbackFunctions", callbackFunctions);
         }
         catch (error) {
             throw new Error(`Failed to initialize synced object with key '${key}': ${error}`);
@@ -33,10 +38,18 @@ export class StorageManager {
             reloadBehavior: reloadBehavior,
         }
         // Add functions:
-        if (type === "custom" && customSyncFunctions) {
-            const { pull, push } = customSyncFunctions;
-            syncedObject.pull = pull;
-            syncedObject.push = push;
+        if (type === "custom") {
+            if (customSyncFunctions) {
+                const { pull, push } = customSyncFunctions;
+                syncedObject.pull = pull;
+                syncedObject.push = push;
+            }
+            else {
+                console.warn(`Synced object initialization with key '${key}': customSyncFunctions not provided for 'custom' object. Use 'temp' or 'local' type instead.`);
+            }
+        }
+        if (type !== "custom" && customSyncFunctions) {
+            console.warn(`Synced object initialization with key '${key}': customSyncFunctions will not be run for 'temp' or 'local' objects. Use 'custom' type instead.`);
         }
         if (callbackFunctions) {
             const { onSuccess, onError } = callbackFunctions;
@@ -55,8 +68,10 @@ export class StorageManager {
         this.syncedObjects.set(key, syncedObject);
         // Initial sync:
         this.forceSyncTask(syncedObject, "pull");
+        // Return:
+        return syncedObject;
     }
-    static async getSyncedObject(key) {
+    static getSyncedObject(key) {
         // Obtain the synced object if it exists.
         return this.syncedObjects.get(key);
     }
@@ -70,7 +85,7 @@ export class StorageManager {
     }
 
     // Local Storage Interface:
-    static async findMatchingInLocalStorage(keyIncludes, options) {
+    static findMatchingInLocalStorage(keyIncludes, options) {
         // Find all objects in local storage which include the key.
         const { readOnly = true, deleteMask, initOptions } = options;
         // Validate input:
@@ -99,13 +114,13 @@ export class StorageManager {
             return matchingKeys;
         }
     }
-    static async removeMatchingInLocalStorage() {
+    static removeMatchingInLocalStorage() {
         // Remove all objects in local storage which include the key.
         const keys = Object.keys(this.localStorage);
         const matchingKeys = keys.filter((key) => key.includes(keyIncludes));
         matchingKeys.map((key) => this.localStorage.removeItem(key));
     }
-    static async resetLocalStorage() {
+    static resetLocalStorage() {
         // Reset all local storage, deleting the affected synced objects.
         this.localStorage.clear();
         this.syncedObjects = new Map();
@@ -130,35 +145,31 @@ export class StorageManager {
         // Handle modifications on the synced object.
         // Rerender dependent components:
         setTimeout(() => {
-            this.emitEvent(syncedObject.key, syncedObject.changelog);
+            this.emitEvent(syncedObject, { requestType: "modify" });
         }, 0);
-        // Check for 'temp':
-        if (syncedObject.type === 'temp') {
-            return;
-        }
         // Handle syncing:
         if (debounceTime === 0) {
             setTimeout(() => {
-                this.forceSyncObject(syncedObject);
+                this.forceSyncTask(syncedObject, "push");
             }, 0);
             return;
         }
         this.queueSyncTask(syncedObject, debounceTime);
     }
     static async queueSyncTask(syncedObject, debounceTime) {
-        // Queue an object to be synced, debouncing multiple requests.
-        if (this.pendingSyncs.has(syncedObject.key)) {
+        // Queue an object to be pushed, debouncing multiple requests.
+        if (this.pendingSyncTasks.has(syncedObject.key)) {
             // Defer the pending sync:
-            clearTimeout(this.pendingSyncs.get(syncedObject.key));
-            this.pendingSyncs.delete(syncedObject.key);
+            clearTimeout(this.pendingSyncTasks.get(syncedObject.key));
+            this.pendingSyncTasks.delete(syncedObject.key);
         }
         // Start a timeout to sync object:
         const sync = () => {
-            this.pendingSyncs.delete(syncedObject.key);
-            this.forceSyncObject(syncedObject);
+            this.pendingSyncTasks.delete(syncedObject.key);
+            this.forceSyncTask(syncedObject, "push");
         }
         const timeoutId = setTimeout(sync, debounceTime);
-        this.pendingSyncs.set(syncedObject.key, timeoutId);
+        this.pendingSyncTasks.set(syncedObject.key, timeoutId);
     }
     static async forceSyncTask(syncedObject, requestType) {
         // Sync an object immediately.
@@ -182,11 +193,11 @@ export class StorageManager {
         }
         catch (error) {
             // Handle callbacks with error:
-            this.handleCallBacks(syncedObject, { requestType: requestType, error: error });
+            this.handleCallBacks(syncedObject, { requestType: requestType, success: false, error: error });
             return;
         }
         // Handle callbacks with success:
-        this.handleCallBacks(syncedObject, { requestType: requestType, success: true });
+        this.handleCallBacks(syncedObject, { requestType: requestType, success: true, error: null });
     }
 
     // Backend Utils:
@@ -194,7 +205,7 @@ export class StorageManager {
         // Pull data from local storage.
         const json = this.localStorage.getItem(syncedObject.key);
         if (json) {
-            this.syncedObjects.set(syncedObject.data, JSON.parse(json));
+            syncedObject.data = JSON.parse(json);
         }
         else {
             await this.pushToLocal(syncedObject);
@@ -204,22 +215,22 @@ export class StorageManager {
         // Push data to local storage.
         this.localStorage.setItem(syncedObject.key, JSON.stringify(syncedObject.data));
     }
-    static async pullFromCustom() {
+    static async pullFromCustom(syncedObject) {
         // Call the custom pull method to obtain data.
         if (!syncedObject.pull) {
             return;
         }
-        const response = await syncedObject.pull();
+        const response = await syncedObject.pull(syncedObject);
         if (response) {
-            this.syncedObjects.set(syncedObject.data, response);
+            syncedObject.data = response;
         }
         else {
             await this.pushToCustom(syncedObject);
         }
     }
-    static async pushToCustom() {
+    static async pushToCustom(syncedObject) {
         // Call the custom push method to send data.
-        const response = await syncedObject.push(syncedObject.data);
+        const response = await syncedObject.push(syncedObject);
     }
     static async handleCallBacks(syncedObject, data) {
         // Handle callbacks, emit events, and reset changelogs.
@@ -230,8 +241,8 @@ export class StorageManager {
         if (error && syncedObject.onError) {
             syncedObject.onError(requestType, error, syncedObject.changelog);
         }
-        syncedObject.changelog = [];
         this.emitEvent(syncedObject, { requestType, success, error });
+        syncedObject.changelog = [];
     }
     
     // Backend Sub-Utils and Setup:
@@ -268,11 +279,33 @@ export class StorageManager {
             }
             throw "parameter 'reloadBehavior' must be either 'prevent', 'allow', or 'finish'."
         }
+        if (type === "customSyncFunctions") {
+            if (!value) {
+                return true;
+            }
+            if (typeof value === "object" && 
+            (!value.pull || typeof value.pull === "function") && 
+            (!value.push || typeof value.push === "function")) {
+                return true;
+            }
+            throw "parameter 'customSyncFunctions' must be an object only containing functions 'pull' and 'push'."
+        }
+        if (type === "callbackFunctions") {
+            if (!value) {
+                return true;
+            }
+            if (typeof value === "object" && 
+            (!value.onSuccess || typeof value.onSuccess === "function") && 
+            (!value.onError || typeof value.onError === "function")) {
+                return true;
+            }
+            throw "parameter 'callbackFunctions' must be an object only containing functions 'onSuccess' and 'onError'."
+        }
     }
     static emitEvent(syncedObject, status) {
         // Emit an event to components.
-        const event = new CustomEvent("syncedObjectChange", { detail: {
-            key: syncedObject.key,
+        const event = new CustomEvent("syncedObjectEvent", { detail: {
+            key: syncedObject.key,            
             changelog: syncedObject.changelog,
             requestType: status.requestType,
             success: status.success,
@@ -284,23 +317,23 @@ export class StorageManager {
         // Prevent reloads on page close.
         window.addEventListener("beforeunload", (event) => {
             // Check for pending syncs:
-            for (const [key, timeoutId] of this.pendingSyncs) {
+            for (const [key, timeoutId] of StorageManager.pendingSyncTasks) {
                 // Object is still syncing: 
-                const syncedObject = this.getSyncedObject(key);
+                const syncedObject = StorageManager.getSyncedObject(key);
                 const reloadBehavior = syncedObject.reloadBehavior;
                 if (reloadBehavior === "allow") {
                     continue;
                 }
                 if (reloadBehavior === "finish") {
-                    this.pendingSyncs.delete(syncedObject.key);
-                    this.forceSyncObject(syncedObject);
+                    StorageManager.pendingSyncTasks.delete(syncedObject.key);
+                    StorageManager.forceSyncTask(syncedObject, "push");
                     continue;
                 }
                 if (reloadBehavior === "prevent") {
                     event.preventDefault();
                     event.returnValue = "You have unsaved changes!";
                     break;
-                }                
+                }
             }
         });
     }

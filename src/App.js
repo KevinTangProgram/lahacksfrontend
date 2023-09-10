@@ -6,6 +6,7 @@ import Setup from './Pages/Setup';
 import About from './Pages/About';
 import Kevin from './Pages/Kevin';
 import Reset from './Pages/Reset';
+import TestComponent from './testStorageManager/testComponent';
 import FourOFour from './Pages/404';
 import './CSS/Home.css';
 import { Helmet } from 'react-helmet';
@@ -49,6 +50,7 @@ function App() {
             <Route path="/oasis" element={<Navigate to="/home" replace />} />
             <Route path="/oasis/:id" element={<Oasis />} />
             <Route path="/kevin" element={<Kevin />} />
+            <Route path="/test" element={<TestComponent />} />
             <Route path="*" element={<FourOFour />} />
           </Routes>
         </div>
