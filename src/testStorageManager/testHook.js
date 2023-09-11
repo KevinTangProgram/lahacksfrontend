@@ -1,17 +1,65 @@
 import { useState, useEffect, useMemo } from 'react';
-import { StorageManager } from './testStorageManager';
+import { SyncedObjectManager, SyncedObjectError } from './testStorageManager';
 
-const useSyncedObject = (key, rerenderOptions) => {
+const useSyncedObject = (key, options) => {
     // Setup:
     if (!key) {
-        throw new Error("useSyncedObject hook error: key is required");
+        throw new SyncedObjectError("useSyncedObject hook error: key is required", key, "useSyncedObject");
     }
+    const handleProps = (options) => {
+        const result = {};
+        // Validate props:
+        if (!options) {
+            return result;
+        }
+        if (options.dependencies) {
+            if (typeof options.dependencies === "string") {
+                result.dependencies = [options.dependencies];
+            }
+            if (Array.isArray(options.dependencies)) {
+                result.dependencies = [];
+            }
+            else {
+                throw new SyncedObjectError("useSyncedObject hook error: options.dependencies must be an string or array of strings", key, "useSyncedObject");
+            }
+            // Loop through array, check each string:
+            options.dependencies.forEach((dependency) => {
+                if (dependency === "selfModify" || dependency === "otherModify" || dependency === "success" || dependency === "error") {
+                    result.dependencies.push(dependency);
+                }
+                else {
+                    throw new SyncedObjectError("useSyncedObject hook error: options.dependencies strings must be one of: 'selfModify', 'otherModify', 'success', 'error'", key, "useSyncedObject");
+                }
+            });
+        }
+        if (options.properties) {
+            if (typeof options.dependencies === "string") {
+                result.properties = [options.properties];
+            }
+            if (Array.isArray(options.properties)) {
+                result.properties = [];
+            }
+            else {
+                throw new SyncedObjectError("useSyncedObject hook error: options.properties must be an string or array of strings", key, "useSyncedObject");
+            }
+            // Loop through array, check each string:
+            options.properties.forEach((properties) => {
+                if (typeof properties === "string") {
+                    result.properties.push(properties);
+                }
+                else {
+                    throw new SyncedObjectError("useSyncedObject hook error: options.properties must be an string or array of strings", key, "useSyncedObject");
+                }
+            });
+        }
+        return result;
+    };
     const { dependencies = ["modify", "success", "error"], properties = [] }
-     = useMemo(() => {handleProps(rerenderOptions)}, [key]);
+     = useMemo(() => {handleProps(options)}, [key]);
 
     useEffect(() => {
         // Initialize synced object:
-        const syncedObject = StorageManager.getSyncedObject(key);
+        const syncedObject = SyncedObjectManager.getSyncedObject(key);
         if (!syncedObject) {
             return;
         }
@@ -35,64 +83,12 @@ const useSyncedObject = (key, rerenderOptions) => {
     const [rerender, setRerender] = useState(0);
  
     // Interface:
-    const modify = (debounceTime) => {
+    const modify = (property, debounceTime) => {
         setSyncedSuccess(null);
-        return syncedObject.modify(debounceTime);
-    };
-    const modifyProperty = (property, debounceTime) => {
-        setSyncedSuccess(null);
-        return syncedObject.modifyProperty(property, debounceTime);
+        return syncedObject.modify(property, debounceTime);
     };
 
     // Utils:
-    const handleProps = (rerenderOptions) => {
-        const result = {};
-        // Validate props:
-        if (!rerenderOptions) {
-            return result;
-        }
-        if (rerenderOptions.dependencies) {
-            if (typeof rerenderOptions.dependencies === "string") {
-                result.dependencies = [rerenderOptions.dependencies];
-            }
-            if (Array.isArray(rerenderOptions.dependencies)) {
-                result.dependencies = [];
-            }
-            else {
-                throw new Error("useSyncedObject hook error: rerenderOptions.dependencies must be an string or array of strings");
-            }
-            // Loop through array, check each string:
-            rerenderOptions.dependencies.forEach((dependency) => {
-                if (dependency === "selfModify" || dependency === "otherModify" || dependency === "success" || dependency === "error") {
-                    result.dependencies.push(dependency);
-                }
-                else {
-                    throw new Error("useSyncedObject hook error: rerenderOptions.dependencies strings must be one of: 'selfModify', 'otherModify', 'success', 'error'");
-                }
-            });
-        }
-        if (rerenderOptions.properties) {
-            if (typeof rerenderOptions.dependencies === "string") {
-                result.properties = [rerenderOptions.properties];
-            }
-            if (Array.isArray(rerenderOptions.properties)) {
-                result.properties = [];
-            }
-            else {
-                throw new Error("useSyncedObject hook error: rerenderOptions.properties must be an string or array of strings");
-            }
-            // Loop through array, check each string:
-            rerenderOptions.properties.forEach((properties) => {
-                if (typeof properties === "string") {
-                    result.properties.push(properties);
-                }
-                else {
-                    throw new Error("useSyncedObject hook error: rerenderOptions.properties must be an string or array of strings");
-                }
-            });
-        }
-        return result;
-    };
     const eventHandler = (event) => {
         // Key check:
         if (event.detail.syncedObject.key !== key) {
@@ -126,7 +122,6 @@ const useSyncedObject = (key, rerenderOptions) => {
         syncedSuccess,
         syncedError,
         modify,
-        modifyProperty
     };
 };
 

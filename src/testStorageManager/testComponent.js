@@ -1,43 +1,58 @@
-import { StorageManager } from "./testStorageManager";
+import { SyncedObjectManager } from "./testStorageManager";
 import { useState, useEffect } from "react";
+import useSyncedObject from "./testHook";
 
 function TestComponent() {
 
     try {
         const options = {
-            defaultValue: {string: "hey"},
+            defaultValue: {string: "no data"},
             debounceTime: 1000,
             reloadBehavior: "finish",
-            customSyncFunctions: { pull: () => {console.log("pulled"); return { string: "just pulled!"}}, push: () => {console.log("pushed")}},
-            callbackFunctions: { onSuccess: (requestType) => {console.log("synced, " + requestType)}}
+            customSyncFunctions: { 
+                pull: async (syncedObject) => {
+                    console.log("pulling with key " + syncedObject.key); 
+                    await new Promise(r => setTimeout(r, 2000));
+                    return { string: "initial pull"}}, 
+                push: async (syncedObject) => {
+                    console.log("pushing with key '" + syncedObject.key + "', changelog and data: ");
+                    // console.log(syncedObject.changelog);
+                    // console.log(syncedObject.data);
+                    return true;
+                }},
+            callbackFunctions: { 
+                onSuccess: (syncedObject, status) => {console.log("onSuccess: " + status.requestType);},
+                onError: (syncedObject, status) => {console.log("onError: " + status.error);}
+            },
+            disableChecks: false,
         };
-        StorageManager.initializeSyncedObject("testKey", "custom", options);
-        // console.log(StorageManager.getSyncedObject("testKey"));
+        SyncedObjectManager.initializeSyncedObject("testKey", "custom", options);
 
         useEffect(() => {
             console.log("rerendering");
-            setSyncedObject(StorageManager.getSyncedObject("testKey"));
         }, []);
 
-        const [syncedObject, setSyncedObject] = useState(null);
+        const { syncedObject } = useSyncedObject("testKey");
+
         const [open, setOpen] = useState(true);
 
         return (
             <div style={{ "background": "lightGray", "height": "100vh" }} >
-                <button onClick={() => {
-                    console.log(StorageManager.getSyncedObject("testKey").data);
+                {/* <button onClick={() => {
+                    console.log(SyncedObjectManager.getSyncedObject("testKey").data);
                 }}>console.log data</button>
                 <button onClick={() => {
-                    syncedObject.data.string = "new data";
-                    StorageManager.getSyncedObject("testKey").modify();
+                    syncedObject.modify("string").string = "new data";
                 }}>modify data</button>
                 <button onClick={() => {
-                    setSyncedObject(StorageManager.getSyncedObject("testKey"));
-                }}>refresh useState</button>
+                    setSyncedObject(SyncedObjectManager.getSyncedObject("testKey"));
+                }}>refresh useState</button> */}
                 <button onClick={() => {setOpen(!open)} }>open/close</button>
+                <br></br>
+                <button>hello</button>
 
                 {open && <p>open</p>}
-                {open && <p>{syncedObject?.data.string}</p>}
+                {/* {open && <p>{syncedObject?.data.string}</p>} */}
 
             </div>);
     }
