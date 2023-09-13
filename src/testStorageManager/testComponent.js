@@ -3,36 +3,36 @@ import { useState, useEffect } from "react";
 import useSyncedObject from "./testHook";
 
 function TestComponent() {
-
-    try {
+    function TestSynced() {
         const options = {
-            defaultValue: {string: "no data"},
+            defaultValue: { string: "no data", string2: "no data2" },
             debounceTime: 1000,
-            reloadBehavior: "finish",
-            customSyncFunctions: { 
+            reloadBehavior: "prevent",
+            customSyncFunctions: {
                 pull: async (syncedObject) => {
-                    console.log("pulling with key " + syncedObject.key); 
+                    // console.log("pulling with key " + syncedObject.key); 
                     await new Promise(r => setTimeout(r, 2000));
-                    return { string: "initial pull"}}, 
+                    return { string: "initial pull", string2: "initial pull2"}}, 
                 push: async (syncedObject) => {
-                    console.log("pushing with key '" + syncedObject.key + "', changelog and data: ");
+                    // console.log("pushing with key '" + syncedObject.key + "', changelog and data: ");
                     // console.log(syncedObject.changelog);
-                    // console.log(syncedObject.data);
+                    console.log(syncedObject.data);
                     return true;
-                }},
-            callbackFunctions: { 
+                }
+            },
+            callbackFunctions: {
                 onSuccess: (syncedObject, status) => {console.log("onSuccess: " + status.requestType);},
                 onError: (syncedObject, status) => {console.log("onError: " + status.error);}
             },
-            disableChecks: false,
+            safeMode: true,
         };
         SyncedObjectManager.initializeSyncedObject("testKey", "custom", options);
 
         useEffect(() => {
             console.log("rerendering");
-        }, []);
+        });
 
-        const { syncedObject } = useSyncedObject("testKey");
+        const { syncedObject, modify } = useSyncedObject("testKey", { dependencies: "2", safeMode: false });
 
         const [open, setOpen] = useState(true);
 
@@ -40,27 +40,27 @@ function TestComponent() {
             <div style={{ "background": "lightGray", "height": "100vh" }} >
                 {/* <button onClick={() => {
                     console.log(SyncedObjectManager.getSyncedObject("testKey").data);
-                }}>console.log data</button>
+                }}>console.log data</button> */}
                 <button onClick={() => {
-                    syncedObject.modify("string").string = "new data";
+                    modify("string").string = "new data";
                 }}>modify data</button>
-                <button onClick={() => {
+                {/* <button onClick={() => {
                     setSyncedObject(SyncedObjectManager.getSyncedObject("testKey"));
                 }}>refresh useState</button> */}
-                <button onClick={() => {setOpen(!open)} }>open/close</button>
+                <button onClick={() => { setOpen(!open) }}>open/close</button>
                 <br></br>
-                <button>hello</button>
-
                 {open && <p>open</p>}
-                {/* {open && <p>{syncedObject?.data.string}</p>} */}
-
+                {open && <p>{syncedObject?.data.string}</p>}
+                {open && <p>{syncedObject?.data.string2}</p>}
             </div>);
     }
-    catch (error) {
-        console.log(error);
-        // alert(error);
-        throw (error);
-    }
+
+    return (
+        <div>
+            <TestSynced />
+            <button onClick={() => {SyncedObjectManager.getSyncedObject("testKey").modify("string2").string2 = "lol"}}>lol</button>
+        </div>
+    );
 }
 
 export default TestComponent;

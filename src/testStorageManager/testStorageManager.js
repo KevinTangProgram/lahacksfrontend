@@ -4,6 +4,7 @@ export class SyncedObjectManager {
     static localStorage = window.localStorage;
     static syncedObjects = new Map();
     static pendingSyncTasks = new Map();
+    static componentCounter = 0;
 
     // Main Interface:
     static initializeSyncedObject(key, type, options) {
@@ -16,9 +17,9 @@ export class SyncedObjectManager {
         if (!key || !type) {
             throw new SyncedObjectError(`Failed to initialize synced object: Missing parameters.`, key, "initializeSyncedObject");
         }
-        const { defaultValue = {}, debounceTime = 0, reloadBehavior = "prevent", customSyncFunctions, callbackFunctions, disableChecks = false } = options || {};
+        const { defaultValue = {}, debounceTime = 0, reloadBehavior = "prevent", customSyncFunctions, callbackFunctions, safeMode = true } = options || {};
         try {
-            if (!disableChecks) {
+            if (safeMode) {
                 this.validateInput("key", key);
                 this.validateInput("type", type);
                 this.validateInput("options", options);
@@ -39,18 +40,11 @@ export class SyncedObjectManager {
             changelog: [],
             debounceTime: debounceTime,
             reloadBehavior: reloadBehavior,
-            disableChecks: disableChecks,
+            safeMode: safeMode,
+            callerId: null,
         }
         // Add functions:
-        if (disableChecks) {
-            // Skip checks:
-            if (customSyncFunctions) {
-                const { pull, push } = customSyncFunctions;
-                syncedObject.pull = pull;
-                syncedObject.push = push;
-            }
-        }
-        else {
+        if (safeMode) {
             // Run checks:
             if (type === "custom") {
                 if (customSyncFunctions) {
@@ -67,6 +61,14 @@ export class SyncedObjectManager {
             }
             if (type === "custom" && reloadBehavior === "finish") {
                 console.warn(`Synced object initialization with key '${key}': reloadBehavior 'finish' might not behave as expected for asynchronous functions.`);
+            }
+        }
+        else {
+            // Skip checks:
+            if (customSyncFunctions) {
+                const { pull, push } = customSyncFunctions;
+                syncedObject.pull = pull;
+                syncedObject.push = push;
             }
         }
         if (callbackFunctions) {
@@ -102,6 +104,11 @@ export class SyncedObjectManager {
     }
     static async safeAssign() {
         // Override a synced object's data with an entire object.
+    }
+    static generateComponentId() {
+        // Generate a unique component id.
+        this.componentCounter++;
+        return this.componentCounter;
     }
 
     // Local Storage Interface:
@@ -152,7 +159,7 @@ export class SyncedObjectManager {
         // Modify the synced object's changelog before continuing.
         // Validate input:
         try {
-            if (!syncedObject.disableChecks) {
+            if (syncedObject.safeMode) {
                 this.validateInput("modify-property", property);
                 if (!syncedObject.data.hasOwnProperty(property)) {
                     console.warn(`Synced Object Modification: property '${property}' not found in synced object with key '${syncedObject.key}'.`);
@@ -176,7 +183,7 @@ export class SyncedObjectManager {
             debounceTime = syncedObject.debounceTime;
         }
         try {
-            if (!syncedObject.disableChecks)
+            if (syncedObject.safeMode)
             this.validateInput("modify-debounceTime", debounceTime);
         }
         catch (error) {
@@ -184,7 +191,7 @@ export class SyncedObjectManager {
         }
         // Rerender dependent components:
         setTimeout(() => {
-            this.emitEvent(syncedObject, { requestType: "modify" });
+            this.emitEvent(syncedObject, { requestType: "modify", success: null, error: null });
         }, 0);
         // Handle syncing:
         if (debounceTime === 0) {
@@ -269,10 +276,12 @@ export class SyncedObjectManager {
     }
     static async pushToCustom(syncedObject) {
         // Call the custom push method to send data.
+        if (!syncedObject.push) {
+            return;
+        }
         const response = await syncedObject.push(syncedObject);
     }
     static async handleCallBacks(syncedObject, status) {
-        console.log(syncedObject);
         // Handle callbacks, emit events, and reset changelogs.
         const { requestType, success, error } = status;
         if (success && syncedObject.onSuccess) {
@@ -283,6 +292,7 @@ export class SyncedObjectManager {
         }
         this.emitEvent(syncedObject, status);
         syncedObject.changelog = [];
+        syncedObject.callerId = null;
     }
     
     // Backend Sub-Utils and Setup:
@@ -302,7 +312,7 @@ export class SyncedObjectManager {
         }
         if (type === "options") {
             if (typeof value === "object") {
-                const validProperties = ["defaultValue", "debounceTime", "reloadBehavior", "customSyncFunctions", "callbackFunctions", "disableChecks"];
+                const validProperties = ["defaultValue", "debounceTime", "reloadBehavior", "customSyncFunctions", "callbackFunctions", "safeMode"];
                 const properties = Object.keys(value);
                 if (properties.every(prop => validProperties.includes(prop))) {
                     return true;
@@ -372,6 +382,7 @@ export class SyncedObjectManager {
             requestType: status.requestType,
             success: status.success,
             error: status.error,
+            callerId: syncedObject.callerId
         } });
         document.dispatchEvent(event);
     }
