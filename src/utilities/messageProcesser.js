@@ -1,4 +1,4 @@
-import { StorageManager } from './storageManager.js';
+import { SyncedObjectManager } from 'react-synced-object'
 import { CONST } from './CONST.js';
 import { v4 as uuidv4 } from "uuid";
 //
@@ -11,12 +11,14 @@ export class MessageProcessor {
     static WARNING_MAX_OASES_LENGTH = 20; // 20 messages.
     // Raw Messages:
     static allRawMessagesKey = "allRawMessages";
-    static allRawMessages = StorageManager.createSyncedObject([], "local", this.allRawMessagesKey); // Array of objects {UUID, timestamp, sender, content}, index corresponds to order.
+    static allRawMessages = SyncedObjectManager.initializeSyncedObject(this.allRawMessagesKey, "temp", { defaultValue: [] });
+    static allRawMessagesData = this.allRawMessages.data;
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
     static allOrganizedMessagesKey = "allOrganizedMessages";
-    static allOrganizedMessages = StorageManager.createSyncedObject([], "local", this.allOrganizedMessagesKey); // Array of objects, index corresponds to order.
+    static allOrganizedMessages = SyncedObjectManager.initializeSyncedObject(this.allOrganizedMessagesKey, "temp", { defaultValue: [] });
+
     static sampleOrganizedMessage = {
         UUID: uuidv4(),
         marker: "", // empty string = normal message
@@ -65,7 +67,7 @@ export class MessageProcessor {
         if (!this.readyForMessages()) {
             return false;
         }
-        const lastMessage = this.allRawMessages[this.allRawMessages.length - 1];
+        const lastMessage = this.allRawMessages[this.allRawMessagesData.length - 1];
         this.allRawMessages.modify().push({
             UUID: uuidv4(),
             timestamp: Date.now(),
@@ -75,7 +77,7 @@ export class MessageProcessor {
         });
         this.syncToDatabase();
         // Grab index, check for warnings, return:
-        const index = this.allRawMessages.length - 1 + this.sessionIndex;
+        const index = this.allRawMessagesData.length - 1 + this.sessionIndex;
         this.handleMessageWarnings(index, newMessageString);
         return index;
     }
@@ -160,7 +162,7 @@ export class MessageProcessor {
         if (this.highContentMessageIndexes.length > 0) {
             warnings.push("w_m_high");
         }
-        const messageNumber = this.allRawMessages.length;
+        const messageNumber = this.allRawMessagesData.length;
         if (messageNumber < this.WARNING_MIN_OASES_LENGTH && messageNumber > 0) {
             warnings.push("w_o_low");
         }
@@ -219,7 +221,7 @@ export class MessageProcessor {
             errors = this.checkGenerationErrors(this.allRawMessages, options.topic);
         }
         else {
-            errors = this.checkGenerationErrors(this.allRawMessages.slice(options.startIndex, options.endIndex), options.topic);
+            errors = this.checkGenerationErrors(this.allRawMessagesData.slice(options.startIndex, options.endIndex), options.topic);
         }
         if (errors.length > 0) {
             this.generationStatus = -2;

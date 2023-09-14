@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UserManager } from '../../utilities/userManager.js';
-import { StorageManager } from '../../utilities/storageManager.js'
+import { SyncedObjectManager } from 'react-synced-object'
 import Tooltip from '../tooltip.js';
 import '../../CSS/Login.css';
 
@@ -15,7 +15,7 @@ function CreateAccountUI(props) {
     const handleChangeEmail = (event) => { setEmail(event.target.value); }
     // Cooldowns:
     const cooldownLength = 60;
-    const cache = StorageManager.createSyncedObject({cooldownTime: 0}, "temp", "cachedCooldown");
+    const cache = SyncedObjectManager.initializeSyncedObject("cachedCooldown", "temp", { defaultValue: { cooldown: 0 } }).data;
     const cooldownSeconds = Math.floor((Date.now() - cache.cooldownTime) / 1000);
     const [cooldown, setCooldown] = useState(cooldownSeconds < cooldownLength ? cooldownLength - cooldownSeconds : 0); 
     const startCooldown = () => {

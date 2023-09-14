@@ -1,7 +1,6 @@
 import '../CSS/Test.css';
 import '../CSS/Tab_oasis.css';
 import { MessageProcessor } from '../utilities/messageProcesser';
-import { StorageManager } from '../utilities/storageManager';
 import SingleMessage from '../components/singleMessage';
 import React, { useState, useRef, useEffect } from 'react';
 import ObserverComponent from '../components/observer';
@@ -40,7 +39,7 @@ function Tab_oasis_ideas({ forceOpenUI }) {
         // Scroll to specific message:
     function scrollToMessageID(messageID) {
         if (messageID === -1) {
-            messageID = MessageProcessor.allRawMessages.length - 1 + MessageProcessor.sessionIndex;
+            messageID = MessageProcessor.allRawMessagesData.length - 1 + MessageProcessor.sessionIndex;
         }
         const messageEle = document.getElementById(`${messageID}`);
         if (messageEle) {
@@ -84,12 +83,12 @@ function Tab_oasis_ideas({ forceOpenUI }) {
                 // scrollToMessageID(-1);
                 focusTextarea();
             }, []);
-            if (MessageProcessor.allRawMessages.length === 0) {
+            if (MessageProcessor.allRawMessagesData.length === 0) {
                 return <div className="singleMessage">Your Oasis is Empty- Add some ideas!</div>;
             }
             return (
                 <div>
-                    {MessageProcessor.allRawMessages.map((message, i) => {
+                    {MessageProcessor.allRawMessagesData.map((message, i) => {
                         return (
                             <SingleMessage key={i} rawMessage={message} index={i}
                                 functions={{ edit: editThought, delete: deleteThought, refocus: focusTextarea }} />

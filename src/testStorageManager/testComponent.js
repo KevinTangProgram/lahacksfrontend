@@ -1,6 +1,6 @@
-import { SyncedObjectManager } from "./testStorageManager";
+import { SyncedObjectManager, useSyncedObject } from "react-synced-object";
 import { useState, useEffect } from "react";
-import useSyncedObject from "./testHook";
+// import useSyncedObject from "./testHook";
 
 function TestComponent() {
     function TestSynced() {

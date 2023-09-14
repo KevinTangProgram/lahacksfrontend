@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../CSS/Test.css"
 //
-import { MessageProcessor } from './messageProcesser.js';
-import { StorageManager } from './storageManager.js';
+import { SyncedObjectManager } from 'react-synced-object';
 import ObserverComponent from '../components/observer.js';
 
 function DebuggerPanel() {
@@ -126,6 +125,5 @@ export class Debugger {
         this.rerender = true;
     }
     // Testing
-    static testObj = StorageManager.createSyncedObject({ test: {test1: 0, test2: 0}, test3: 0 }, "temp", "testObj");
-
+    static testObj = SyncedObjectManager.initializeSyncedObject("testObj", "temp", { defaultValue: { test: {test1: 0, test2: 0}, test3: 0 } });
 }
