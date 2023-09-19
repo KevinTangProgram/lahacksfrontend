@@ -1,4 +1,4 @@
-import { SyncedObjectManager } from 'react-synced-object'
+import { initializeSyncedObject } from 'react-synced-object'
 import { CONST } from './CONST.js';
 import { v4 as uuidv4 } from "uuid";
 //
@@ -11,13 +11,13 @@ export class MessageProcessor {
     static WARNING_MAX_OASES_LENGTH = 20; // 20 messages.
     // Raw Messages:
     static allRawMessagesKey = "allRawMessages";
-    static allRawMessages = SyncedObjectManager.initializeSyncedObject(this.allRawMessagesKey, "temp", { defaultValue: [] });
+    static allRawMessages = initializeSyncedObject(this.allRawMessagesKey, "temp", { defaultValue: [] });
     static allRawMessagesData = this.allRawMessages.data;
     static lowContentMessageIndexes = []; // Array of indexes.
     static highContentMessageIndexes = [];
     // Organized Messages:
     static allOrganizedMessagesKey = "allOrganizedMessages";
-    static allOrganizedMessages = SyncedObjectManager.initializeSyncedObject(this.allOrganizedMessagesKey, "temp", { defaultValue: [] });
+    static allOrganizedMessages = initializeSyncedObject(this.allOrganizedMessagesKey, "temp", { defaultValue: [] });
 
     static sampleOrganizedMessage = {
         UUID: uuidv4(),

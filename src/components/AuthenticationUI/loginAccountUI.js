@@ -99,7 +99,7 @@ function LoginAccountUI(props) {
                         }
                     }}></input>
                     {emailError && <p className="loginTextboxError">{emailError}</p>}
-                    <input ref={inputRefPassword} type="password" name="password" autocomplete="on" placeholder="Password" value={password} onChange={handleChangePassword} style={{ "marginTop": "1em" }} onKeyDown={(event) => {
+                    <input ref={inputRefPassword} type="password" name="password" autoComplete="on" placeholder="Password" value={password} onChange={handleChangePassword} style={{ "marginTop": "1em" }} onKeyDown={(event) => {
                         if (event.key === "Enter") {
                             event.preventDefault();
                             loginAccount();
