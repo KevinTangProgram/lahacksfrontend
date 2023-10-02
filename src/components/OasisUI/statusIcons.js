@@ -1,52 +1,24 @@
 import Loader from '../loader';
 import Tooltip from '../tooltip';
-import { StorageManager } from '../../utilities/storageManager';
+import { useSyncedObject } from 'react-synced-object';
+import { useEffect } from 'react';
 
 
-function StatusIcons({ syncProps }) {
+function StatusIcons({ objectKey }) {
     // Custom dependency icons:
-    if (syncProps) {
-        console.log("sync props!");
-        const { syncLoading, syncSuccess, syncError, syncRetryFunc } = syncProps;
-        return (
-            <div className="twoIcon-container">
-                <div className="icon-container">
-                    {syncLoading && <Loader type="icon" />}
-                    {syncSuccess && <img className="iconSynced" src="/images/icons/iconConfirm.png" alt="Synced" />}
-                    {syncError && <img className="iconSynced" src="/images/icons/iconCancel.png" alt="Synced with error" />}
-                </div>
-                <div className="icon-container">
-                    {syncError &&
-                        <div onClick={() => { syncRetryFunc() }}>
-                            <Tooltip text={syncError + "\n\n [Click to retry]"} iconComponent={() => { return <img className="iconError" src="/images/icons/iconExclamation.png" alt="Error" /> }} />
-                        </div>}
-                </div>
-            </div>
-        );
-    }
-    // Default StorageManager icons:
+    const { modify, syncedSuccess, syncedError } = useSyncedObject(objectKey);
     return (
         <div className="twoIcon-container">
             <div className="icon-container">
-                {StorageManager.unsyncCounter === 0 ? (
-                    StorageManager.syncError ? (
-                        // Synced, but error:
-                        <img className="iconSynced" src="/images/icons/iconCancel.png" alt="Synced with error" />
-                    ) : (
-                        // Synced, success:
-                        <img className="iconSynced" src="/images/icons/iconConfirm.png" alt="Synced" />
-                    )
-                ) : (
-                    // Syncing...
-                    <Loader type="icon" />
-                )}
+                {syncedSuccess === null && <Loader type="icon" />}
+                {syncedSuccess && <img className="iconSynced" src="/images/icons/iconConfirm.png" alt="Synced" />}
+                {syncedSuccess === false && <img className="iconSynced" src="/images/icons/iconCancel.png" alt="Synced with error" />}
             </div>
             <div className="icon-container">
-                {StorageManager.syncError ? (
-                    // Display error:
-                    <div onClick={() => { StorageManager.retryLastErrorSync() }}>
-                        <Tooltip text={StorageManager.syncError.error + "\n\n [Click to retry]"} iconComponent={() => { return <img className="iconError" src="/images/icons/iconExclamation.png" alt="Error" /> }} />
-                    </div>) : null}
+                {(syncedError && syncedSuccess !== null) &&
+                    <div onClick={() => { modify() }}>
+                        <Tooltip text={syncedError + "\n\n [Click to retry]"} iconComponent={() => { return <img className="iconError" src="/images/icons/iconExclamation.png" alt="Error" /> }} />
+                    </div>}
             </div>
         </div>
     );

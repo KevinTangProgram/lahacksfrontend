@@ -1,6 +1,4 @@
 //
-import { StorageManager } from '../../utilities/storageManager';
-import Observer from '../observer';
 import Clock from '../clock';
 import StatusIcons from './statusIcons';
 import '../../CSS/Utils.css';
@@ -9,24 +7,14 @@ import { useParams } from "react-router-dom";
 import { Context } from '../../utilities/context';
 
 function StatusBar() {
+    // Setup:
+    const { id } = useParams();
+    const oasisInstance = useContext(Context).oasisInstance;
     // Components:
     function StatusBarHeader() {
-        // Setup:
-        const { id } = useParams();
-        const oasisInstance = useContext(Context).oasisInstance;
-
-        if (!oasisInstance || !id) {
-            // No Oasis Instance:
-            return (
-                <div className="titleContainer alignCenter">
-                    <h3 className="titleText">Settings</h3>
-                </div>
-                
-            );
-        }
         // Oasis Instance:
         const [showInput, setShowInput] = useState(false);
-        const [titleValue, setTitleValue] = useState(oasisInstance.getData("info").title);
+        const [titleValue, setTitleValue] = useState(oasisInstance?.getData("info").title);
         const handleTitleChange = (event) => {
             setTitleValue(event.target.value);
             oasisInstance.setData("info").title = event.target.value;
@@ -49,6 +37,15 @@ function StatusBar() {
         const closeInput = () => {
             setShowInput(false);
         };
+        // Output:
+        if (!oasisInstance || !id) {
+            return (
+                <div className="titleContainer alignCenter">
+                    <h3 className="titleText">Settings</h3>
+                </div>
+
+            );
+        }
         return (
             <div className="titleContainer alignCenter">
                 {showInput && <textarea className="titleInput" ref={inputRef} style={dimensions} type="text" value={titleValue} onKeyDown={(event) => {
@@ -65,7 +62,7 @@ function StatusBar() {
     return (
         <div className="tablet statusBar">
             <Clock type={"date"} className={"alignLeft"} />
-            <Observer dependencies={"StorageState"} Component={StatusIcons} />
+            <StatusIcons objectKey={`oasis/${id}`} />
             <StatusBarHeader />
             <Clock type={"time"} className={"alignRight"} />
         </div>

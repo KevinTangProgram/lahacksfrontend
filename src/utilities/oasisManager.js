@@ -3,7 +3,7 @@ import { MessageProcessor } from './messageProcesser.js';
 import { UserManager } from './userManager.js';
 import { CONST } from './CONST.js';
 import axios from 'axios';
-import { getHumanizedDate } from './utilities.js';
+import { findInLocalStorage, removeFromLocalStorage, initializeSyncedObject, getSyncedObject, updateSyncedObject, deleteSyncedObject } from 'react-synced-object';
 
 
 //
@@ -14,7 +14,7 @@ export class OasisManager {
         // Returns an object: { mainOases, syncableOases}.
         // mainOases is an array containing the requested oases.
         // syncableOases is an array of local oases that can be synced.
-        let localOasisList = StorageManager.findMatchingInLocal("oasis/", true, { content: 0, user: 0 });
+        let localOasisList = findInLocalStorage(/oasis\/.*/);
         const token = UserManager.token.token;
         // Guest User:
         if (token === "") {
@@ -46,7 +46,7 @@ export class OasisManager {
             try {
                 const response = await axios.post(CONST.URL + "/oasis/getTemplateOasis", { title: title, description: description });
                 // Sync object and return its _id:
-                StorageManager.createSyncedObject(response.data, "local", "oasis/" + response.data._id);
+                initializeSyncedObject("oasis/" + response.data._id, "local", { defaultValue: response.data, debounceTime: 5000 });
                 return response.data._id;
             }
             catch (error) {
@@ -82,11 +82,11 @@ export class OasisManager {
     static async syncLocalOases() {
         // Transform local oases -> database oases:
         try {
-            const localOases = StorageManager.findMatchingInLocal("oasis/", true);
+            const localOases = findInLocalStorage(/oasis\/.*/);
             const response = await axios.post(CONST.URL + "/oasis/syncLocalOases", { token: UserManager.token.token, localOases: localOases });
             // Remove synced oases from localStorage:
             if (response.data.numSynced === localOases.length) {
-                StorageManager.removeMatchingInLocal("oasis/");
+                removeFromLocalStorage(/oasis\/.*/);
             }
             else {
                 // Backend sends errorOases as an object with keys as _ids and values as errors.
@@ -100,7 +100,7 @@ export class OasisManager {
                     }
                     else {
                         // Successfully synced:
-                        StorageManager.removeMatchingInLocal("oasis/" + localOases[i]._id);
+                        removeFromLocalStorage("oasis/" + localOases[i]._id);
                     }
                 }
                 throw {response: { status: 400, data: { error: error } }};
@@ -119,47 +119,38 @@ export class OasisManager {
         }
     }
     static async createOasisInstance(UUID) {
+        // Create a synced object with oasis data and wrap it with OasisManager instance:
+        
         // Search localStorage:
-            // If found, StorageManager creates a synced object and returns its key.
-        const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, false);
+        const oasisMatches = findInLocalStorage("oasis/" + UUID, "key");
         if (oasisMatches && oasisMatches.length > 0) {
-            const oasisData = StorageManager.read(oasisMatches[0]);
-            oasisData.stats.state.lastViewDate = Date.now();
-            return new OasisManager(oasisData);
+            const syncedObject = initializeSyncedObject(oasisMatches[0], "local", {debounceTime: 5000});
+            syncedObject.data.stats.state.lastViewDate = Date.now();
+            return new OasisManager(syncedObject);
         }
+
         // Search database:
         const token = UserManager.token.token;
+        const oasisPushFunction = async (syncedObject) => {
+            try {
+                await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: syncedObject.data, changelog: syncedObject.changelog });
+            }
+            catch (error) {
+                if (error.response && error.response.status === 400) {
+                    // My error:
+                    const errorMessage = error.response.data.error;
+                    throw errorMessage;
+                } else {
+                    // Network error:
+                    const errorMessage = "Network error - please try again later.";
+                    throw errorMessage;
+                }
+            }
+        };
         try {
             const response = await axios.get(CONST.URL + "/oasis/access", { params: { token: token, UUID: UUID } });
-            // Create synced Object and return data:
-                // Note that we set our oasis data to a synced object, allowing us to delegate syncing and rerendering to StorageManager.
-                // This requires us to pass in a pull, push, and callback function.
-                // We leave pull null as we do this manually.
-            const oasis = new OasisManager(response.data);
-            const callback = (error, changelog) => {
-                if (changelog) {
-                    error += ". Properties: "
-                    for (const property of changelog) {
-                        error += " " + property;
-                    }
-                }
-                oasis.error = error;
-            };
-            const push = async (oasisData, changelog) => {
-                try {
-                    const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasisData, changelog: Array.from(changelog) });
-                }
-                catch (error) {
-                    throw error;
-                }
-            };
-            oasis.data = StorageManager.createSyncedObject(response.data, "database", "oasis/" + UUID, { pull: null, push: push, callback: callback });
-            if (oasis.data.StorageManagerInfo.changelog) {
-                // Modify last view date:
-                oasis.data.stats.state.lastViewDate = Date.now();
-                oasis.data.StorageManagerInfo.changelog.add("stats");
-            }
-            return oasis;
+            const syncedObject = initializeSyncedObject("oasis/" + UUID, "custom", { defaultValue: response.data, debounceTime: 5000, customSyncFunctions: { push: oasisPushFunction } });
+            return new OasisManager(syncedObject);
         }
         catch (error) {
             if (error.response && error.response.status === 400) {
@@ -174,102 +165,55 @@ export class OasisManager {
         }
     }
     static async editOasisInfo(oasis, title, description) { 
-        const UUID = oasis._id;
-        // If already in StorageManager (currently active), edit directly:
-        const activeOasis = StorageManager.read("oasis/" + UUID);
-        if (activeOasis) {
-            activeOasis.info.title = title;
-            activeOasis.info.description = description;
-            oasis.stats.state.lastEditDate = Date.now();
-            if (activeOasis.StorageManagerInfo.changelog) {
-                // type is database, need to modify changelog:
-                activeOasis.StorageManagerInfo.changelog.add("info");
-            }
-            const response = await StorageManager.forceSyncObject(activeOasis.StorageManagerInfo);
-            if (response === true) {
-                return;
-            }
-            else {
-                throw response;
-            }
+        // Create oasis instance w/ synced object:
+        const key = "oasis/" + oasis._id;
+        const oasisIsOpen = getSyncedObject(key) ? true : false;
+        const oasisInstance = await this.createOasisInstance(oasis._id);
+        const syncedObject = oasisInstance.syncedObject;
+        // Update info:
+        const updater = { info: syncedObject.data.info, stats: syncedObject.data.stats };
+        updater.info.title = title;
+        updater.info.description = description;
+        updater.stats.state.lastEditDate = Date.now();
+        await updateSyncedObject(key, updater);
+        // Check errors:
+        if (syncedObject.state.error) {
+            throw syncedObject.state.error;
         }
-        // Otherwise, find oasis and edit:
-            // Search localStorage:
-        const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, false);
-        if (oasisMatches && oasisMatches.length > 0) {
-            // Create temporary syncedObject and edit:
-            const oasis = StorageManager.read(oasisMatches[0]);
-            oasis.info.title = title;
-            oasis.info.description = description;
-            oasis.stats.state.lastEditDate = Date.now();
-            const response = await StorageManager.forceSyncObject(oasis.StorageManagerInfo);
-            if (response === true) {
-                StorageManager.safeDecouple(oasisMatches[0]);
-                return;
-            }
-            else {
-                throw response;
-            }
-        }
-            // Search database:
-        try {
-            // Create a version of oasisData with only our updated information, and mark changelogs:
-            const token = UserManager.token.token;
-            const oasisData = {
-                info: oasis.info
-            };
-            oasis.info.title = title;
-            oasis.info.description = description;
-            oasis.stats.state.lastEditDate = Date.now();
-            const changelog = ["info"];
-            const response = await axios.post(CONST.URL + "/oasis/push", { token: token, UUID: UUID, oasisInstance: oasisData, changelog: changelog });
-            return;
-        }
-        catch (error) {
-            if (error.response && error.response.status === 400) {
-                // My error:
-                const errorMessage = error.response.data.error;
-                throw errorMessage;
-            } else {
-                // Network error:
-                const errorMessage = "Network error - please try again later.";
-                throw errorMessage;
-            }
+        // Remove synced object:
+        if (!oasisIsOpen) {
+            deleteSyncedObject(syncedObject.key);
         }
     }
     static async deleteOasis(oasis) {
-        let navHome = false;
-        const UUID = oasis._id;
-        // If oasis is open, navigate to home:
-        const activeOasis = StorageManager.read("oasis/" + UUID);
-        if (activeOasis) {
-            navHome = true;
-        }
-        // Delete from localStorage:
-        const oasisMatches = StorageManager.findMatchingInLocal("oasis/" + UUID, true);
-        if (oasisMatches && oasisMatches.length > 0) {
-            // Delete:
-            StorageManager.removeMatchingInLocal("oasis/" + oasisMatches[0]._id);
-            return navHome;
-        }
-        // Delete from database:
-        try {
-            const token = UserManager.token.token;
-            const response = await axios.post(CONST.URL + "/oasis/deleteOasis", { UUID: UUID, token: token });
-            return navHome;
-        }
-        catch (error) {
-            if (error.response && error.response.status === 400) {
-                // My error:
-                const errorMessage = error.response.data.error;
-                throw errorMessage;
-            } else {
-                console.log(error);
-                // Network error:
-                const errorMessage = "Network error - please try again later.";
-                throw errorMessage;
+        // Delete oasis, return if should navHome or not:
+        const key = "oasis/" + oasis._id;
+        const oasisIsOpen = getSyncedObject(key) ? true : false;
+        // Delete from database or storage:
+        const deletedKeys = removeFromLocalStorage(key, "delete");
+        if (deletedKeys.length === 0) {
+            try {
+                const token = UserManager.token.token;
+                await axios.post(CONST.URL + "/oasis/deleteOasis", { UUID: oasis._id, token: token });
+            }
+            catch (error) {
+                if (error.response && error.response.status === 400) {
+                    // My error:
+                    const errorMessage = error.response.data.error;
+                    throw errorMessage;
+                } else {
+                    console.log(error);
+                    // Network error:
+                    const errorMessage = "Network error - please try again later.";
+                    throw errorMessage;
+                }
             }
         }
+        // Delete synced object:
+        if (oasisIsOpen) {
+            deleteSyncedObject(key);
+        }
+        return oasisIsOpen;
     }
         // Utils:
     static sortOasisList(list, sort) {
@@ -305,13 +249,14 @@ export class OasisManager {
     }
 
     // Instance Logic:
-    constructor(data) {
+    constructor(syncedObject) {
         // Setup vars:
-        this.type = data.users.owner ? "synced" : "local";
-        this.data = data;
-        this.UUID = data._id;
+        this.syncedObject = syncedObject;
+        this.data = syncedObject.data;        
+        this.type = this.data.users.owner ? "synced" : "local";
+        this.UUID = this.data._id;
         this.error = null;
-        this.messageProcessor = new MessageProcessor(data.content);
+        this.messageProcessor = new MessageProcessor(this.data.content);
         this.cache = {
             activeTab: 1,
             toggleCheckboxes: true,
@@ -335,7 +280,7 @@ export class OasisManager {
     setData(property) {
         // Function modify(false, property) updates the changelog and returns data.
         this.data.stats.state.lastEditDate = Date.now();
-        return this.data.modify(false, property)[property];
+        return this.syncedObject.modify(property)[property];
     }   
         // Utils:
 }

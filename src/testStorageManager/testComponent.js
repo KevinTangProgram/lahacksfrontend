@@ -1,4 +1,4 @@
-import { getSyncedObject, initializeSyncedObject, useSyncedObject, findInLocalStorage, removeFromLocalStorage, deleteSyncedObject } from "react-synced-object";
+import { getSyncedObject, initializeSyncedObject, useSyncedObject, findInLocalStorage, removeFromLocalStorage, deleteSyncedObject, updateSyncedObject } from "react-synced-object";
 import { useState, useEffect } from "react";
 // import useSyncedObject from "./testHook";
 
@@ -114,11 +114,15 @@ function TestComponent() {
                 }}>try to console testCustom</button>
                 <button onClick={() => {
                     syncedData.string = "hello2";
-                    modify();
+                    modify(2000);
                 }}>try to modify testCustom</button>
                 <button onClick={() => {
                     deleteSyncedObject("testCustom");
                 }}>delete testCustom</button>
+                <button onClick={async () => {
+                    const object = await updateSyncedObject("testCustom", { string: syncedData.string + "!"});
+                    console.log(object.state.success, object.state.error, object.changelog);
+                }}>update testCustom</button>
             </div>
         );
     }
@@ -132,7 +136,59 @@ function TestComponent() {
             </div>
         );
     }
+
+    function TestEvents() {
+        const { syncedObject, modify } = useSyncedObject("testEvent", {properties: ["", "myProperty"], safeMode: true});
+        return (
+            <div>
+                {syncedObject && syncedObject.data.myProperty}
+                <input onChange={(event) => { modify().myProperty = event.target.value }}></input>
+            </div>
+        );
+    }
+    function TestEvents2() {
+        // const { syncedObject, modify } = useSyncedObject("testEvent");
+        // return (
+        //     <div>
+        //         {syncedObject && syncedObject.data.myProperty}
+        //         <input onChange={(event) => { modify("myProperty").myProperty = event.target.value }}></input>
+        //     </div>
+        // );
+        return <div>
+            <button onClick={() => { getSyncedObject("testEvent").modify().myProperty = "new hellow1" }}>modify</button>
+            <button onClick={() => { getSyncedObject("testEvent").modify("myProperty").myProperty = "new hellow2" }}>modify("myProperty")</button>
+            <button onClick={() => { getSyncedObject("testEvent").modify("myProperty2").myProperty = "new hellow3" }}>modify("myProperty2")</button>
+        </div>
+
+    }
     const [open, setOpen] = useState(true);
+
+    function TestRandom() {
+        let promise;
+        let promiseResolve;
+        return (
+            <div>
+                <button onClick={() => {
+                    console.log("making promise");
+                    promise = new Promise((resolve) => {
+                        promiseResolve = resolve;
+                        setTimeout(() => {
+                            console.log("timer done");
+                            resolve();
+                        }, 5000);
+                    });
+                }}>make promise</button>
+                <button onClick={() => {
+                    promise.then(() => {
+                        console.log("promise done");
+                    });
+                }}>listen for promise</button>
+                <button onClick={() => {
+                    promiseResolve();
+                }}>resolve promise now</button>
+            </div>
+        );
+    }
 
 
     return (
@@ -143,9 +199,12 @@ function TestComponent() {
             {open && <div>
                 {/* <TestSynced />
                 <TestLocalStorage />
-                <button onClick={() => { getSyncedObject("testKey").modify("string2").string2 = "lol" }}>lol</button>
-                <TestStatusIconsAndCustomSync /> */}
-                <TestStuff />
+                <button onClick={() => { getSyncedObject("testKey").modify("string2").string2 = "lol" }}>lol</button> */}
+                <TestStatusIconsAndCustomSync />
+                {/* <TestStuff />
+                <TestEvents />
+                <TestEvents2 /> */}
+                {/* <TestRandom /> */}
                 </div>}
 
         </div>

@@ -199,7 +199,7 @@ function Tab_home({ focusOasis }) {
                                             openOasisUI,
                                             contextMenuInfo: { setMenu: openContextMenu, showMenu: openMenuId === oasis._id, coords: coords }
                                         };
-                                        return <SingleOasisPreview {...props} />
+                                        return <SingleOasisPreview {...props} key={oasis._id} />
                                     }))}
                                 </div>
 
