@@ -2,7 +2,7 @@ import '../CSS/Test.css';
 import React, { useState, useContext } from 'react';
 import { Context } from '../utilities/context';
 import Tooltip from '../components/tooltip';
-import { getHumanizedDate } from '../utilities/utilities';
+import { getHumanizedDate } from '../components/clock';
 //
 function Tab_settings_oasis() {
     // Oasis Data:

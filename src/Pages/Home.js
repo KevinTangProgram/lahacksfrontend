@@ -29,9 +29,11 @@ function Home() {
 
     return (
         <div className="Main">
+            {/* Helmet: */}
             <Helmet>
-                <title>Homepage - Idea Oasis</title>
+                <title>Idea Oasis - Home</title>
             </Helmet>
+            {/* Tab Select: */}
             <div className="tablet" id="noBackground">
                 <div className="threeButtons">
                     <button className="selectCells" id={currentTab[0]} onClick={() => { setCurrentTab(["tabActive", "tabInactive"]) }}>Home</button>
@@ -39,15 +41,14 @@ function Home() {
                     <button className="selectCells" id={currentTab[1]} onClick={() => { setCurrentTab(["tabInactive", "tabActive"]) }}>Settings</button>
                 </div>
             </div>
-
+            {/* Content: */}
             <div className="activeTab">
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
                 {currentTab[1] === "tabActive" && <Tab_settings type="home" />}
             </div>
 
+            {/* Popups: */}
             {showLogin && <Authenticator closeFunc={() => { setShowLogin(false) }} />}
-
-
             <DebuggerPanel />
 
         </div>

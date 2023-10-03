@@ -1,10 +1,9 @@
 import '../CSS/Test.css';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Authenticator from '../components/AuthenticationUI/authenticator';
 import { UserManager } from '../utilities/userManager';
 import Tooltip from '../components/tooltip';
-import Loader from '../components/loader';
-import { getHumanizedDate } from '../utilities/utilities';
+import { getHumanizedDate } from '../components/clock';
 import StatusIcons from '../components/OasisUI/statusIcons';
 
 //
@@ -241,23 +240,11 @@ function Tab_settings_user() {
                         You have unsaved changes:
                         {STATE.showButton() && <button className={STATE.isLoading() ? "lowOpacity" : ""} onClick={saveChanges}> save </button>}
                     </div>
-                {/* {STATE.isDirty() && <div className="twoIcon-container">
-                    <div className="icon-container">
-                        {STATE.isLoading() && (
-                        <Loader type="icon" />)}
-                        {STATE.isSynced() && (
-                        <img className="iconSynced" src="/images/icons/iconConfirm.png" alt="Synced" />)}
-                    </div>
-                    <div className="icon-container">
-                        {error && (
-                        <Tooltip text={error} iconComponent={() => { return <img className="iconError" src="/images/icons/iconExclamation.png" alt="Error" /> }} />)}
-                    </div>
-                </div>} */}
                     {!STATE.showButton() && <StatusIcons syncProps={{
-                        syncLoading: STATE.isLoading(),
-                        syncSuccess: STATE.isSynced(),
-                        syncError: error,
-                        syncRetryFunc: saveChanges
+                        loading: STATE.isLoading(),
+                        success: STATE.isSynced(),
+                        error: error,
+                        retryFunc: saveChanges
                     }} />}
             </div>}
 

@@ -3,7 +3,10 @@ import Authenticator from '../components/AuthenticationUI/authenticator';
 import ObserverComponent from '../components/observer';
 import { useNavigate } from 'react-router-dom';
 import { UserManager } from '../utilities/userManager';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { Context } from '../utilities/context';
+import { deleteSyncedObject } from 'react-synced-object';
+
 
 import { OasisManager } from '../utilities/oasisManager';
 import ManageOasisUI from '../components/OasisUI/manageOasisUI';
@@ -14,6 +17,7 @@ function Tab_home({ focusOasis }) {
     const Output = () => {
         // Setup:
         const navigate = useNavigate();
+
         // User Auth:
         const [showLogin, setShowLogin] = useState(false);
         const UserComponent = () => {
@@ -106,15 +110,15 @@ function Tab_home({ focusOasis }) {
             const [activeOasis, setActiveOasis] = useState(null);
             const [activeMenu, setActiveMenu] = useState(null);
             const openOasisUI = (oasis, menu) => {
-                        setActiveOasis(oasis);
-                        setActiveMenu(menu);
-                    }
+                setActiveOasis(oasis);
+                setActiveMenu(menu);
+            }
             // Component:
             const OasisUIComponent = () => {
                 // Setup:
                 function goToNewOasis(ID) {
+                    focusOasis(ID);
                     navigate('/oasis/' + ID);
-                    focusOasis();
                 }
                 function navigateHome() {
                     navigate('/home');

@@ -3,6 +3,7 @@ import '../CSS/Test.css';
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from "react-router-dom";
 import { Context } from '../utilities/context';
+import { useSyncedObject, deleteSyncedObject } from 'react-synced-object';
 //
 import Tab_oasis from '../tabs/Tab_oasis';
 import Tab_home from '../tabs/Tab_home';
@@ -14,6 +15,7 @@ import { OasisManager } from '../utilities/oasisManager';
 import Authenticator from '../components/AuthenticationUI/authenticator';
 import Loader from '../components/loader';
 import { Helmet } from 'react-helmet';
+import { currentDateKey } from '../components/clock';
    
 
 function Oasis() {
@@ -29,49 +31,47 @@ function Oasis() {
         checkToken();
     }, []);
     // Meridian Display Logic:
-    function getHour() {
-        const timeString = (new Date()).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-        const hour = Number(timeString.substring(0, timeString.indexOf(':')));
-        const ante = timeString.includes("AM");
-        if (ante && hour > 5)
-        {
-            return 0;
+    const MeridianDisplay = () => {
+        const { syncedData } = useSyncedObject(currentDateKey);
+        function getHour() {
+            const now = syncedData.now;
+            const hour = now.hour();
+            const isAM = now.format('A') === 'AM';
+
+            if (isAM && hour > 5) {
+                return 0;
+            } else if (!isAM && (hour < 5 || hour === 12)) {
+                return 1;
+            } else if (!isAM && hour > 4 && hour < 7) {
+                return 2;
+            } else if (!isAM && hour > 6 && hour < 9) {
+                return 3;
+            } else if (!isAM && hour > 8) {
+                return 4;
+            } else if (isAM && (hour < 6 || hour === 12)) {
+                return 5;
+            }
+            return null;
         }
-        else if (!ante && hour < 5 || hour == 12)
-        {
-            return 1;
+        function welcomeMessage() {
+            if (!UserManager.user._id) {
+                return ""; // Good evening
+            }
+            else {
+                return ", " + UserManager.user.info.username.split(" ")[0]; // Good evening, [username]
+            }
         }
-        else if (!ante && hour > 4 && hour < 7)
-        {
-            return 2;
-        }
-        else if (!ante && hour > 6 && hour < 9)
-        {
-            return 3;
-        }
-        else if (!ante && hour > 8)
-        {
-            return 4;
-        }
-        else if (ante && hour < 6 || hour == 12)
-        {
-            return 5;
-        }
-    }
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTracker(getHour());
-        }, 3000);
-    }, []);
-    const [tracker, setTracker] = useState(getHour());
-    const welcome = ["Good Morning", "Good Afternoon", "Good Afternoon", "Good Evening", "Good Evening", "Good Morning"];
-    const image = ["morning.png", "ocean.png", "afternoon.png", "evening.png", "night.png", "night.png"];
-    
-    // Tab Logic:
-    const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
-    const focusOasis = () => {
-        setCurrentTab(["tabInactive", "tabActive", "tabInactive"]);
-    }
+        const tracker = getHour();
+        const welcome = ["Good Morning", "Good Afternoon", "Good Afternoon", "Good Evening", "Good Evening", "Good Morning"];
+        const image = ["morning.png", "ocean.png", "afternoon.png", "evening.png", "night.png", "night.png"];
+
+        return (
+            <div style={{ "position": "relative", "display": "flex" }}>
+                <img src={"/images/icons/" + image[tracker]} style={{ "width": "100%", "z-index": "-1" }} />
+                <h1 style={{ "color": "black", "padding-top": "5em", "margin-top": "0", "text-align": "center", "width": "100%", "position": "absolute", "fontStyle": "italic" }}>{welcome[tracker] + welcomeMessage()}</h1>
+            </div>
+        );
+    };
 
     // Oasis Instance Logic:
     const { id } = useParams();
@@ -96,18 +96,22 @@ function Oasis() {
         fetchOasis();
     }, [id]);
 
-    // Content Logic:
-    function welcomeMessage()
-    {
-        if (!UserManager.user._id)
-        {
-            return ""; // Good evening
-        }
-        else
-        {
-            return ", " + UserManager.user.info.username.split(" ")[0]; // Good evening, [username]
+    // Tab Logic:
+    const [currentTab, setCurrentTab] = useState(["tabInactive", "tabActive", "tabInactive"]);
+    const focusOasis = (ID) => {
+        setCurrentTab(["tabInactive", "tabActive", "tabInactive"]);
+        // Delete the active oasis syncedObject if:
+            // 1. We are moving to a new oasis (diff ID).
+            // 2. Other tabs aren't using the active oasis.
+            // - EX: two tabs of "my oasis", one tab does focusOasis("my new oasis")
+        if (context?.oasisInstance) {
+            const oldID = context.oasisInstance.data._id;
+            if (oldID !== ID) {
+                deleteSyncedObject(`oasis/${oldID}`);
+            }
         }
     }
+
     
     // Output:
     return (
@@ -116,10 +120,10 @@ function Oasis() {
             {context.oasisInstance && <Helmet>
                 <title>'{context.oasisInstance.getData("info").title}' - Idea Oasis</title>
             </Helmet>}
-            {/* Background + Image:  */}
+
+            {/* Meridian Display + Tab Select:  */}
             <div style={{"position": "relative", "display": "flex"}}>
-                <img src={"/images/icons/" + image[tracker]} style={{"width": "100%", "z-index": "-1"}} />
-                <h1 style={{"color": "black", "padding-top": "5em", "margin-top": "0", "text-align": "center", "width": "100%", "position": "absolute", "fontStyle": "italic"}}>{welcome[tracker] + welcomeMessage()}</h1>
+                <MeridianDisplay />
                 <div id="noBackground" style={{"position": "absolute", "top": "auto", "bottom": "0", "width": "100%"}}>
                     <div className="threeButtons" style={{}}>
                         <button className="selectCells" id={currentTab[0]} onClick={() => { setCurrentTab(["tabActive", "tabInactive", "tabInactive"]) }}>Home</button>
@@ -128,10 +132,11 @@ function Oasis() {
                     </div>
                 </div>
             </div>
+
             {/* Content: */}
-            <div className="activeTab">
-                {/* Note: because the following components are not loaded until oasisInstance exists, 
+            {/* Note: because the following components are not loaded until oasisInstance exists, 
             we can freely access oasisInstance inside them without null checks. */}
+            <div className="activeTab">
                 {/* Tab_Home selected: */}
                 {currentTab[0] === "tabActive" && <Tab_home focusOasis={focusOasis} />}
                 {/* Tab_Oasis selected: */}
@@ -149,8 +154,9 @@ function Oasis() {
                     </>
                 )}
             </div>
-            {showLogin && <Authenticator closeFunc={() => { setShowLogin(false) }} />}
 
+            {/* Popups: */}
+            {showLogin && <Authenticator closeFunc={() => { setShowLogin(false) }} />}
             <DebuggerPanel />
         </div>
     );

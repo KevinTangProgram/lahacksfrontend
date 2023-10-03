@@ -1,7 +1,7 @@
 //
 import { useState, useEffect, useRef } from "react";
 import { NavLink } from 'react-router-dom';
-import { getHumanizedDate } from '../../utilities/utilities';
+import { getHumanizedDate } from "../clock";
 import Tooltip from '../tooltip';
 
 
@@ -25,7 +25,7 @@ function SingleOasisPreview(props) {
 
     return (
         <NavLink to={"/oasis/" + oasis._id} className="oasisPreview" activeclassname="oasisPreview active" key={oasis._id} onClick={() => {
-                focusOasis();
+                focusOasis(oasis._id);
             }} onContextMenu={(event) => {
                 event.preventDefault(); 
                 setMenu(oasis._id, event.clientX, event.clientY);

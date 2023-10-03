@@ -1,48 +1,41 @@
-import React, { useState, useEffect } from 'react';
-
-// Vars:
-
-// Components:
-export default function Clock(props) {
-    const [time, setTime] = useState(getTime());
-    const [date, setDate] = useState(getDate());
-  
-    useEffect(() => {
-      const interval = setInterval(() => {
-        const date = new Date();
-        const timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-        const dateString = date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-        setTime(timeString);
-        setDate(dateString);
-      }, 3000);
-  
-      // Cleanup function to clear the interval
-      return () => clearInterval(interval);
-    }, []);
-  
-    if (props.type === "time") {
-        return <p className={props.className} style={{"color": "white"}}>{time}</p>;
-    }
-    if (props.type === "date") {
-        return <p className={props.className} style={{"color": "white"}}>{date}</p>;
-    }
-    return <p>Hello Aaron</p>
-  }
+// Using dayjs & react-synced-object:
+import { initializeSyncedObject, useSyncedObject, updateSyncedObject } from 'react-synced-object';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 // Interface:
-function getTimeData() {
-    return date;
+export default function Clock(props) {
+  const { syncedData } = useSyncedObject('currentDate');
+  if (props.type === "time") {
+    return <p className={props.className} style={{ "color": "white" }}>{syncedData.time}</p>;
+  }
+  if (props.type === "date") {
+    return <p className={props.className} style={{ "color": "white" }}>{syncedData.date}</p>;
+  }
 }
-// Utils:
-function getTime() {
-  const date = new Date();
-  const timeString = date.toLocaleTimeString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true});
-  return timeString;
-}
-function getDate() {
-  const date = new Date();
-  const dateString = date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-  return dateString;
-}
+function getHumanizedDate(date) {
+  const dayjsDate = dayjs(date);
+  return dayjsDate.fromNow();
+} 
 
-export { getTimeData, getTime, getDate };
+// Setup:
+const currentDateKey = 'currentDate';
+function setup() {
+  const now = dayjs();
+  const time = now.format('h:mm A');
+  const date = now.format('MM/DD/YYYY');
+  const syncedData = { now, time, date }
+  const timeToNextMin = 60 - now.second();
+
+  setTimeout(() => {
+    updateSyncedObject('currentDate', setup());
+  }, timeToNextMin * 1000);
+  return syncedData;
+}
+initializeSyncedObject(currentDateKey, 'temp', {
+  defaultValue: setup()
+});
+
+
+export { getHumanizedDate, currentDateKey };

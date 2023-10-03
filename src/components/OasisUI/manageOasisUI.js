@@ -1,7 +1,7 @@
 import '../../CSS/Home.css';
 import { useState, useEffect, useRef } from 'react';
 import { OasisManager } from '../../utilities/oasisManager';
-import { getHumanizedDate } from '../../utilities/utilities';
+import { getHumanizedDate } from '../clock';
 import Tooltip from '../tooltip';
 import Loader from '../loader';
 import '../../CSS/Login.css';

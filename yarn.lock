@@ -7888,10 +7888,10 @@ react-side-effect@^2.1.0:
   resolved "https://registry.yarnpkg.com/react-side-effect/-/react-side-effect-2.1.2.tgz#dc6345b9e8f9906dc2eeb68700b615e0b4fe752a"
   integrity sha512-PVjOcvVOyIILrYoyGEpDN3vmYNLdy1CajSFNt4TDsVQC5KpTijDvWVoR+/7Rz2xT978D8/ZtFceXxzsPwZEDvw==
 
-react-synced-object@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/react-synced-object/-/react-synced-object-1.2.0.tgz#34d536eaaf36cf55e13a3319638784cd44701910"
-  integrity sha512-Ky4uvdnv/cR/2/0pZI99FTZPuTnlT4tbYPqTWpbBRxBQb5oXFsax5xCsrG9mu/wneKTFc72MYE91TPE/qRawMA==
+react-synced-object@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-synced-object/-/react-synced-object-1.2.1.tgz#984fe7c72635135ec5ac0d711424fd1ffb6326a9"
+  integrity sha512-LVa1hC5WE0FGrUtxFA5yQb1tXw2LrLIoqkpDL10EcbXypFZYln7HdyJbQNWzInmuWSFZMxKDlP8Y3mFUq4N/YQ==
 
 react@^18.2.0:
   version "18.2.0"

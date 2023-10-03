@@ -5,6 +5,7 @@ import '../../CSS/Utils.css';
 import { useState, useRef, useContext } from 'react';
 import { useParams } from "react-router-dom";
 import { Context } from '../../utilities/context';
+import { OasisManager } from '../../utilities/oasisManager';
 
 function StatusBar() {
     // Setup:
@@ -17,8 +18,16 @@ function StatusBar() {
         const [titleValue, setTitleValue] = useState(oasisInstance?.getData("info").title);
         const handleTitleChange = (event) => {
             setTitleValue(event.target.value);
-            oasisInstance.setData("info").title = event.target.value;
+            let validate = OasisManager.validateInput("title", event.target.value);
+            if (validate === true) {
+                setTitleError(null);
+                oasisInstance.setData("info").title = event.target.value;
+            }
+            else {
+                setTitleError(OasisManager.validateInput("title", event.target.value));
+            }
         }
+        const [titleError, setTitleError] = useState(null);
         // Input - Text transition:
         const textRef = useRef(null);
         const inputRef = useRef(null);
@@ -43,7 +52,6 @@ function StatusBar() {
                 <div className="titleContainer alignCenter">
                     <h3 className="titleText">Settings</h3>
                 </div>
-
             );
         }
         return (
@@ -55,6 +63,7 @@ function StatusBar() {
                     }
                 }} onChange={handleTitleChange} onBlur={closeInput} />}
                 {!showInput && <h3 className="titleText" ref={textRef} onClick={openInput}>{titleValue}</h3>}
+                <p className="loginError" style={{"padding": "0", "margin": "0"}}>{titleError}</p>
             </div>
         );
     }
@@ -62,7 +71,7 @@ function StatusBar() {
     return (
         <div className="tablet statusBar">
             <Clock type={"date"} className={"alignLeft"} />
-            <StatusIcons objectKey={`oasis/${id}`} />
+            <StatusIcons objectKey={id ? `oasis/${id}` : null} />
             <StatusBarHeader />
             <Clock type={"time"} className={"alignRight"} />
         </div>
